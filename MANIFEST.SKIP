@@ -4,6 +4,7 @@
 
 (^|/)CVS(/|$)
 \.cvsignore$
+(^|/).svn(/|$)
 
 ^Makefile$
 ^blib
