@@ -1,0 +1,51 @@
+--- #YAML:1.0
+name: HTML-WebDAO
+version: 0.01
+license: perl
+distribution_type: module
+requires:
+  FreezeThaw: 0.43
+recommends: {}
+build_requires: {}
+conflicts: {}
+provides:
+  HTML::WebDAO:
+    file: lib/HTML/WebDAO.pm
+    version: 0.01
+  HTML::WebDAO::Activator:
+    file: lib/HTML/WebDAO/Activator.pm
+  HTML::WebDAO::Base:
+    file: lib/HTML/WebDAO/Base.pm
+  HTML::WebDAO::Comp::Graph:
+    file: lib/HTML/WebDAO/Comp/Graph.pm
+  HTML::WebDAO::Comp::Image:
+    file: lib/HTML/WebDAO/Comp/Image.pm
+  HTML::WebDAO::Comp::Label:
+    file: lib/HTML/WebDAO/Comp/Label.pm
+  HTML::WebDAO::Comp::ListEnv:
+    file: lib/HTML/WebDAO/Comp/ListEnv.pm
+  HTML::WebDAO::Comp::TabMenu:
+    file: lib/HTML/WebDAO/Comp/TabMenu.pm
+  HTML::WebDAO::Comp::VertMenu:
+    file: lib/HTML/WebDAO/Comp/VertMenu.pm
+  HTML::WebDAO::Component:
+    file: lib/HTML/WebDAO/Component.pm
+  HTML::WebDAO::Container:
+    file: lib/HTML/WebDAO/Container.pm
+  HTML::WebDAO::Element:
+    file: lib/HTML/WebDAO/Element.pm
+  HTML::WebDAO::Engine:
+    file: lib/HTML/WebDAO/Engine.pm
+  HTML::WebDAO::Lib::EvActivator:
+    file: lib/HTML/WebDAO/Lib/EvActivator.pm
+  HTML::WebDAO::Lib::RawHTML:
+    file: lib/HTML/WebDAO/Lib/RawHTML.pm
+  HTML::WebDAO::Session:
+    file: lib/HTML/WebDAO/Session.pm
+  HTML::WebDAO::Sessionco:
+    file: lib/HTML/WebDAO/Sessionco.pm
+  HTML::WebDAO::Sessiondb:
+    file: lib/HTML/WebDAO/Sessiondb.pm
+  HTML::WebDAO::Sessiong:
+    file: lib/HTML/WebDAO/Sessiong.pm
+generated_by: Module::Build version 0.21

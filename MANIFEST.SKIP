@@ -1,0 +1,12 @@
+~$
+\.bak$
+\.tar\.gz$
+
+(^|/)CVS(/|$)
+\.cvsignore$
+
+^Makefile$
+^blib
+^Build$
+^_build
+^MANIFEST.SKIP$
