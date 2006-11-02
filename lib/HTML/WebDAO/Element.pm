@@ -16,7 +16,7 @@ sub _init {
 
 sub RegEvent {
     my $self    = shift;
-    my $ref_eng = $self->GetEngine;
+    my $ref_eng = $self->getEngine;
     $ref_eng->RegEvent( $self, @_ );
 }
 
@@ -72,7 +72,7 @@ sub call_path {
     my $self = shift;
     my $path = shift;
     $path = [ grep { $_ } split( /\//, $path ) ];
-    return $self->GetEngine->_call_method( $path, @_ );
+    return $self->getEngine->_call_method( $path, @_ );
 }
 
 sub _call_method {
@@ -127,6 +127,12 @@ sub MyName {
 }
 
 sub GetEngine {
+    my $self = shift;
+    $self->_deprecated("getEngine");
+    return $self->__engine;
+}
+
+sub getEngine {
     my $self = shift;
     return $self->__engine;
 }
@@ -188,6 +194,7 @@ sub GetFormData {
 
 sub _set_unknown_var {
     my ( $self, $par, $val ) = @_;
+    _log1 $self "$self  $par $val";
     $self->_deprecated("NONE");
 #    my ($ref_unknown_vars) = $self->_runtime("_unknown_vars");
 #    $ref_unknown_vars->{$par} = $$val;
@@ -197,7 +204,6 @@ sub _set_vars {
     my ( $self, $ref, $names ) = @_;
     $names = $self->__attribute_names;
     for my $key ( keys %{$ref} ) {
-        next if ( ref( $ref->{$key} ) eq "HASH" );
         if ( exists( $names->{$key} ) ) {
             $self ->${key}( $ref->{$key} );
         }

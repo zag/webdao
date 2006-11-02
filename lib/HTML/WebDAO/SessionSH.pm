@@ -10,13 +10,15 @@ use base qw( HTML::WebDAO::Session );
 sub Init {
     $self = shift;
     %args = @_;
+    $self->SUPER::Init(@_);
     Params $self ( \%args );
     Events $self ( {} );
 }
 
 #Can be overlap if you choose another
 #alghoritm generate unique session ID (i.e cookie,http_auth)
-sub get_id {
+sub ___get_id {
+    die "aaa";
     return rand(100);
 }
 
@@ -28,13 +30,13 @@ sub ExecEngine() {
     my ( $self, $eng_ref ) = @_;
 
     #Load session
-#    $self->LoadSession($eng_ref);
+    $self->LoadSession($eng_ref);
 
     #send events from urls;
     map { $eng_ref->SendEvent( $_, $self->Events->{$_} ) } keys %{ $self->Events };
 
     #print $self->print_header();
-    $eng_ref->Work($self);
+#    $eng_ref->Work($self);
 
     #print @{$eng_ref->Fetch()};
 #    $self->store_session($eng_ref);

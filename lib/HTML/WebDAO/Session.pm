@@ -28,10 +28,12 @@ sub Init {
     _store_obj $self $_[0]->{store} || new HTML::WebDAO::Store::Abstract::;
     Cgi_env $self (
         {
-            url               => $self->Cgi_obj->url(),         #http://eng.zag
-            path_info         => $self->Cgi_obj->path_info(),
+            url               => $self->Cgi_obj->url( -base => 1),         #http://eng.zag
+            path_info         => $self->Cgi_obj->url( -absolute => 1, -path_info => 1 ),
             path_info_elments => [],
             file              => "",
+            base_url          =>$self->Cgi_obj->url( -base => 1),#http://base.com
+            query_string      => $self->Cgi_obj->query_string,
         }
     );
     $self->get_id;
@@ -76,7 +78,6 @@ sub store { (shift)->_store_obj->store(@_) }
 #--------------------------------------------------
 sub set_engine_state() {
     my ( $self, $eng_ref, $object_state_tree ) = @_;
-
     #Store object's state tree
     $eng_ref->_set_vars($object_state_tree);
     return 1;
@@ -101,9 +102,9 @@ sub store_session() {
     $eng_ref->SendEvent("_sess_ended");
     my $id                = $self->get_id();
     my $object_state_tree = $self->get_engine_state($eng_ref);
-    my $stored_hash       = $self->load($id);
-    $object_state_tree =
-      $self->merge_stored_and_new_tree( $stored_hash, $object_state_tree );
+#    my $stored_hash       = $self->load($id);
+#    $object_state_tree =
+#      $self->merge_stored_and_new_tree( $stored_hash, $object_state_tree );
     $self->store( $id, $object_state_tree );
     return 1;
 }
@@ -286,8 +287,8 @@ sub _get_params {
 #return recurcive merged tree
 sub merge_stored_and_new_tree {
     my ( $self, $h1, $h2 ) = @_;
-
-#logmsgs $self Dumper({'$h1'=>$h1}).Dumper([ map {caller($_)} (1..4)]);
+    return $h2 unless defined $h1;
+#_log4 $self Dumper({'$h1'=>$h1,'$h2'=>$h2});#.Dumper([ map {caller($_)} (1..4)]);
 #print STDERR "Do merge\n".Dumper([ map {caller($_)} (1..4)]) unless ref $h2 eq 'HASH';
     return $h1 unless ref $h2 eq 'HASH';
     while ( my ( $key, $val ) = each(%$h2) ) {

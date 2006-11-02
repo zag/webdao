@@ -174,7 +174,10 @@ sub RegEvent {
 sub SendEvent {
     my ( $self, $event_name, @Par ) = @_;
     my $ev_hash = $self->__events;
-    return 0 unless ( exists( $ev_hash->{$event_name} ) );
+    unless ( exists ($ev_hash->{$event_name}) ){
+        _log2 $self "WARN: Event $event_name not exists.";
+        return 0;
+    }
     foreach my $ref_rec ( keys %{ $ev_hash->{$event_name} } ) {
         my $ref_sub = $ev_hash->{$event_name}->{$ref_rec}->{ref_sub};
         my $ref_obj = $ev_hash->{$event_name}->{$ref_rec}->{ref_obj};
@@ -186,7 +189,7 @@ sub _createObj {
     my ( $self, $name_obj, $name_func, @par ) = @_;
     if ( my $pack = _pack4name $self $name_func ) {
         my $ref_init_hash = {
-            ref_engine => $self->GetEngine(),    #! Setup _engine refernce for childs!
+            ref_engine => $self->getEngine(),    #! Setup _engine refernce for childs!
             name_obj   => $name_obj
         };    #! Setup _my_name
         my $obj_ref = eval "$pack\-\>new(\$ref_init_hash,\@par)";

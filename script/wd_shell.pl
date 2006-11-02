@@ -43,9 +43,9 @@ my (
         $ENV{wdEngine} || 'HTML::WebDAO::Engine'
         );
 
-my ( $help, $man );
-my %opt = ( help => \$help, man => \$man );    #meta=>\$meta,);
-GetOptions( \%opt, 'help|?', 'man', 'f=s', )
+my ( $help, $man, $sess_id );
+my %opt = ( help => \$help, man => \$man, sid=>\$sess_id );    #meta=>\$meta,);
+GetOptions( \%opt, 'help|?', 'man', 'f=s', 'sid|s=s' )
   or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
@@ -84,6 +84,7 @@ my $sess = $session_class->new(
         store => $store_obj,
     }
 );
+$sess->U_id($sess_id);
 my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile}||$opt{f};
 die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}" unless $filename;
 my $content = qq!<wD><include file="$filename"/></wD>!;
