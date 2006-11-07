@@ -24,7 +24,7 @@ use HTML::WebDAO::Comp::Label;
 #use HTML::WebDAO::Comp::Graph;
 our @ISA = qw();
 
-our $VERSION = '0.66';
+our $VERSION = '0.67';
 
 
 # Preloaded methods go here.
