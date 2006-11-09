@@ -41,15 +41,7 @@ sub init {
     my ( $self, %opt ) = @_;
     #register default clasess
     $self->register_class(
-        'HTML::WebDAO::Comp::Label' => 'label',
-
-        #        'HTML::WebDAO::Comp::TabMenu'=>'tabmenu',
-        #        'HTML::WebDAO::Comp::VertMenu'=>'smpmenu',
-        #        'HTML::WebDAO::Comp::Graph'=>'graph',
-        #        'HTML::WebDAO::Comp::Image'=>'image',
         'HTML::WebDAO::Lib::RawHTML' => '_rawhtml_element',
-
-        #        'HTML::WebDAO::Lib::EvActivator'=>'eventactivator',
     );
 
     #Save session
@@ -130,9 +122,6 @@ sub Work {
     #    $self->_log1("$res") if $res;
     if ($res) {
         unless ( ref($res) ) {
-
-            #            print $sess->print_header();
-            #            print $res;
             $sess->response( { data => $res } );
             return;
         }
@@ -140,9 +129,6 @@ sub Work {
             if ( ref($res) eq 'HASH' and ( exists $res->{header} or exists $res->{data} ) ) {
 
                 $sess->response($res);
-
-                #                print $res->{header}, $res->{data};
-
                 if ( my $call_back = $res->{call_back} ) {
                     $call_back->() if ref($call_back) eq 'CODE';
                 }
@@ -152,11 +138,7 @@ sub Work {
 
     }
 
-    #    $sess->response({data=>
-    #    $sess->response({data=>join"",@{ $self->fetch() }});
     $sess->print_header();
-
-    #     $self->fetch($sess);
     print @{ $self->fetch($sess) };
 }
 
