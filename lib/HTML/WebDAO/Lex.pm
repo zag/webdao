@@ -3,13 +3,13 @@
 package HTML::WebDAO::Lex;
 use XML::LibXML;
 use Data::Dumper;
-use HTML::WebDAO::Lobject;
-use HTML::WebDAO::Lbase;
-use HTML::WebDAO::Lregclass;
-use HTML::WebDAO::Lobjectref;
-use HTML::WebDAO::Ltext;
-use HTML::WebDAO::Linclude;
-use HTML::WebDAO::Lmethod;
+use HTML::WebDAO::Lexer::Lobject;
+use HTML::WebDAO::Lexer::Lbase;
+use HTML::WebDAO::Lexer::Lregclass;
+use HTML::WebDAO::Lexer::Lobjectref;
+use HTML::WebDAO::Lexer::Ltext;
+use HTML::WebDAO::Lexer::Linclude;
+use HTML::WebDAO::Lexer::Lmethod;
 use HTML::WebDAO::Base;
 use base qw( HTML::WebDAO::Base );
 __PACKAGE__->attributes qw/ engine tree auto / ;
@@ -42,10 +42,10 @@ sub buld_tree {
         my @ref;
         unless ( $text =~ /^<wd/i ) {
             push @ref,
-              HTML::WebDAO::Lobject->new(
+              HTML::WebDAO::Lexer::Lobject->new(
                 class   => "_rawhtml_element",
                 id      => "none",
-                childs  => [ HTML::WebDAO::Ltext->new( value => \$text ) ],
+                childs  => [ HTML::WebDAO::Lexer::Ltext->new( value => \$text ) ],
                 context => $self
               )  unless $text =~/^\s*$/;
         }
@@ -64,13 +64,13 @@ sub buld_tree {
 sub get_obj_tree {
     my $self = shift;
     my %map  = (
-        object    => 'HTML::WebDAO::Lobject',
-        regclass  => 'HTML::WebDAO::Lregclass',
-        objectref => 'HTML::WebDAO::Lobjectref',
-        text      => 'HTML::WebDAO::Ltext',
-        include   => 'HTML::WebDAO::Linclude',
-        default   => 'HTML::WebDAO::Lbase',
-        method    => 'HTML::WebDAO::Lmethod'
+        object    => 'HTML::WebDAO::Lexer::Lobject',
+        regclass  => 'HTML::WebDAO::Lexer::Lregclass',
+        objectref => 'HTML::WebDAO::Lexer::Lobjectref',
+        text      => 'HTML::WebDAO::Lexer::Ltext',
+        include   => 'HTML::WebDAO::Lexer::Linclude',
+        default   => 'HTML::WebDAO::Lexer::Lbase',
+        method    => 'HTML::WebDAO::Lexer::Lmethod'
     );
     my @result;
     foreach my $node (@_) {

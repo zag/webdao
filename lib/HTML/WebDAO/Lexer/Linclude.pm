@@ -1,11 +1,9 @@
 #$Id: Linclude.pm,v 1.4 2006/10/27 08:59:08 zag Exp $
 
-package HTML::WebDAO::Linclude;
-use HTML::WebDAO::Base;
-use HTML::WebDAO::Lbase;
+package HTML::WebDAO::Lexer::Linclude;
+use HTML::WebDAO::Lexer::Lbase;
 use Data::Dumper;
-use CGI;
-use base qw( HTML::WebDAO::Lbase );
+use base qw( HTML::WebDAO::Lexer::Lbase );
 use strict;
 __PACKAGE__->attributes qw/ ret_obj /;
 

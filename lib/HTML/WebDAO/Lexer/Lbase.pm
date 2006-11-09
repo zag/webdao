@@ -1,6 +1,6 @@
 #$Id: Lbase.pm,v 1.4 2006/10/27 08:59:08 zag Exp $
 
-package HTML::WebDAO::Lbase;
+package HTML::WebDAO::Lexer::Lbase;
 use HTML::WebDAO::Base;
 use Data::Dumper;
 use base qw( HTML::WebDAO::Base );

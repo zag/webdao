@@ -1,11 +1,9 @@
 #$Id: Ltext.pm,v 1.2 2006/09/19 10:05:25 zag Exp $
 
-package HTML::WebDAO::Ltext;
-use HTML::WebDAO::Base;
-use HTML::WebDAO::Lbase;
+package HTML::WebDAO::Lexer::Ltext;
+use HTML::WebDAO::Lexer::Lbase;
 use Data::Dumper;
-use CGI;
-use base qw( HTML::WebDAO::Lbase );
+use base qw( HTML::WebDAO::Lexer::Lbase );
 use strict;
 sub Init {
     my $self = shift;
