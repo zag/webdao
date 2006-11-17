@@ -8,23 +8,14 @@ use HTML::WebDAO::Base;
 use HTML::WebDAO::Element;
 use HTML::WebDAO::Component;
 use HTML::WebDAO::Container;
-#use HTML::WebDAO::Activator;
 use HTML::WebDAO::Engine;
 use HTML::WebDAO::Session;
 use HTML::WebDAO::Sessionco;
-use HTML::WebDAO::Sessiondb;
 use HTML::WebDAO::Sessiong;
 use HTML::WebDAO::Lib::RawHTML;
-#use HTML::WebDAO::Lib::EvActivator;
-#use HTML::WebDAO::Comp::VertMenu;
-#use HTML::WebDAO::Comp::ListEnv;
-use HTML::WebDAO::Comp::Label;
-#use HTML::WebDAO::Comp::TabMenu;
-#use HTML::WebDAO::Comp::Image;
-#use HTML::WebDAO::Comp::Graph;
 our @ISA = qw();
 
-our $VERSION = '0.67';
+our $VERSION = '0.68';
 
 
 # Preloaded methods go here.
