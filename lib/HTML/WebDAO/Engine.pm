@@ -13,8 +13,9 @@ __PACKAGE__->attributes qw( _session __obj __events);
 sub _sysinit {
     my ( $self, $ref ) = @_;
     my %hash = @$ref;
+
     # Setup $init_hash;
-    my $my_name = $hash{id} || '';#shift( @{$ref} );
+    my $my_name = $hash{id} || '';    #shift( @{$ref} );
     unshift(
         @{$ref},
         {
@@ -39,9 +40,9 @@ sub _sysinit {
 
 sub init {
     my ( $self, %opt ) = @_;
+
     #register default clasess
-    $self->register_class(
-        'HTML::WebDAO::Lib::RawHTML' => '_rawhtml_element',
+    $self->register_class( 'HTML::WebDAO::Lib::RawHTML' => '_rawhtml_element',
     );
 
     #Save session
@@ -54,9 +55,7 @@ sub init {
     my $raw_html = $opt{source};
     if ( my $lex = $opt{lexer} ) {
         map { $_->value($self) } @{ $lex->auto };
-#        die Dumper($lex->tree);
         my @objs = map { $_->value($self) } @{ $lex->tree };
-        _log1 $self "TO ADD:".Dumper([ map { ref $_ } @objs]);
         foreach (@objs) {
             $self->AddChild($_);
         }
@@ -69,32 +68,6 @@ sub init {
         }
     }
 
-    #register event _sess_loaded
-    $self->RegEvent( $self, "_sess_loaded", \&SessionLoaded );
-}
-
-sub SessionLoaded {
-    my ( $self, $event_name, $par ) = @_;
-
-    #logmsgs $self q/SessionLoaded/;
-    #$self->_session_loaded();
-    $self->SUPER::SessionLoaded;
-}
-
-sub SetParam {
-    my ( $self, $par_ref ) = @_;
-    my $ref;
-    my $tr;
-    foreach my $key ( keys %{$par_ref} ) {
-        next if ( $par_ref->{$key} eq "" );
-        my $str;
-        $str = '$ref->'
-          . ( join "", map { "\{$_\}" } split( /\./, $key ) ) . "=\'"
-          . $par_ref->{$key} . "\'";
-        eval $str;
-    }
-    $ref = $ref->{ $self->MyName() } if ( exists( $ref->{ $self->MyName() } ) );
-    $self->_set_vars($ref);
 }
 
 sub _get_obj_by_path {
@@ -111,9 +84,6 @@ sub _get_obj_by_path {
 sub Work {
     my $self = shift;
     my $sess = shift;
-    SendEvent $self "_begin_work";
-
-    #    my @path = @{$sess->Cgi_env->{path_info_elments}};
     my @path = @{ $sess->call_path };
     ####
     $self->_log1( "PATH" . Dumper( \@path ) );
@@ -126,7 +96,9 @@ sub Work {
             return;
         }
         else {
-            if ( ref($res) eq 'HASH' and ( exists $res->{header} or exists $res->{data} ) ) {
+            if ( ref($res) eq 'HASH'
+                and ( exists $res->{header} or exists $res->{data} ) )
+            {
 
                 $sess->response($res);
                 if ( my $call_back = $res->{call_back} ) {
@@ -151,12 +123,13 @@ sub RegEvent {
         ref_sub => $ref_sub
       }
       if ( ref($ref_sub) );
+    return 1;
 }
 
 sub SendEvent {
     my ( $self, $event_name, @Par ) = @_;
     my $ev_hash = $self->__events;
-    unless ( exists ($ev_hash->{$event_name}) ){
+    unless ( exists( $ev_hash->{$event_name} ) ) {
         _log2 $self "WARN: Event $event_name not exists.";
         return 0;
     }
@@ -171,10 +144,14 @@ sub _createObj {
     my ( $self, $name_obj, $name_func, @par ) = @_;
     if ( my $pack = _pack4name $self $name_func ) {
         my $ref_init_hash = {
-            ref_engine => $self->getEngine(),    #! Setup _engine refernce for childs!
-            name_obj   => $name_obj
+            ref_engine => $self->getEngine()
+            ,    #! Setup _engine refernce for childs!
+            name_obj => $name_obj
         };    #! Setup _my_name
-        my $obj_ref = eval "$pack\-\>new(\$ref_init_hash,\@par)";
+        my $obj_ref =
+          $pack->isa('HTML::WebDAO::Element')
+          ? eval "'$pack'\-\>new(\$ref_init_hash,\@par)"
+          : eval "'$pack'\-\>new(\@par)";
         carp "Error in eval:  _createObj $@" if $@;
         return $obj_ref;
     }
@@ -194,14 +171,14 @@ sub _parse_html {
     foreach my $text (@$mass) {
         my @ref;
         unless ( $text =~ /^<wd/i ) {
-            push @ref,
-              $self->_createObj( "none", "_rawhtml_element", \$text );    #if $text =~ /\s+/;
+            push @ref, $self->_createObj( "none", "_rawhtml_element", \$text )
+              ;    #if $text =~ /\s+/;
         }
         else {
             my $lex = new HTML::WebDAO::Lex:: engine => $self;
-            @ref = $lex->lex_data($text);                                 #clean 'empty'
+            @ref = $lex->lex_data($text);    #clean 'empty'
 
-            #        _log3 $self "LEXED:".Dumper([ map {"$_"} @ref])."from $text";
+          #        _log3 $self "LEXED:".Dumper([ map {"$_"} @ref])."from $text";
 
         }
         next unless @ref;
@@ -230,23 +207,6 @@ sub register_class {
         $$_obj{$alias} = $class;
     }
     return;
-}
-
-#This method call from _set_vars then
-#setup unknown var (i.e. from form)
-sub _set_unknown_var {
-    my ( $self, $par, $val ) = @_;
-    for ($par) {
-        do {
-            /sess/ && do {
-                $self->SetSession($val);
-                return 1;    #do not inheritance SUPER
-              }
-              || do {
-                $self->SUPER::_set_unknown_var( $par, $val );
-              }
-          }
-    }
 }
 
 sub _destroy {

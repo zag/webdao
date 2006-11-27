@@ -2,9 +2,6 @@
 
 package HTML::WebDAO::Base;
 
-#require Exporter;
-# Import freeze() and thaw() for methods ref2str & str2ref
-#use FreezeThaw qw(freeze thaw);
 use Data::Dumper;
 use Carp;
 @HTML::WebDAO::Base::ISA    = qw(Exporter);
@@ -165,21 +162,6 @@ sub _init {
     my $self = shift;
     return 1;
 }
-
-=pod
-#-------- this methods use for
-#encodes complex data structures into printable ASCII strings
-#used module FreezeThaw, written by Ilya Zakharevich
-sub ref2str {
-    my ( $self, $ref ) = @_;
-    return freeze($ref);
-}
-
-sub str2ref {
-    my ( $self, $str ) = @_;
-    return ( thaw($str) )[0];
-}
-=cut
 
 #put message into syslog
 sub _deprecated {

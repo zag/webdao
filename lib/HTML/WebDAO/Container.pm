@@ -118,15 +118,6 @@ sub _get_obj_by_name {
     return;
 }
 
-sub SessionLoaded {
-    my $self = shift;
-
-    #$self->SUPER::SessionLoaded();
-    for my $a ( @{ $self->GetChilds } ) {
-        $a->SessionLoaded;
-    }
-}
-
 sub fetch {
     my $self = shift;
     my $sess = shift;

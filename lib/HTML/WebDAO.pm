@@ -15,10 +15,9 @@ use HTML::WebDAO::Sessiong;
 use HTML::WebDAO::Lib::RawHTML;
 our @ISA = qw();
 
-our $VERSION = '0.68';
+our $VERSION = '0.70';
 
 
-# Preloaded methods go here.
 
 1;
 __END__
@@ -45,11 +44,11 @@ http://sourceforge.net/projects/webdao
 
 =head1 AUTHOR
 
-Zahatski Aliaksandr, E<lt>zagap@users.sourceforge.netE<gt>
+Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003 by Zahatski Aliaksandr
+Copyright 2003-2006 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

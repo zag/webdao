@@ -119,32 +119,15 @@ sub _obj_name {
     return $_[0]->__my_name;
 }
 
-sub MyName {
-
-    my $self = shift;
-    return $self->__my_name;
-
-}
-
-sub GetEngine {
-    my $self = shift;
-    $self->_deprecated("getEngine");
-    return $self->__engine;
-}
 
 sub getEngine {
     my $self = shift;
     return $self->__engine;
 }
 
-sub GetParent {
-    my $self = shift;
-    return $self->__parent;
-}
-
 sub SendEvent {
     my $self   = shift;
-    my $parent = GetParent $self;
+    my $parent = __parent $self;
     $parent->SendEvent(@_);
 }
 
@@ -177,28 +160,10 @@ sub post_format {
     return [];
 }
 
-#private subroute for handled recurcive(for class inheritance)
-#call Session Loaded
-
-sub SessionLoaded { my $self = shift; }
 
 sub fetch { my $self = shift; return [] }
+
 sub _destroy { my $self=shift;$self->__parent(undef);$self->__engine(undef)}
-
-#deprecated
-
-sub GetFormData {
-    my ($self) = @_;
-    $self->_deprecated("NONE");
-}
-
-sub _set_unknown_var {
-    my ( $self, $par, $val ) = @_;
-    _log1 $self "$self  $par $val";
-    $self->_deprecated("NONE");
-#    my ($ref_unknown_vars) = $self->_runtime("_unknown_vars");
-#    $ref_unknown_vars->{$par} = $$val;
-}
 
 sub _set_vars {
     my ( $self, $ref, $names ) = @_;
@@ -208,48 +173,11 @@ sub _set_vars {
             $self ->${key}( $ref->{$key} );
         }
         else {
-            $self->_set_unknown_var( ${key}, \$ref->{$key} );
+            # Uknown attribute ???
+
         }
     }
 }
 
-
-# $obj->_runtime(name => 'John', age => 23);
-#
-# Or, $obj->_runtime (['name', 'age'], ['John', 23]);
-#hints:
-#	use 1 parametr to read value
-#		$obj->_runtime("ID")
-#	use anonym array to read multiple read
-#		$obj->_runtime(["ID","runtime_exept"])
-#	use hash for multiple or individual set
-#		$obj->_runtime("ID"=>$id,"runtime_exept"=>$err)
-sub _runtime {
-    my $self = shift;
-    $self->_deprecated("NONE");
-    my @res;
-    my $ref = $self->get_attribute("_runtime");
-    if ( @_ == 1 ) {
-        if ( ref( $_[0] ) ) {
-            foreach my $attr_name ( @{ $_[0] } ) {
-                push( @res, @{ $$ref{"$attr_name"} } );
-            }
-            return @res;
-        }
-        else {
-
-            #not ref && @_==1
-            return $$ref{ $_[0] };
-        }
-    }
-    else {    # > 1 par
-        my ( $attr_name, $attr_value );
-        while (@_) {
-            $attr_name        = shift;
-            $attr_value       = shift;
-            $$ref{$attr_name} = $attr_value;
-        }
-    }
-}
 
 1;
