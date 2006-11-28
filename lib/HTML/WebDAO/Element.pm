@@ -68,6 +68,17 @@ sub _get_vars {
     return $res;
 }
 
+=head3 _get_childs()
+
+Return ref to childs array
+
+=cut
+
+sub _get_childs {
+    return []
+}
+
+
 sub call_path {
     my $self = shift;
     my $path = shift;

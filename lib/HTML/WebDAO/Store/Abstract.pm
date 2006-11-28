@@ -2,6 +2,7 @@
 
 package HTML::WebDAO::Store::Abstract;
 use HTML::WebDAO::Base;
+use Data::Dumper;
 use strict;
 @HTML::WebDAO::Store::Abstract::ISA = ('HTML::WebDAO::Base');
 sub _init {
@@ -13,4 +14,16 @@ sub init {
 }
 sub load { {} }
 sub store { {} }
+sub _load_attributes {
+    my $self = shift;
+    _log1 $self "prepare keys for ". Dumper(\@_);
+    return {}
+}
+sub _store_attributes {
+    my $self = shift;
+    _log1 $self "storedata  ". Dumper(\@_);
+    return {}
+}
+sub flush { $_[0]->_log1("flush")}
+
 1;

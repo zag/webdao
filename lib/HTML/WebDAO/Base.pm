@@ -11,10 +11,9 @@ $DEBUG = 0;    # assign 1 to it to see code generated on the fly
 
 sub sess_attributes {
     my ($pkg) = caller;
-    shift if $_[0] =~ /\:\:/;
+    shift if $_[0] =~ /\:\:/ or  $_[0] eq $pkg;
     croak "Error: attributes() invoked multiple times"
       if scalar @{"${pkg}::_SESS_ATTRIBUTES_"};
-
     @{"${pkg}::_SESS_ATTRIBUTES_"} = @_;#grep { !/^_+/ } @_;
     my $code = "";
     print STDERR "Creating methods for $pkg\n" if $DEBUG;
@@ -45,7 +44,7 @@ sub sess_attributes {
 
 sub attributes {
     my ($pkg) = caller;
-    shift if $_[0] =~ /\:\:/;
+    shift if $_[0] =~ /\:\:/ or  $_[0] eq $pkg;
     my $code = "";
     foreach my $attr (@_) {
         print STDERR "  defining method $attr\n" if $DEBUG;

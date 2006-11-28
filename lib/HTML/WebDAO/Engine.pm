@@ -56,16 +56,12 @@ sub init {
     if ( my $lex = $opt{lexer} ) {
         map { $_->value($self) } @{ $lex->auto };
         my @objs = map { $_->value($self) } @{ $lex->tree };
-        foreach (@objs) {
-            $self->AddChild($_);
-        }
+        $self->_add_childs(@objs);
     }
     else {
 
         #Create childs from source
-        foreach ( @{ $self->_parse_html($raw_html) } ) {
-            $self->AddChild($_);
-        }
+        $self->_add_childs(@{ $self->_parse_html($raw_html) });
     }
 
 }
@@ -80,6 +76,39 @@ sub _get_obj_by_path {
     }
     return $res;
 }
+
+sub __restore_session_attributes {
+    my $self = shift;
+    #collect paths as index
+    my %paths;
+    foreach my $object (@_) {
+       my @collection = ($object, @{$object->_get_childs});
+        $paths{$_->__path2me} = $_ for @collection;
+    }
+    my $sess = $self->_session;
+    my $loaded = $sess->_load_attributes_by_path(keys %paths);
+    while ( my ($key, $ref) = each %$loaded) {
+        next unless exists $paths{$key};
+        $paths{$key}->_set_vars($ref)
+    }
+}
+
+sub __store_session_attributes {
+    my $self = shift;
+    #collect paths as index
+    my %paths;
+    foreach my $object (@_) {
+       my @collection = ($object, @{$object->_get_childs});
+          foreach  (@collection) {
+            my $attrs = $_->_get_vars;
+            next unless $attrs;
+            $paths{$_->__path2me} = $attrs;
+          }
+    }
+    my $sess = $self->_session;
+    $sess->_store_attributes_by_path(\%paths);
+}
+
 
 sub Work {
     my $self = shift;
@@ -139,7 +168,11 @@ sub SendEvent {
         $ref_obj->$ref_sub( $event_name, @Par );
     }
 }
+=head3 _createObj(<name>,<class or alias>,@parameters)
 
+create object by <class or alias>.
+
+=cut
 sub _createObj {
     my ( $self, $name_obj, $name_func, @par ) = @_;
     if ( my $pack = _pack4name $self $name_func ) {
@@ -200,7 +233,7 @@ sub register_class {
     while ( my ( $class, $alias ) = each %register ) {
         eval " use $class";
         if ($@) {
-            LOG $self "Error register class :$class with $@ ";
+            _log1 $self "Error register class :$class with $@ ";
             return "Error register class :$class with $@ ";
             next;
         }
@@ -211,6 +244,7 @@ sub register_class {
 
 sub _destroy {
     my $self = shift;
+    $self->__store_session_attributes(@{$self->_get_childs});
     $self->SUPER::_destroy;
     $self->_session(undef);
     $self->__obj(undef);

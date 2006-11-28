@@ -12,7 +12,6 @@ sub Init {
     %args = @_;
     $self->SUPER::Init(@_);
     Params $self ( \%args );
-    Events $self ( {} );
 }
 
 #Can be overlap if you choose another
@@ -28,12 +27,6 @@ sub print_header() {
 
 sub ExecEngine() {
     my ( $self, $eng_ref ) = @_;
-
-    #Load session
-    $self->LoadSession($eng_ref);
-
-    #send events from urls;
-    map { $eng_ref->SendEvent( $_, $self->Events->{$_} ) } keys %{ $self->Events };
 
     #print $self->print_header();
 #    $eng_ref->Work($self);

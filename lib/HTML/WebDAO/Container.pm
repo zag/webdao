@@ -21,22 +21,19 @@ sub _sysinit {
 
 }
 
-sub GetChilds {
-    return $_[0]->__childs;
-}
-
 sub _get_vars {
     my $self = shift;
     my ( $res, $ref );
     $res = $self->SUPER::_get_vars;
-    for my $tmp ( @{ $self->GetChilds } ) {
-        $ref = $tmp->_get_vars;
-        next unless ( ref($ref) );
-        my $my_name = $tmp->__my_name;
-        for my $key ( keys %{$ref} ) {
-            $res->{$my_name}->{$key} = $ref->{$key};
-        }
-    }
+#    for my $tmp ( @{ $self->__childs } ) {
+#        $ref = $tmp->_get_vars;
+#        next unless ( ref($ref) );
+#        my $my_name = $tmp->__my_name;
+#        for my $key ( keys %{$ref} ) {
+#            $res->{$my_name}->{$key} = $ref->{$key};
+#        }
+#    }
+#    _log1 $self Dumper(\$res);
     return $res;
 }
 
@@ -44,46 +41,53 @@ sub _set_vars {
     my ( $self, $ref ) = @_;
     my $chld_name;
     $self->SUPER::_set_vars($ref);
-    for my $tmp ( @{ $self->GetChilds } ) {
-        $chld_name = $tmp->__my_name;
-        $tmp->_set_vars( $ref->{$chld_name} ) if ( exists( $ref->{$chld_name} ) );
-    }
+#    for my $tmp ( @{ $self->__childs } ) {
+#        $chld_name = $tmp->__my_name;
+#        $tmp->_set_vars( $ref->{$chld_name} ) if ( exists( $ref->{$chld_name} ) );
+#    }
 }
 
-sub _add_child {
+=head3 _get_childs()
+
+Return ref to childs array
+
+=cut
+
+sub _get_childs {
+    return $_[0]->__childs
+}
+
+=head3 _add_childs($object1[, $object2])
+
+Insert set of objects into container
+
+=cut
+sub _add_childs {
     my $self = shift;
-    return $self->AddChild(@_);
+    my @childs = 
+            grep { ref $_ }
+            map {
+                ref($_) eq 'ARRAY' ? @$_ : $_
+            } 
+            map {$_->__get_self_refs}
+            grep {
+            ref($_) && $_->can('__get_self_refs')
+            } @_;
+    return unless @childs;
+    if ($self->__parent) {
+            $_->_set_parent($self) for @childs;
+            $self->getEngine->__restore_session_attributes(@childs)
+    }
+    push( @{ $self->__childs }, @childs );
 }
 
-sub AddChild {
-    my ( $self, $refer ) = @_;
-
-    #$self->_deprecated("_add_child");
-    return unless ( ref($refer) );
-    my $refs = $refer->__get_self_refs;
-
-    #Set new _parent runtime variable and reset _path2me
-    $refs = [ grep { ref $_ } ( ref($refs) eq 'ARRAY' ? @$refs : ($refs) ) ];
-    $_->_set_parent($self) for @{$refs};
-    push( @{ $self->GetChilds }, @{$refs} );
-}
 
 #it for container
 sub _set_parent {
     my ( $self, $par ) = @_;
     $self->SUPER::_set_parent($par);
-    foreach my $ref ( @{ $self->GetChilds } ) {
+    foreach my $ref ( @{ $self->__childs } ) {
         $ref->_set_parent($self);
-    }
-}
-
-sub SetChilds {
-    my ( $self, @refs ) = @_;
-
-    #initalize "childs" array for this container
-    $self->__childs( [] );
-    foreach (@refs) {
-        $self->AddChild($_) if ( ref($_) );
     }
 }
 
@@ -110,7 +114,7 @@ sub _get_obj_by_name {
     my $name = shift;
     return unless defined $name;
     my $res;
-    foreach my $obj ( $self, @{ $self->GetChilds } ) {
+    foreach my $obj ( $self, @{ $self->__childs } ) {
         if ( $obj->_obj_name eq $name ) {
             return $obj;
         }
@@ -122,7 +126,7 @@ sub fetch {
     my $self = shift;
     my $sess = shift;
     my @res;
-    for my $a ( @{ $self->GetChilds } ) {
+    for my $a ( @{ $self->__childs } ) {
         push( @res, @{ $a->_format($sess) } );
     }
     return \@res;    # unless $sess;
@@ -132,7 +136,7 @@ sub fetch {
 sub _destroy {
     my $self = shift;
     my @res;
-    for my $a ( @{ $self->GetChilds } ) {
+    for my $a ( @{ $self->__childs } ) {
         $a->_destroy;
     }
     $self->SUPER::_destroy;

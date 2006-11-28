@@ -4,12 +4,12 @@ package HTML::WebDAO::Store::MLDBM;
 use File::Path;
 use Fcntl ":flock";
 use IO::File;
-#use MLDBM qw (DB_File Storable);
 use MLDBM qw (DB_File Data::Dumper);
-use HTML::WebDAO::Base;
+use HTML::WebDAO::Store::Abstract;
+use Data::Dumper;
 use strict 'vars';
-attributes ( '_dir' );
 use base 'HTML::WebDAO::Store::Abstract';
+__PACKAGE__->attributes qw/ _dir _cache /;
 
 sub init {
     my $self = shift;
@@ -22,6 +22,8 @@ sub init {
         mkpath($dir,0)
     }
     $self->_dir($dir);
+    my %hash;
+    $self->_cache(\%hash);
     return 1
 }
 
@@ -62,5 +64,28 @@ sub store {
     close DBM;
     return $id;
 
+}
+sub _store_attributes {
+    my $self = shift;
+    my $id = shift || return;
+    my $ref = shift || return;
+    my $cache = $self->_cache();
+    while ( my ($key,$val) = each %$ref ) {
+        $cache->{$key} = $val
+    }
+}
+sub _load_attributes {
+    my $self  = shift;
+    my $id = shift || return;
+    my $loaded = $self->load($id);
+    my %res;
+    foreach my $key ( @_ ) {
+        $res{$key} = $loaded->{$key} if exists $loaded->{$key};
+    }
+    return \%res
+}
+sub flush {
+    my $self = shift;
+    $self->store(@_,$self->_cache)
 }
 1;

@@ -7,7 +7,7 @@ use HTML::WebDAO::Store::Abstract;
 use Data::Dumper;
 use base qw( HTML::WebDAO::Base );
 __PACKAGE__->attributes
-  qw( Cgi_obj Cgi_env U_id Header Params  Events Switch_sos_id Switch_sos_flag _store_obj );
+  qw( Cgi_obj Cgi_env U_id Header Params  Switch_sos_id Switch_sos_flag _store_obj );
 
 sub _init() {
     my $self = shift;
@@ -20,20 +20,20 @@ sub Init {
 
     #Parametrs is realm
     $self = shift;
+    my %args = @_;
     Header $self ( {} );
-    Events $self ( {} );
     U_id $self undef;
-    Cgi_obj $self $_[0]->{cv}
+    Cgi_obj $self $args{cv}
       || do { $self->_log1("ERR: USE cv when init Session!"); CGI::new() };
-    _store_obj $self $_[0]->{store} || new HTML::WebDAO::Store::Abstract::;
+    _store_obj $self ( $args{store} || new HTML::WebDAO::Store::Abstract:: );
     Cgi_env $self (
         {
-            url               => $self->Cgi_obj->url( -base => 1),         #http://eng.zag
-            path_info         => $self->Cgi_obj->url( -absolute => 1, -path_info => 1 ),
+            url => $self->Cgi_obj->url( -base => 1 ),    #http://eng.zag
+            path_info => $self->Cgi_obj->url( -absolute => 1, -path_info => 1 ),
             path_info_elments => [],
             file              => "",
-            base_url          =>$self->Cgi_obj->url( -base => 1),#http://base.com
-            query_string      => $self->Cgi_obj->query_string,
+            base_url     => $self->Cgi_obj->url( -base => 1 ),  #http://base.com
+            query_string => $self->Cgi_obj->query_string,
         }
     );
     $self->get_id;
@@ -62,63 +62,17 @@ sub call_path {
     $self->Cgi_env->{path_info_elments};
 }
 
-#this method first need overlapped;
-#see store_session() and load_session()
-#{		id		=>$id, 		session ID
-#		eng_name	=>$eng_name,	request name of Engine
-#		tree		=>$tree		refer to tree fo this Engine
-#}
-#note: if for load()  parametr "tree" is string (always !) eq this: .applic.container1.text1
-#load() mast return value for this request
-# if tree not reference to hash for store() it equ to parametr for load(), but
-#must save this  path into requested Engine name .applic.container1.text1.rewd=[parametr]
-sub load  { (shift)->_store_obj->load(@_) }
-sub store { (shift)->_store_obj->store(@_) }
 
-#--------------------------------------------------
-sub set_engine_state() {
-    my ( $self, $eng_ref, $object_state_tree ) = @_;
-    #Store object's state tree
-    $eng_ref->_set_vars($object_state_tree);
-    return 1;
+sub _load_attributes_by_path  { (shift)->_store_obj->_load_attributes($self->get_id(),@_) }
+sub _store_attributes_by_path { (shift)->_store_obj->_store_attributes($self->get_id(),@_) }
+
+
+
+sub flush_session {
+    my $self = shift;
+    $self->_store_obj->flush($self->get_id());
 }
 
-sub get_engine_state() {
-    my ( $self, $eng_ref ) = @_;
-
-    #Fetch object's state tree
-    my $object_state_tree = $eng_ref->_get_vars();
-    return $object_state_tree;
-}
-
-#--------------------------------------------------
-
-#Method for store enigine_state
-#these method need to overlap for convert tree Engine
-#format store state to database store data format
-#
-sub store_session() {
-    my ( $self, $eng_ref ) = @_;
-    $eng_ref->SendEvent("_sess_ended");
-    my $id                = $self->get_id();
-    my $object_state_tree = $self->get_engine_state($eng_ref);
-#    my $stored_hash       = $self->load($id);
-#    $object_state_tree =
-#      $self->merge_stored_and_new_tree( $stored_hash, $object_state_tree );
-    $self->store( $id, $object_state_tree );
-    return 1;
-}
-
-#Method for load engine_state
-#these method need to overlap for convert database
-#store data format to tree Engine format store state
-#
-sub load_session() {
-    my ( $self, $eng_ref ) = @_;
-    my $id                = $self->get_id();
-    my $object_state_tree = $self->load($id);
-    $self->set_engine_state( $eng_ref, $object_state_tree );
-}
 
 #--------------------------------------------------
 #$ref_sos={	data_type=>"text\/html",
@@ -206,18 +160,6 @@ sub sess_servise_getenv {
     return $self->Cgi_env;
 }
 
-sub LoadSession {
-    my ( $self, $eng_ref ) = @_;
-
-    #register special event
-    #for switch to single object state
-    $eng_ref->RegEvent( $self, "_switch_sos",   \&switch2sos );
-    $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
-    $self->load_session($eng_ref);
-
-    #send Event after load all parametrs
-    $eng_ref->SendEvent("_sess_loaded");
-}
 
 sub response {
     my $self = shift;
@@ -245,19 +187,14 @@ sub print {
 sub ExecEngine() {
     my ( $self, $eng_ref ) = @_;
 
-    #Load session
-    $self->LoadSession($eng_ref);
-
-    #send events from urls;
-    map { $eng_ref->SendEvent( $_, $self->Events->{$_} ) }
-      keys %{ $self->Events };
-
     #print $self->print_header();
+    $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
     $eng_ref->Work($self);
-
+    $eng_ref->SendEvent("_sess_ended");
     #print @{$eng_ref->Fetch()};
-    $self->store_session($eng_ref);
     $eng_ref->_destroy;
+    $self->flush_session($eng_ref);
+
 }
 
 #for setup Output headers
@@ -288,6 +225,7 @@ sub _get_params {
 sub merge_stored_and_new_tree {
     my ( $self, $h1, $h2 ) = @_;
     return $h2 unless defined $h1;
+
 #_log4 $self Dumper({'$h1'=>$h1,'$h2'=>$h2});#.Dumper([ map {caller($_)} (1..4)]);
 #print STDERR "Do merge\n".Dumper([ map {caller($_)} (1..4)]) unless ref $h2 eq 'HASH';
     return $h1 unless ref $h2 eq 'HASH';
