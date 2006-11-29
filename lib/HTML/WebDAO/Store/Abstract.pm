@@ -16,12 +16,10 @@ sub load { {} }
 sub store { {} }
 sub _load_attributes {
     my $self = shift;
-    _log1 $self "prepare keys for ". Dumper(\@_);
     return {}
 }
 sub _store_attributes {
     my $self = shift;
-    _log1 $self "storedata  ". Dumper(\@_);
     return {}
 }
 sub flush { $_[0]->_log1("flush")}

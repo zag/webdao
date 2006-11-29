@@ -14,6 +14,7 @@ use warnings;
 use Carp;
 use HTML::WebDAO;
 use HTML::WebDAO::SessionSH;
+use HTML::WebDAO::Store::Abstract;
 use HTML::WebDAO::Lex;
 use Data::Dumper;
 use Getopt::Long;
