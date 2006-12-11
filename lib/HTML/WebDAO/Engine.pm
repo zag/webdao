@@ -2,7 +2,6 @@
 
 package HTML::WebDAO::Engine;
 use Data::Dumper;
-use HTML::WebDAO::Base;
 use HTML::WebDAO::Container;
 use HTML::WebDAO::Lex;
 use base qw(HTML::WebDAO::Container);
@@ -23,7 +22,9 @@ sub _sysinit {
             name_obj   => "$my_name"
         }
     );                                 #! Setup _my_name
-
+    #Save session
+    _session $self $hash{session};
+    
     #	name_obj=>"applic"});	#! Setup _my_name
     $self->SUPER::_sysinit($ref);
 
@@ -45,8 +46,6 @@ sub init {
     $self->register_class( 'HTML::WebDAO::Lib::RawHTML' => '_rawhtml_element',
     );
 
-    #Save session
-    _session $self $opt{session};
 
     #Register by init classes
     if ( ref( my $classes = $opt{register} ) ) {
@@ -115,7 +114,7 @@ sub Work {
     my $sess = shift;
     my @path = @{ $sess->call_path };
     ####
-    $self->_log1( "PATH" . Dumper( \@path ) );
+#    $self->_log1( "PATH" . Dumper( \@path ) );
     my $res = $self->_call_method( \@path, %{ $sess->Params } ) if @path;
 
     #    $self->_log1("$res") if $res;

@@ -10,7 +10,7 @@ use MIME::Base64;
 use base qw( HTML::WebDAO::Session );
 
 use strict 'vars';
-__PACKAGE__->attributes qw( Cookie_name Realm Db_file );
+__PACKAGE__->attributes qw( Cookie_name Db_file );
 
 sub Init {
 
@@ -18,8 +18,8 @@ sub Init {
     #		id =>[string] - name of cookie
     #		db_file => [string] - path and filename
     #
-    my ( $self, $param ) = @_;
-    my $id = $param->{id} || "stored";
+    my ( $self, %param ) = @_;
+    my $id = $param{id} || "stored";
     Cookie_name $self (
         {
             -NAME    => "$id",
@@ -28,9 +28,7 @@ sub Init {
             -VALUE   => "0"
         }
     );
-    $self->SUPER::Init($param);
-#    Db_file $self $param->{db_file} ? $param->{db_file} : "/tmp/engstore.db";
-    Realm $self $param->{realm}     ? $param->{realm}   : "eng.zone";
+    $self->SUPER::Init(%param);
     set_header $self ( "-TYPE",    "text\/html" );
 #    set_header $self ( "-EXPIRES", "-1d" );
 }
@@ -39,19 +37,6 @@ sub get_id {
     my $self = shift;
     my $coo  = U_id $self;
     return $coo if ($coo);
-
-=pod
-    if ( exists( $ENV{"HTTP_AUTHORIZATION"} ) && ( $ENV{"HTTP_AUTHORIZATION"} ) ) {
-        $uspwd = decode_base64( ( split( /\s+/, $ENV{"HTTP_AUTHORIZATION"} ) )[1] );
-    }
-    else {
-        $self->set_header( "-status",           '401 Authorization Required' );
-        $self->set_header( "-WWW_Authenticate", 'Basic realm="' . $self->Realm() . '"' );
-        print $self->print_header();
-        exit;
-    }
-=cut
-
     my $_cgi = $self->Cgi_obj();
     $coo = $_cgi->get_cookie( ( $self->Cookie_name() )->{-NAME} );
     unless ($coo) {

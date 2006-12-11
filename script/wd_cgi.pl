@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #===============================================================================
 #
-#         FILE: wd_cgi.pl 
+#         FILE: wd_cgi.pl
 #
 #  DESCRIPTION:  CGI script for WebDAO project
 #       AUTHOR:  Aliaksandr P. Zahatski (Mn), <zag@cpan.org>
@@ -28,35 +28,31 @@ sub _parse_str_to_hash {
     \%hash;
 }
 
-my ( 
-    $store_class,
-    $session_class,
-    $eng_class
-    )  = map {
-            eval "require $_" or die $@;
-            $_
-        } (
-        $ENV{wdStore} || 'HTML::WebDAO::Store::Abstract',
-        $ENV{wdSession} || 'HTML::WebDAO::Session',
-        $ENV{wdEngine} || 'HTML::WebDAO::Engine'
-        );
+my ( $store_class, $session_class, $eng_class ) = map {
+    eval "require $_"
+      or die $@;
+    $_
+  } (
+    $ENV{wdStore}   || 'HTML::WebDAO::Store::Abstract',
+    $ENV{wdSession} || 'HTML::WebDAO::Session',
+    $ENV{wdEngine}  || 'HTML::WebDAO::Engine'
+  );
 
-my $store_obj = $store_class->new( %{ &_parse_str_to_hash( $ENV{wdStorePar} ) || {} } );
+my $store_obj =
+  $store_class->new( %{ &_parse_str_to_hash( $ENV{wdStorePar} ) || {} } );
 my $sess = $session_class->new(
-    {
-        %{ &_parse_str_to_hash( $ENV{wdSessionPar} ) || {} },
-        store => $store_obj,
-        cv    => new HTML::WebDAO::CVcgi::,
+    %{ &_parse_str_to_hash( $ENV{wdSessionPar} ) || {} },
+    store => $store_obj,
+    cv    => new HTML::WebDAO::CVcgi::,
 
-    }
 );
 $sess->set_header( -type => 'text/html; charset=utf-8' );
 my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile},
   "$ENV{DOCUMENT_ROOT}/$ENV{wdIndexFile}", "$ENV{DOCUMENT_ROOT}/index.xhtml";
-die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}" unless $filename;
+die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
+  unless $filename;
 my $content = qq!<wD><include file="$filename"/></wD>!;
 my $lex     = new HTML::WebDAO::Lex:: content => $content;
-
 
 my $eng = $eng_class->new(
     %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },

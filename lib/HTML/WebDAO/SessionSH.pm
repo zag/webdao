@@ -11,7 +11,7 @@ sub Init {
     $self = shift;
     %args = @_;
     $self->SUPER::Init(@_);
-    Params $self ( \%args );
+    Params $self ( %args );
 }
 
 #Can be overlap if you choose another

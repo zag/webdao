@@ -1,10 +1,9 @@
 #$Id: Container.pm,v 1.4 2006/10/27 08:59:08 zag Exp $
 
 package HTML::WebDAO::Container;
-use HTML::WebDAO::Base;
+use HTML::WebDAO::Element;
 use Data::Dumper;
 use base qw(HTML::WebDAO::Element);
-@Desc = ( "ucontainer", "", "Container element" );
 use strict 'vars';
 
 #no strict 'refs';
@@ -25,15 +24,6 @@ sub _get_vars {
     my $self = shift;
     my ( $res, $ref );
     $res = $self->SUPER::_get_vars;
-#    for my $tmp ( @{ $self->__childs } ) {
-#        $ref = $tmp->_get_vars;
-#        next unless ( ref($ref) );
-#        my $my_name = $tmp->__my_name;
-#        for my $key ( keys %{$ref} ) {
-#            $res->{$my_name}->{$key} = $ref->{$key};
-#        }
-#    }
-#    _log1 $self Dumper(\$res);
     return $res;
 }
 
@@ -41,10 +31,6 @@ sub _set_vars {
     my ( $self, $ref ) = @_;
     my $chld_name;
     $self->SUPER::_set_vars($ref);
-#    for my $tmp ( @{ $self->__childs } ) {
-#        $chld_name = $tmp->__my_name;
-#        $tmp->_set_vars( $ref->{$chld_name} ) if ( exists( $ref->{$chld_name} ) );
-#    }
 }
 
 =head3 _get_childs()
@@ -103,7 +89,7 @@ sub _call_method {
             $obj->_call_method( \@path, @_ );
         }
         else {
-            _log4 $self "Cant find obj for name $name";
+            _log4 $self "Cant find obj for name $name in ". Dumper([ map { $_->__my_name } @{$self->_get_childs}]);
             return;
         }
       }

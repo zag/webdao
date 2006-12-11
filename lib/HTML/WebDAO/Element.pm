@@ -90,8 +90,7 @@ sub _call_method {
     my $self = shift;
     my ( $method, @path ) = @{ shift @_ };
     if ( scalar @path ) {
-
-                _log4 $self "Extra path @path ";
+        #_log4 $self "Extra path @path $self";
         return;
     }
     unless ( $self->can($method) ) {
@@ -139,6 +138,7 @@ sub getEngine {
 sub SendEvent {
     my $self   = shift;
     my $parent = __parent $self;
+    $self->_log1("Not def parent $self name:".($self->__my_name).Dumper(\@_).Dumper([map{[caller($_)]} (1..10)])) unless $parent;
     $parent->SendEvent(@_);
 }
 

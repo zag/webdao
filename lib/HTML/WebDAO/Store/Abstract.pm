@@ -22,6 +22,7 @@ sub _store_attributes {
     my $self = shift;
     return {}
 }
-sub flush { $_[0]->_log1("flush")}
+sub flush { #$_[0]->_log1("flush")
+}
 
 1;
