@@ -5,6 +5,7 @@ Module::Build->new
    prereq => {
 	      'FreezeThaw' => 0.43,
 	      'MLDBM'	=> '0',
+	      'XML::LibXML'=>'0'
 	     },
   script_files=>[qw!
     script/wd_cgi.pl
