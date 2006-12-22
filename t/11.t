@@ -13,7 +13,7 @@ BEGIN { use_ok('HTML::WebDAO::Engine') }
 BEGIN { use_ok('HTML::WebDAO::Store::MLDBM') }
 BEGIN { use_ok('HTML::WebDAO::Container') }
 BEGIN { use_ok('HTML::WebDAO::SessionSH') }
-BEGIN { use_ok('TestWDAO') }
+BEGIN { use lib 'contrib';use_ok('TestWDAO') }
 
 my $ID       = "tcontainer";
 my $store_ml = new HTML::WebDAO::Store::MLDBM:: path => 'tmp';

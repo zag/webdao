@@ -211,35 +211,12 @@ sub _get_params {
     my $_cgi = $self->Cgi_obj();
     my %params;
     foreach my $i ( $_cgi->param() ) {
-        $params{$i} = $_cgi->param($i);
+        my @all = $_cgi->param($i);
+        $params{$i} = scalar @all > 1 ? \@all : $all[0];
     }
     return \%params;
 }
 
-#Stored tree MUST BE MERGED with exists tree !
-#this is need for store param for ucontainer with
-#dynamic content
-#If !correct overlaped this method - feacher is lost
-#parametrs is \%stored_hash, \%new_hashe
-#return recurcive merged tree
-sub merge_stored_and_new_tree {
-    my ( $self, $h1, $h2 ) = @_;
-    return $h2 unless defined $h1;
-
-#_log4 $self Dumper({'$h1'=>$h1,'$h2'=>$h2});#.Dumper([ map {caller($_)} (1..4)]);
-#print STDERR "Do merge\n".Dumper([ map {caller($_)} (1..4)]) unless ref $h2 eq 'HASH';
-    return $h1 unless ref $h2 eq 'HASH';
-    while ( my ( $key, $val ) = each(%$h2) ) {
-        unless ( ref($val) ) {
-            $h1->{$key} = $val;
-        }
-        else {
-            $h1->{$key} =
-              $self->merge_stored_and_new_tree( $h1->{$key}, $h2->{$key} );
-        }
-    }
-    return $h1;
-}
 
 sub print_header() {
     my ($self) = @_;

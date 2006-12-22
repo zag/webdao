@@ -13,7 +13,6 @@ use HTML::WebDAO::CVcgi;
 use HTML::WebDAO::Session;
 use HTML::WebDAO::Lex;
 
-#use ArtPers;
 use Data::Dumper;
 use strict;
 
