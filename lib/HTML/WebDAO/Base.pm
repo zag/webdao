@@ -74,7 +74,7 @@ sub _define_accessor {
     package $pkg;
     sub $attr {                                      # Accessor ...
       my \$self=shift;
-      \@_ ? \$self->set_attribute($attr,shift):\$self->get_attribute($attr);
+      \@_ ? \$self->set_attribute("$attr",shift):\$self->get_attribute("$attr");
     }
   };
     $code;
