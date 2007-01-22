@@ -12,7 +12,7 @@ use HTML::WebDAO::Lexer::Linclude;
 use HTML::WebDAO::Lexer::Lmethod;
 use HTML::WebDAO::Base;
 use base qw( HTML::WebDAO::Base );
-__PACKAGE__->attributes qw/ engine tree auto / ;
+__PACKAGE__->attributes qw( engine tree auto );
 use strict;
 
 sub _init() {
