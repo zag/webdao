@@ -74,19 +74,17 @@ croak $@ if $@;
 
 foreach my $sname ('__DIE__') {
     $SIG{$sname} = sub {
+        return if (caller(1))[3] =~ /eval/;
         push @_, "STACK:" . Dumper( [ map { [ caller($_) ] } ( 1 .. 3 ) ] );
         print "PID: $$ $sname: @_";
       }
 }
 
-#my $sess = HTML::WebDAO::SessionSH->new();
 my $store_obj =
   $store_class->new( %{ &_parse_str_to_hash( $ENV{wdStorePar} ) || {} } );
 my $sess = $session_class->new(
-    {
         %{ &_parse_str_to_hash( $ENV{wdSessionPar} ) || {} },
         store => $store_obj,
-    }
 );
 $sess->U_id($sess_id);
 my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile} || $opt{f};

@@ -36,6 +36,8 @@ sub Init {
             query_string => $self->Cgi_obj->query_string,
         }
     );
+    #fix CGI.pm bug http://rt.cpan.org/Ticket/Display.html?id=25908
+    $self->Cgi_env->{path_info} =~ s/\?.*//s;
     $self->get_id;
     Params $self ( $self->_get_params() );
     $self->Cgi_env->{path_info_elments} =

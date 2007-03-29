@@ -4,6 +4,7 @@ package HTML::WebDAO::Sessionco;
 use HTML::WebDAO::Base;
 use CGI;
 use MIME::Base64;
+use Digest::MD5 qw(md5_hex);
 
 #use usession;
 #@ISA="usession";
@@ -40,7 +41,7 @@ sub get_id {
     my $_cgi = $self->Cgi_obj();
     $coo = $_cgi->get_cookie( ( $self->Cookie_name() )->{-NAME} );
     unless ($coo) {
-        $coo = time();
+        $coo = md5_hex(time ^ $$, rand(999)) ;
         U_id $self ( $coo );
     }
     $self->Cookie_name()->{-VALUE} = $coo;

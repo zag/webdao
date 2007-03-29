@@ -1,6 +1,8 @@
 #$Id: SessionSH.pm,v 1.1.1.1 2006/05/09 11:49:16 zag Exp $
 
 package HTML::WebDAO::SessionSH;
+use strict;
+use warnings;
 use HTML::WebDAO::Base;
 use HTML::WebDAO::Session;
 use Data::Dumper;
@@ -8,10 +10,11 @@ use base qw( HTML::WebDAO::Session );
 
 #Need to be forever called from over classes;
 sub Init {
-    $self = shift;
-    %args = @_;
+    my $self = shift;
+    my %args = @_;
     $self->SUPER::Init(@_);
-    Params $self ( %args );
+    delete $args{store};
+    Params $self ( \%args );
 }
 
 #Can be overlap if you choose another

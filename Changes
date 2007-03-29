@@ -1,4 +1,7 @@
 Revision history for Perl extension HTML::WebDAO.
+0.75    20070329
+    fix CGI.pm bug http://rt.cpan.org/Ticket/Display.html?id=25908
+    improve cockie generate 
 0.04	20040815
 	- fix cpan module prereq
 0.03	20040810
