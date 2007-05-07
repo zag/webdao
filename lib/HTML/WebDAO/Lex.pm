@@ -77,6 +77,7 @@ sub get_obj_tree {
         my $node_name = $node->nodeName;
         my %attr      = map { $_->nodeName => $_->value } grep { defined $_ } $node->attributes;
         my $map_key   = $node->nodeName || 'text';
+        $map_key = $map_key =~ /text$/ ? "text" : $map_key; 
         $attr{name} = $map_key unless exists $attr{name};
         if ( $map_key eq 'text' ) { $attr{value} = $node->nodeValue }
         my $lclass = $map{$map_key} || $map{default};

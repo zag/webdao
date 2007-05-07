@@ -4,6 +4,8 @@ package HTML::WebDAO::Engine;
 use Data::Dumper;
 use HTML::WebDAO::Container;
 use HTML::WebDAO::Lex;
+use HTML::WebDAO::Lib::MethodByPath;
+use HTML::WebDAO::Lib::RawHTML;
 use base qw(HTML::WebDAO::Container);
 use Carp;
 use strict;
@@ -44,6 +46,7 @@ sub init {
 
     #register default clasess
     $self->register_class( 'HTML::WebDAO::Lib::RawHTML' => '_rawhtml_element',
+    'HTML::WebDAO::Lib::MethodByPath' => '_method_call'
     );
 
 
@@ -114,7 +117,6 @@ sub Work {
     my $sess = shift;
     my @path = @{ $sess->call_path };
     ####
-#    $self->_log1( "PATH" . Dumper( \@path ) );
     my $res = $self->_call_method( \@path, %{ $sess->Params } ) if @path;
 
     #    $self->_log1("$res") if $res;

@@ -8,4 +8,9 @@ sub init {
     my $self = shift;
     _sess2 $self (3)
 }
+sub echo {
+    my $self = shift;
+    return shift
+}
+
 1;

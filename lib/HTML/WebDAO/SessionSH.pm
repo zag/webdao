@@ -28,8 +28,15 @@ sub print_header() {
     return ''
 }
 
+sub sess_servise {
+    my $self= shift;
+    return $self->SUPER::sess_servise(@_)
+
+}
+
 sub ExecEngine() {
     my ( $self, $eng_ref ) = @_;
+    $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
 
     #print $self->print_header();
 #    $eng_ref->Work($self);

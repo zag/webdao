@@ -5,7 +5,8 @@ use Data::Dumper;
 use HTML::WebDAO::Base;
 use base qw/ HTML::WebDAO::Base/;
 use strict 'vars';
-__PACKAGE__->attributes qw/ _format_subs __attribute_names __my_name __parent __path2me  __engine/;
+__PACKAGE__->attributes
+  qw/ _format_subs __attribute_names __my_name __parent __path2me  __engine/;
 
 sub _init {
     my $self = shift;
@@ -28,7 +29,7 @@ sub _sysinit {
     my $ref_init_hash = shift( @{ $_[0] } );
 
     #_engine - reference to engine
-    $self->__engine($ref_init_hash->{ref_engine} );
+    $self->__engine( $ref_init_hash->{ref_engine} );
 
     #_my_name - name of this object
     $self->__my_name( $ref_init_hash->{name_obj} );
@@ -38,7 +39,7 @@ sub _sysinit {
     map { $ref_names_hash->{$_} = 1 } $self->get_attribute_names();
 
     #        _attribute_names $self $ref_names_hash;
-    $self->__attribute_names( $ref_names_hash );
+    $self->__attribute_names($ref_names_hash);
 
     #init array of _format sub's references
     $self->_format_subs(
@@ -75,9 +76,8 @@ Return ref to childs array
 =cut
 
 sub _get_childs {
-    return []
+    return [];
 }
-
 
 sub call_path {
     my $self = shift;
@@ -90,12 +90,12 @@ sub _call_method {
     my $self = shift;
     my ( $method, @path ) = @{ shift @_ };
     if ( scalar @path ) {
+
         #_log4 $self "Extra path @path $self";
         return;
     }
     unless ( $self->can($method) ) {
-
-               _log4 $self $self->_obj_name.": don't have method $method";
+        _log4 $self $self->_obj_name . ": don't have method $method";
         return;
     }
     else {
@@ -112,13 +112,14 @@ sub _set_parent {
     $self->__parent($parent);
     $self->_set_path2me();
 }
+
 sub _set_path2me {
-    my $self = shift;
+    my $self   = shift;
     my $parent = $self->__parent;
     if ( $self != $parent ) {
-        ( my $parents_path = $parent->__path2me) ||= "";
+        ( my $parents_path = $parent->__path2me ) ||= "";
         my $my_path = $parents_path . "/" . $self->__my_name;
-        $self->__path2me($my_path );
+        $self->__path2me($my_path);
     }
     else {
         $self->__path2me('');
@@ -129,7 +130,6 @@ sub _obj_name {
     return $_[0]->__my_name;
 }
 
-
 sub getEngine {
     my $self = shift;
     return $self->__engine;
@@ -138,7 +138,11 @@ sub getEngine {
 sub SendEvent {
     my $self   = shift;
     my $parent = __parent $self;
-    $self->_log1("Not def parent $self name:".($self->__my_name).Dumper(\@_).Dumper([map{[caller($_)]} (1..10)])) unless $parent;
+    $self->_log1( "Not def parent $self name:"
+          . ( $self->__my_name )
+          . Dumper( \@_ )
+          . Dumper( [ map { [ caller($_) ] } ( 1 .. 10 ) ] ) )
+      unless $parent;
     $parent->SendEvent(@_);
 }
 
@@ -155,7 +159,8 @@ sub _format {
     push( @res, @{ $format_subs->[0]->() } );
     if ( my $result = $self->fetch($sess) ) {
         push @res,
-          map { $format_subs->[1]->($_) } ( ref($result) eq 'ARRAY' ? @{$result} : $result );
+          map { $format_subs->[1]->($_) }
+          ( ref($result) eq 'ARRAY' ? @{$result} : $result );
     }
     push( @res, @{ $format_subs->[2]->() } );
     return \@res;
@@ -171,10 +176,13 @@ sub post_format {
     return [];
 }
 
-
 sub fetch { my $self = shift; return [] }
 
-sub _destroy { my $self=shift;$self->__parent(undef);$self->__engine(undef)}
+sub _destroy {
+    my $self = shift;
+    $self->__parent(undef);
+    $self->__engine(undef);
+}
 
 sub _set_vars {
     my ( $self, $ref, $names ) = @_;
@@ -184,11 +192,11 @@ sub _set_vars {
             $self ->${key}( $ref->{$key} );
         }
         else {
+
             # Uknown attribute ???
 
         }
     }
 }
-
 
 1;

@@ -98,7 +98,7 @@ $eng = $eng_class->new(
     register => { 'HTML::WebDAO::Comp::ListEnv' => 'listenv' },
     session  => $sess,
 );
-
+$sess->ExecEngine($eng);
 #run
 {
     eval "\$evaled_sub->()";

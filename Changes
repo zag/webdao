@@ -1,4 +1,8 @@
 Revision history for Perl extension HTML::WebDAO.
+0.76    20070508
+    add lexical command method;
+    add support for url_method in shell environment;
+
 0.75    20070329
     fix CGI.pm bug http://rt.cpan.org/Ticket/Display.html?id=25908
     improve cockie generate 
