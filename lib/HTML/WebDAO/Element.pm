@@ -151,13 +151,13 @@ sub pre_format {
     return [];
 }
 
+
 sub _format {
     my $self = shift;
-    my $sess = shift;
     my @res;
     my $format_subs = $self->_format_subs();
     push( @res, @{ $format_subs->[0]->() } );
-    if ( my $result = $self->fetch($sess) ) {
+    if ( my $result = $self->fetch(@_) ) {
         push @res,
           map { $format_subs->[1]->($_) }
           ( ref($result) eq 'ARRAY' ? @{$result} : $result );

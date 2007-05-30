@@ -108,14 +108,19 @@ sub _get_obj_by_name {
     return;
 }
 
+=head2 fetch(@_), default call by webdao: fetch( $session )
+
+Interate call fetch(@_) on childs
+
+=cut
+
 sub fetch {
     my $self = shift;
-    my $sess = shift;
     my @res;
     for my $a ( @{ $self->__childs } ) {
-        push( @res, @{ $a->_format($sess) } );
+        push( @res, @{ $a->_format(@_) } );
     }
-    return \@res;    # unless $sess;
+    return \@res;
 
 }
 

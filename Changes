@@ -1,4 +1,6 @@
 Revision history for Perl extension HTML::WebDAO.
+0.77
+    -fix path_info_elments
 0.76    20070508
     add lexical command method;
     add support for url_method in shell environment;

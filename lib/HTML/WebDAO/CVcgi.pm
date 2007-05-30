@@ -31,6 +31,17 @@ sub response {
     print $res->{data};
 }
 
+=head2 referer
+
+Get current referer
+
+=cut
+
+sub referer {
+    my $self = shift;
+    my $cgi = $self->Cgi_obj;
+    return $cgi->referer
+}
 #path_info param url header
 sub AUTOLOAD { 
     my $self = shift;

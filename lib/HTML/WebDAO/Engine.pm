@@ -116,6 +116,7 @@ sub Work {
     my $self = shift;
     my $sess = shift;
     my @path = @{ $sess->call_path };
+    _log1 $self "WOKR: '@path'".Dumper(\@path);
     ####
     my $res = $self->_call_method( \@path, %{ $sess->Params } ) if @path;
 

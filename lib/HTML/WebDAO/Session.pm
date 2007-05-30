@@ -34,6 +34,7 @@ sub Init {
             file              => "",
             base_url     => $self->Cgi_obj->url( -base => 1 ),  #http://base.com
             query_string => $self->Cgi_obj->query_string,
+            referer      =>$self->Cgi_obj->referer()
         }
     );
     #fix CGI.pm bug http://rt.cpan.org/Ticket/Display.html?id=25908
@@ -41,7 +42,7 @@ sub Init {
     $self->get_id;
     Params $self ( $self->_get_params() );
     $self->Cgi_env->{path_info_elments} =
-      [ grep { $_ && defined $_ } split( /\//, $self->Cgi_env->{path_info} ) ];
+      [ grep { defined $_ } split( /\//, $self->Cgi_env->{path_info} ) ];
 
     #init hash of describe content
     # single object state
