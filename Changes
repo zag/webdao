@@ -1,4 +1,6 @@
 Revision history for Perl extension HTML::WebDAO.
+0.78
+    - customize fastcgi by SetEnv
 0.77
     -fix path_info_elments
 0.76    20070508

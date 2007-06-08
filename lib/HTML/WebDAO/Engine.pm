@@ -24,9 +24,9 @@ sub _sysinit {
             name_obj   => "$my_name"
         }
     );                                 #! Setup _my_name
-    #Save session
+                                       #Save session
     _session $self $hash{session};
-    
+
     #	name_obj=>"applic"});	#! Setup _my_name
     $self->SUPER::_sysinit($ref);
 
@@ -45,10 +45,10 @@ sub init {
     my ( $self, %opt ) = @_;
 
     #register default clasess
-    $self->register_class( 'HTML::WebDAO::Lib::RawHTML' => '_rawhtml_element',
-    'HTML::WebDAO::Lib::MethodByPath' => '_method_call'
+    $self->register_class(
+        'HTML::WebDAO::Lib::RawHTML'      => '_rawhtml_element',
+        'HTML::WebDAO::Lib::MethodByPath' => '_method_call'
     );
-
 
     #Register by init classes
     if ( ref( my $classes = $opt{register} ) ) {
@@ -63,7 +63,7 @@ sub init {
     else {
 
         #Create childs from source
-        $self->_add_childs(@{ $self->_parse_html($raw_html) });
+        $self->_add_childs( @{ $self->_parse_html($raw_html) } );
     }
 
 }
@@ -81,42 +81,44 @@ sub _get_obj_by_path {
 
 sub __restore_session_attributes {
     my $self = shift;
+
     #collect paths as index
     my %paths;
     foreach my $object (@_) {
-       my @collection = ($object, @{$object->_get_childs});
-        $paths{$_->__path2me} = $_ for @collection;
+        my @collection = ( $object, @{ $object->_get_childs } );
+        $paths{ $_->__path2me } = $_ for @collection;
     }
-    my $sess = $self->_session;
-    my $loaded = $sess->_load_attributes_by_path(keys %paths);
-    while ( my ($key, $ref) = each %$loaded) {
+    my $sess   = $self->_session;
+    my $loaded = $sess->_load_attributes_by_path( keys %paths );
+    while ( my ( $key, $ref ) = each %$loaded ) {
         next unless exists $paths{$key};
-        $paths{$key}->_set_vars($ref)
+        $paths{$key}->_set_vars($ref);
     }
 }
 
 sub __store_session_attributes {
     my $self = shift;
+
     #collect paths as index
     my %paths;
     foreach my $object (@_) {
-       my @collection = ($object, @{$object->_get_childs});
-          foreach  (@collection) {
+        my @collection = ( $object, @{ $object->_get_childs } );
+        foreach (@collection) {
             my $attrs = $_->_get_vars;
             next unless $attrs;
-            $paths{$_->__path2me} = $attrs;
-          }
+            $paths{ $_->__path2me } = $attrs;
+        }
     }
     my $sess = $self->_session;
-    $sess->_store_attributes_by_path(\%paths);
+    $sess->_store_attributes_by_path( \%paths );
 }
-
 
 sub Work {
     my $self = shift;
     my $sess = shift;
     my @path = @{ $sess->call_path };
-    _log1 $self "WOKR: '@path'".Dumper(\@path);
+
+    #    _log1 $self "WOKR: '@path'".Dumper(\@path);
     ####
     my $res = $self->_call_method( \@path, %{ $sess->Params } ) if @path;
 
@@ -142,7 +144,7 @@ sub Work {
     }
 
     $sess->print_header();
-    print @{ $self->fetch($sess) };
+    $sess->print($_) for @{ $self->fetch($sess) };
 }
 
 #fill $self->__events hash event - method
@@ -170,11 +172,13 @@ sub SendEvent {
         $ref_obj->$ref_sub( $event_name, @Par );
     }
 }
+
 =head3 _createObj(<name>,<class or alias>,@parameters)
 
 create object by <class or alias>.
 
 =cut
+
 sub _createObj {
     my ( $self, $name_obj, $name_func, @par ) = @_;
     if ( my $pack = _pack4name $self $name_func ) {
@@ -246,7 +250,7 @@ sub register_class {
 
 sub _destroy {
     my $self = shift;
-    $self->__store_session_attributes(@{$self->_get_childs});
+    $self->__store_session_attributes( @{ $self->_get_childs } );
     $self->SUPER::_destroy;
     $self->_session(undef);
     $self->__obj(undef);
