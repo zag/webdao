@@ -1,4 +1,4 @@
-#$Id: Lobject.pm,v 1.4 2006/09/19 10:05:25 zag Exp $
+#$Id$
 
 package HTML::WebDAO::Lexer::Lobject;
 use HTML::WebDAO::Lexer::Lbase;

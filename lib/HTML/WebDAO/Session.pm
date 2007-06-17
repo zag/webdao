@@ -1,4 +1,4 @@
-#$Id: Session.pm,v 1.6 2006/10/27 08:59:08 zag Exp $
+#$Id$
 
 package HTML::WebDAO::Session;
 use HTML::WebDAO::Base;

@@ -1,4 +1,4 @@
-#$Id: CVcgi.pm,v 1.2 2006/09/11 12:04:28 zag Exp $
+#$Id$
 
 package HTML::WebDAO::CVcgi;
 use HTML::WebDAO::Base;

@@ -1,4 +1,4 @@
-#$Id: CVapache2.pm,v 1.2 2006/09/19 10:05:25 zag Exp $
+#$Id$
 
 package HTML::WebDAO::CVapache2;
 use HTML::WebDAO::Base;

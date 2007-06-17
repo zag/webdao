@@ -1,4 +1,4 @@
-#$Id: Container.pm,v 1.4 2006/10/27 08:59:08 zag Exp $
+#$Id$
 
 package HTML::WebDAO::Container;
 use HTML::WebDAO::Element;

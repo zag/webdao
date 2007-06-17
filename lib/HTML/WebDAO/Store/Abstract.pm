@@ -1,4 +1,4 @@
-#$Id: Abstract.pm,v 1.1 2006/05/29 15:27:09 zag Exp $
+#$Id$
 
 package HTML::WebDAO::Store::Abstract;
 use HTML::WebDAO::Base;

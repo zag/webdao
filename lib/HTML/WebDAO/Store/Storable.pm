@@ -1,4 +1,4 @@
-#$Id: MLDBM.pm,v 1.2 2006/09/19 10:05:25 zag Exp $
+#$Id$
 
 package HTML::WebDAO::Store::Storable;
 use Storable qw(lock_nstore lock_retrieve);

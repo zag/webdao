@@ -1,4 +1,4 @@
-#$Id: SessionID.pm,v 1.2 2006/09/19 10:05:25 zag Exp $
+#$Id$
 package HTML::WebDAO::SessionID;
 use HTML::WebDAO::Base;
 use CGI;

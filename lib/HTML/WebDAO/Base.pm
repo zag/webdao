@@ -1,4 +1,4 @@
-#$Id: Base.pm,v 1.2 2006/10/11 07:16:04 zag Exp $
+#$Id$
 
 package HTML::WebDAO::Base;
 
