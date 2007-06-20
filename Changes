@@ -1,4 +1,6 @@
 Revision history for Perl extension HTML::WebDAO.
+0.79
+    - use additional parametr for WebDAO::CVcgi under fastcgi
 0.78
     - customize fastcgi by SetEnv
 0.77

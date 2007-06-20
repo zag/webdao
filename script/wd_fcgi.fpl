@@ -51,7 +51,7 @@ while ( my $fcgi_obj = new CGI::Fast ) {
     my $sess = $session_class->new(
         %{ &_parse_str_to_hash( $ENV{wdSessionPar} ) || {} },
         store => $store_obj,
-        cv    => new HTML::WebDAO::CVcgi::,
+        cv    => new HTML::WebDAO::CVcgi:: $fcgi_obj,
 
     );
     $sess->set_header( -type => 'text/html; charset=utf-8' );

@@ -11,7 +11,8 @@ attributes qw (Cgi_obj);
 
 sub _init {
     my $self = shift;
-    my $cgi = new CGI::;
+    my $cgi_obj = shift;
+    my $cgi = $cgi_obj || new CGI::;
     Cgi_obj $self  $cgi;
     return 1;
 }
