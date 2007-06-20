@@ -9,7 +9,7 @@ use HTML::WebDAO::Store::Abstract;
 use Data::Dumper;
 use strict 'vars';
 use base 'HTML::WebDAO::Store::Abstract';
-__PACKAGE__->attributes qw/ _dir _cache /;
+__PACKAGE__->attributes qw/ _dir _cache _is_loaded/;
 
 sub init {
     my $self = shift;
@@ -17,23 +17,23 @@ sub init {
     die "need param path to dir" unless exists $pars{path};
     my $dir = $pars{path};
     $dir .= "/" unless $dir =~ m%/$%;
-    unless (-d $dir) {
+    unless ( -d $dir ) {
         _log4 $self "create dir for store";
-        mkpath($dir,0)
+        mkpath( $dir, 0 );
     }
     $self->_dir($dir);
     my %hash;
-    $self->_cache(\%hash);
-    return 1
+    $self->_cache( \%hash );
+    return 1;
 }
 
 sub load {
-    my $self =shift;
+    my $self = shift;
     my $id = shift || return {};
     my %hash;
-    my $db_file = $self->_dir()."sess_$id.db";
-    my $db      = tie %hash, "MLDBM", $db_file, O_CREAT | O_RDWR, 0644 or die "$!";
-    my $fd      = $db->fd();
+    my $db_file = $self->_dir() . "sess_$id.db";
+    my $db = tie %hash, "MLDBM", $db_file, O_CREAT | O_RDWR, 0644 or die "$!";
+    my $fd = $db->fd();
     undef $db;
     local *DBM;
     open DBM, "+<&=$fd" or die "$!";
@@ -46,14 +46,14 @@ sub load {
 }
 
 sub store {
-    my $self =shift;
-    my $id = shift || return {};
+    my $self     = shift;
+    my $id       = shift || return {};
     my $ref_tree = shift;
     return unless $ref_tree && ref($ref_tree);
     my %hash;
-    my $db_file = $self->_dir()."sess_$id.db";
-    my $db      = tie %hash, "MLDBM", $db_file, O_CREAT | O_RDWR, 0644 or die "$!";
-    my $fd      = $db->fd();
+    my $db_file = $self->_dir() . "sess_$id.db";
+    my $db = tie %hash, "MLDBM", $db_file, O_CREAT | O_RDWR, 0644 or die "$!";
+    my $fd = $db->fd();
     undef $db;
     local *DBM;
     open DBM, "+<&=$fd" or die "$!";
@@ -65,27 +65,39 @@ sub store {
     return $id;
 
 }
+
 sub _store_attributes {
-    my $self = shift;
-    my $id = shift || return;
-    my $ref = shift || return;
+    my $self  = shift;
+    my $id    = shift || return;
+    my $ref   = shift || return;
     my $cache = $self->_cache();
-    while ( my ($key,$val) = each %$ref ) {
-        $cache->{$key} = $val
+    while ( my ( $key, $val ) = each %$ref ) {
+        $cache->{$key} = $val;
     }
 }
+
 sub _load_attributes {
-    my $self  = shift;
+    my $self = shift;
     my $id = shift || return;
-    my $loaded = $self->load($id);
+    unless ( $self->_is_loaded ) {
+        my $from_storage = $self->load($id);
+        my $cache        = $self->_cache;
+        while ( my ( $key, $val ) = each %$from_storage ) {
+            next if exists $cache->{$key};
+            $cache->{$key} = $val;
+        }
+        $self->_is_loaded(1);
+    }
+    my $loaded = $self->_cache;
     my %res;
-    foreach my $key ( @_ ) {
+    foreach my $key (@_) {
         $res{$key} = $loaded->{$key} if exists $loaded->{$key};
     }
-    return \%res
+    return \%res;
 }
+
 sub flush {
     my $self = shift;
-    $self->store(@_,$self->_cache)
+    $self->store( @_, $self->_cache );
 }
 1;

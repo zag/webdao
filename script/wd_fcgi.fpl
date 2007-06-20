@@ -27,25 +27,44 @@ sub _parse_str_to_hash {
     \%hash;
 }
 
+my ( $def_store_class, $def_session_class, $def_eng_class );
 my ( $store_class, $session_class, $eng_class ) = map {
     eval "require $_"
       or die $@;
     $_
   } (
-    $ENV{wdStore}   || 'HTML::WebDAO::Store::Abstract',
-    $ENV{wdSession} || 'HTML::WebDAO::Session',
-    $ENV{wdEngine}  || 'HTML::WebDAO::Engine'
+    $def_store_class   = $ENV{wdStore}   || 'HTML::WebDAO::Store::Abstract',
+    $def_session_class = $ENV{wdSession} || 'HTML::WebDAO::Session',
+    $def_eng_class     = $ENV{wdEngine}  || 'HTML::WebDAO::Engine'
   );
 
 while ( my $fcgi_obj = new CGI::Fast ) {
 
-  #customize ENV
-  foreach my $rec ( [\$store_class, $ENV{wdStore}],[\$session_class,$ENV{wdSession}],[\$eng_class, $ENV{wdEngine}]) {
-    next if ${$rec->[0]} eq $rec->[1];
-    eval "require @{[$rec->[1]]}" or die $@;
-    ${$rec->[0]} = $rec->[1]
-    
-  }
+    #customize ENV
+    foreach my $rec (
+        [
+            \$store_class,
+            $ENV{wdStore} || $def_store_class,
+            $ENV{wdStore} eq $def_store_class
+        ],
+        [
+            \$session_class,
+            $ENV{wdSession} || $def_session_class,
+            $ENV{wdSession} eq $def_session_class
+        ],
+        [
+            \$eng_class,
+            $ENV{wdEngine} || $def_eng_class,
+            $ENV{wdEngine} eq $def_eng_class
+        ]
+      )
+    {
+        next unless defined $rec->[1];
+        next if ${ $rec->[0] } eq $rec->[1] or $rec->[2];
+        eval "require @{[$rec->[1]]}" or die $@;
+        ${ $rec->[0] } = $rec->[1]
+
+    }
     my $store_obj =
       $store_class->new( %{ &_parse_str_to_hash( $ENV{wdStorePar} ) || {} } );
     my $sess = $session_class->new(
@@ -63,7 +82,7 @@ while ( my $fcgi_obj = new CGI::Fast ) {
       unless $filename;
     my $content = qq!<wD><include file="$filename"/></wD>!;
     my $lex     = new HTML::WebDAO::Lex:: content => $content;
-    my $eng = $eng_class->new(
+    my $eng     = $eng_class->new(
         %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },
         lexer    => $lex,
         register => { 'HTML::WebDAO::Comp::ListEnv' => 'listenv' },

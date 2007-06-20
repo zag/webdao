@@ -6,6 +6,7 @@ use CGI;
 use HTML::WebDAO::Store::Abstract;
 use Data::Dumper;
 use base qw( HTML::WebDAO::Base );
+use strict;
 __PACKAGE__->attributes
   qw( Cgi_obj Cgi_env U_id Header Params  Switch_sos_id Switch_sos_flag _store_obj );
 
@@ -19,7 +20,7 @@ sub _init() {
 sub Init {
 
     #Parametrs is realm
-    $self = shift;
+    my $self = shift;
     my %args = @_;
     Header $self ( {} );
     U_id $self undef;
@@ -34,9 +35,10 @@ sub Init {
             file              => "",
             base_url     => $self->Cgi_obj->url( -base => 1 ),  #http://base.com
             query_string => $self->Cgi_obj->query_string,
-            referer      =>$self->Cgi_obj->referer()
+            referer      => $self->Cgi_obj->referer()
         }
     );
+
     #fix CGI.pm bug http://rt.cpan.org/Ticket/Display.html?id=25908
     $self->Cgi_env->{path_info} =~ s/\?.*//s;
     $self->get_id;
@@ -65,17 +67,20 @@ sub call_path {
     $self->Cgi_env->{path_info_elments};
 }
 
+sub _load_attributes_by_path {
+    my $self = shift;
+    $self->_store_obj->_load_attributes( $self->get_id(), @_ );
+}
 
-sub _load_attributes_by_path  { (shift)->_store_obj->_load_attributes($self->get_id(),@_) }
-sub _store_attributes_by_path { (shift)->_store_obj->_store_attributes($self->get_id(),@_) }
-
-
+sub _store_attributes_by_path {
+    my $self = shift;
+    $self->_store_obj->_store_attributes( $self->get_id(), @_ );
+}
 
 sub flush_session {
     my $self = shift;
-    $self->_store_obj->flush($self->get_id());
+    $self->_store_obj->flush( $self->get_id() );
 }
-
 
 #--------------------------------------------------
 #$ref_sos={	data_type=>"text\/html",
@@ -163,7 +168,6 @@ sub sess_servise_getenv {
     return $self->Cgi_env;
 }
 
-
 sub response {
     my $self = shift;
     my $res  = shift;
@@ -194,6 +198,7 @@ sub ExecEngine() {
     $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
     $eng_ref->Work($self);
     $eng_ref->SendEvent("_sess_ended");
+
     #print @{$eng_ref->Fetch()};
     $eng_ref->_destroy;
     $self->flush_session($eng_ref);
@@ -219,7 +224,6 @@ sub _get_params {
     }
     return \%params;
 }
-
 
 sub print_header() {
     my ($self) = @_;

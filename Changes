@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::WebDAO.
 0.79
+    - fix Session.pm (add strict)
+    - add caching and fix load session attributes
+    - use default ENV when fastcgi
     - use additional parametr for WebDAO::CVcgi under fastcgi
 0.78
     - customize fastcgi by SetEnv
