@@ -6,6 +6,7 @@ use CGI;
 use HTML::WebDAO::Store::Abstract;
 use Data::Dumper;
 use base qw( HTML::WebDAO::Base );
+use Encode qw(encode decode is_utf8);
 use strict;
 __PACKAGE__->attributes
   qw( Cgi_obj Cgi_env U_id Header Params  Switch_sos_id Switch_sos_flag _store_obj );
@@ -220,6 +221,10 @@ sub _get_params {
     my %params;
     foreach my $i ( $_cgi->param() ) {
         my @all = $_cgi->param($i);
+        foreach my $value (@all) {
+            next if ref $value;
+            $value = decode( 'utf8', $value ) unless is_utf8($value);
+        }
         $params{$i} = scalar @all > 1 ? \@all : $all[0];
     }
     return \%params;
