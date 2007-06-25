@@ -12,7 +12,7 @@ use HTML::WebDAO::Lexer::Linclude;
 use HTML::WebDAO::Lexer::Lmethod;
 use HTML::WebDAO::Base;
 use base qw( HTML::WebDAO::Base );
-__PACKAGE__->attributes qw/ engine tree auto / ;
+__PACKAGE__->attributes qw/ tree auto / ;
 use strict;
 
 sub _init() {
@@ -23,7 +23,6 @@ sub _init() {
 sub Init {
     my $self = shift;
     my %par  = @_;
-    $self->engine( $par{engine} );
     $self->auto( [] );
     $self->tree( $self->buld_tree( $par{content} ) ) if $par{content};
     return 1;
@@ -92,5 +91,9 @@ sub get_obj_tree {
     }
     return @result;
 
+}
+sub _destroy {
+    my $self = shift;
+    $self->auto( [] );
 }
 1;

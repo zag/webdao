@@ -34,21 +34,4 @@ sub value {
 
 }
 
-sub get_values {
-    my $self = shift;
-    my $par  = $self->all;
-    my ( $class, $alias ) = @$par{qw/class alias/};
-    unless ( $class && $alias ) {
-        logmsgs $self "Syntax error: regclass - not initialized class or alias";
-        return;
-    }
-    unless ( my $eng = $self->engine ) { return \$par }
-
-    else {
-        if ( my $error_str = $eng->register_class( $class => $alias ) ) {
-            logmsgs $self $error_str;
-        }
-    }
-}
-
 1;

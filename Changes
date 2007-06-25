@@ -1,4 +1,8 @@
 Revision history for Perl extension HTML::WebDAO.
+0.80
+    - ENV{wdFCGIreq} - count request per fcgi process
+    - fix mem leaks
+    - unicode
 0.79
     - fix Session.pm (add strict)
     - add caching and fix load session attributes

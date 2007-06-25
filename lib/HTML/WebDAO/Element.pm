@@ -42,13 +42,13 @@ sub _sysinit {
     $self->__attribute_names($ref_names_hash);
 
     #init array of _format sub's references
-#    $self->_format_subs(
-#        [
-#            sub { $self->pre_format(@_) },
-#            sub { $self->format(@_) },
-#            sub { $self->post_format(@_) },
-#        ]
-#    );
+    #    $self->_format_subs(
+    #        [
+    #            sub { $self->pre_format(@_) },
+    #            sub { $self->format(@_) },
+    #            sub { $self->post_format(@_) },
+    #        ]
+    #    );
 
 }
 
@@ -154,11 +154,13 @@ sub pre_format {
 sub _format {
     my $self = shift;
     my @res;
+    push( @res, @{ $self->pre_format(@_) } );#for compat
     if ( my $result = $self->fetch(@_) ) {
-        push @res,
-          ( ref($result) eq 'ARRAY' ? @{$result} : $result );
+        push @res, ( ref($result) eq 'ARRAY' ? @{$result} : $result );
     }
-    \@res
+    push( @res, @{ $self->post_format(@_) } );#for compat
+
+    \@res;
 }
 
 sub _format1 {

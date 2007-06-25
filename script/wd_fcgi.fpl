@@ -37,8 +37,8 @@ my ( $store_class, $session_class, $eng_class ) = map {
     $def_session_class = $ENV{wdSession} || 'HTML::WebDAO::Session',
     $def_eng_class     = $ENV{wdEngine}  || 'HTML::WebDAO::Engine'
   );
-
-while ( my $fcgi_obj = new CGI::Fast ) {
+my $count_req = $ENV{wdFCGIreq} || -1;
+while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
 
     #customize ENV
     foreach my $rec (
@@ -89,7 +89,9 @@ while ( my $fcgi_obj = new CGI::Fast ) {
         session  => $sess,
     );
     $sess->ExecEngine($eng);
+    --$count_req if $count_req > 0;
 }
+sleep( rand(3) );
 FCGI::finish();
 
 __END__
@@ -113,7 +115,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003-2006 by Zahatski Aliaksandr
+Copyright 2003-2007 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
