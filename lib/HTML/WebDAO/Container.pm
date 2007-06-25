@@ -130,6 +130,7 @@ sub _destroy {
     for my $a ( @{ $self->__childs } ) {
         $a->_destroy;
     }
+    $self->__childs([]);
     $self->SUPER::_destroy;
 }
 
