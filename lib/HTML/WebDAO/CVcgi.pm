@@ -6,8 +6,8 @@ use CGI;
 use Data::Dumper;
 use base qw( HTML::WebDAO::Base );
 use strict;
-#__PACKAGE__->
-attributes qw (Cgi_obj);
+
+__PACKAGE__->attributes qw (Cgi_obj);
 
 sub _init {
     my $self = shift;
@@ -32,6 +32,10 @@ sub response {
     print $res->{data};
 }
 
+sub print {
+    my $self = shift;
+    print @_;
+}
 =head2 referer
 
 Get current referer
