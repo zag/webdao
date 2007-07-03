@@ -224,7 +224,7 @@ sub _createObj {
 #return \@Objects
 sub _parse_html {
     my ( $self, $raw_html ) = @_;
-
+    return [] unless $raw_html;
     #Mac and DOS line endings
     $raw_html =~ s/\r\n?/\n/g;
     my $mass;
