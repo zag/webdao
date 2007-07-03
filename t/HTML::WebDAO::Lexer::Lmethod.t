@@ -39,7 +39,7 @@ isa_ok(
     my $method_call = $lmethod->value($eng),
     "HTML::WebDAO::Lib::MethodByPath"
 );
-is($method_call->fetch,111, "Check call");
+is( $method_call->fetch, 111, "Check call" );
 
 #########################
 

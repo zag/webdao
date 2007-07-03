@@ -2,14 +2,15 @@
 
 package HTML::WebDAO::Session;
 use HTML::WebDAO::Base;
-use CGI;
+use HTML::WebDAO::CVcgi;
 use HTML::WebDAO::Store::Abstract;
+use HTML::WebDAO::Response;
 use Data::Dumper;
 use base qw( HTML::WebDAO::Base );
 use Encode qw(encode decode is_utf8);
 use strict;
 __PACKAGE__->attributes
-  qw( Cgi_obj Cgi_env U_id Header Params  Switch_sos_id Switch_sos_flag _store_obj );
+  qw( Cgi_obj Cgi_env U_id Header Params  Switch_sos_id Switch_sos_flag _store_obj _response_obj);
 
 sub _init() {
     my $self = shift;
@@ -25,8 +26,9 @@ sub Init {
     my %args = @_;
     Header $self ( {} );
     U_id $self undef;
-    Cgi_obj $self $args{cv}
-      || do { $self->_log1("ERR: USE cv when init Session!"); CGI::new() };
+    Cgi_obj $self $args{cv} || new HTML::WebDAO::CVcgi::;#create default controller
+    #create response object
+    $self->_response_obj(new HTML::WebDAO::Response:: session => $self, cv => $self->Cgi_obj);
     _store_obj $self ( $args{store} || new HTML::WebDAO::Store::Abstract:: );
     Cgi_env $self (
         {
@@ -81,6 +83,11 @@ sub _store_attributes_by_path {
 sub flush_session {
     my $self = shift;
     $self->_store_obj->flush( $self->get_id() );
+}
+
+sub response_obj {
+    my $self = shift;
+    return $self->_response_obj
 }
 
 #--------------------------------------------------
@@ -202,16 +209,16 @@ sub ExecEngine() {
 
     #print @{$eng_ref->Fetch()};
     $eng_ref->_destroy;
-    $self->flush_session($eng_ref);
+    $self->flush_session();
 
 }
 
 #for setup Output headers
-sub set_header() {
-    my ( $self, $name, $par ) = @_;
-    $self->_log2( Dumper( [ map { [ caller($_) ] } ( 1 .. 5 ) ] ) )
-      unless ref( $self->Header() );
-    $self->Header()->{ uc $name } = $par;
+sub set_header {
+    my $self = shift;
+    my $response = $self->response_obj;
+    return $self->response_obj->set_header(@_)
+
 }
 
 #Get cgi params;
@@ -238,4 +245,8 @@ sub print_header() {
     return $_cgi->header( map { $_ => $ref->{$_} } keys %{ $self->Header() } );
 }
 
+sub destroy {
+    my $self = shift;
+    $self->_response_obj(undef);
+}
 1;

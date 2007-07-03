@@ -89,6 +89,7 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
         session  => $sess,
     );
     $sess->ExecEngine($eng);
+    $sess->destroy;
     --$count_req if $count_req > 0;
 }
 sleep( rand(3) );

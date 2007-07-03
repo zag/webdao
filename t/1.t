@@ -7,29 +7,31 @@
 use Test::More (no_plan);
 use Data::Dumper;
 use strict;
-BEGIN { use_ok('HTML::WebDAO') };
-BEGIN { use_ok('HTML::WebDAO::Store::Abstract') };
+BEGIN { use_ok('HTML::WebDAO') }
+BEGIN { use_ok('HTML::WebDAO::Store::Abstract') }
+
 #BEGIN { use_ok('HTML::WebDAO::Store::MLDBM') };
-BEGIN { use_ok('HTML::WebDAO::Store::Storable') };
-BEGIN { use_ok('HTML::WebDAO::Container') };
-BEGIN { use_ok('HTML::WebDAO::Engine') };
-BEGIN { use_ok('HTML::WebDAO::SessionSH') };
+BEGIN { use_ok('HTML::WebDAO::Store::Storable') }
+BEGIN { use_ok('HTML::WebDAO::Container') }
+BEGIN { use_ok('HTML::WebDAO::Engine') }
+BEGIN { use_ok('HTML::WebDAO::SessionSH') }
+
 sub test_storage {
-    my $object  = shift;
-    ok($object, "Create Store ".ref($object));
-    my $ref = {test=>'test'};
+    my $object = shift;
+    ok( $object, "Create Store " . ref($object) );
+    my $ref = { test => 'test' };
     my $id = "ID";
-    $object->store($id, $ref);
-    ok($object->load($id)->{test} eq $ref->{test}, "Test load");
+    $object->store( $id, $ref );
+    ok( $object->load($id)->{test} eq $ref->{test}, "Test load" );
 }
-my $store_st = new HTML::WebDAO::Store::Storable:: path=>'tmp';
+my $store_st = new HTML::WebDAO::Store::Storable:: path => 'tmp';
 test_storage($store_st);
-my $store_ml = new HTML::WebDAO::Store::MLDBM:: path=>'tmp';
+my $store_ml = new HTML::WebDAO::Store::MLDBM:: path => 'tmp';
 test_storage($store_ml);
 my $store_ab = new HTML::WebDAO::Store::Abstract::;
-ok($store_ab,"Create abstract Store");
+ok( $store_ab, "Create abstract Store" );
 my $session = new HTML::WebDAO::SessionSH::;
-ok($session,"Create abstract Store");
+ok( $session, "Create abstract Store" );
 
 #########################
 

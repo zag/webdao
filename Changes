@@ -1,4 +1,8 @@
 Revision history for Perl extension HTML::WebDAO.
+0.81
+    - create default controller ( Session )
+    - create Response class
+
 0.80
     - ENV{wdFCGIreq} - count request per fcgi process
     - fix mem leaks

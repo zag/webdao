@@ -25,4 +25,8 @@ sub url_method {
     return $res;
 
 }
+sub response {
+    my $self = shift;
+    return $self->getEngine->response;
+}
 1;

@@ -5,8 +5,10 @@ Module::Build->new
    prereq => {
 	      'FreezeThaw' => 0.43,
 	      'MLDBM'	=> '0',
-	      'XML::LibXML'=>'0'
-	     },
+	      'XML::LibXML'=>'0',
+	      'DateTime'=> 0.37,
+	      'DateTime::Format::HTTP'=>0.37,
+	       },
   script_files=>[qw!
     script/wd_cgi.pl
     script/wd_fcgi.fpl

@@ -60,6 +60,7 @@ my $eng = $eng_class->new(
     session  => $sess,
 );
 $sess->ExecEngine($eng);
+$sess->destroy;
 
 __END__
 
@@ -82,7 +83,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003-2006 by Zahatski Aliaksandr
+Copyright 2003-2007 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

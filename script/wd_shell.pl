@@ -103,6 +103,7 @@ $sess->ExecEngine($eng);
 {
     eval "\$evaled_sub->()";
 }
+$sess->destroy;
 croak STDERR $@ if $@;
 print "\n";
 
