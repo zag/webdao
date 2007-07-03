@@ -18,8 +18,13 @@ sub init {
     my $dir = $pars{path};
     $dir .= "/" unless $dir =~ m%/$%;
     unless ( -d $dir ) {
-        _log4 $self "create dir for store";
+    eval {
         mkpath( $dir, 0 );
+        };
+    if ($@) {   
+        _log1 $self "error mkdir".$@
+    }
+
     }
     $self->_dir($dir);
     my %hash;
