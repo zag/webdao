@@ -269,6 +269,17 @@ sub flush {
     $self;
 }
 
+=head2 error404
+
+Set HTTP 404 headers
+
+=cut
+sub error404 {
+    my $self = shift;
+    $self->set_header("-status", '404 Not Found');
+    $self->print(@_) if @_;
+    return $self; 
+}
 sub _destroy {
     my $self = shift;
     $self->auto( [] );

@@ -134,6 +134,7 @@ sub Work {
     unless ( $res ) {
 #        $response->print_header();
         $response->print($_) for @{ $self->fetch($sess) };
+#        $response->error404("Url not found:".join "/",@path);
         $response->flush;
         return ;#end
     }

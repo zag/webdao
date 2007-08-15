@@ -65,9 +65,16 @@ sub get_id {
     return rand(100);
 }
 
+=head2 call_path [$url]
+
+Return ref to array of element from $url or from CGI ENV
+
+=cut
 sub call_path {
     my $self = shift;
-    $self->Cgi_env->{path_info_elments};
+    my $url = shift || return $self->Cgi_env->{path_info_elments};
+    return  [ grep { defined $_ } split( /\//, $url) ];
+
 }
 
 sub _load_attributes_by_path {
