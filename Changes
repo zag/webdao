@@ -1,4 +1,7 @@
 Revision history for Perl extension HTML::WebDAO.
+0.82
+    - add error404 response method
+    - call_path parse custom url (Session)
 0.81
     - create default controller ( Session )
     - create Response class

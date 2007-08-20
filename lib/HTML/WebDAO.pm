@@ -15,7 +15,7 @@ use HTML::WebDAO::Sessiong;
 use HTML::WebDAO::Lib::RawHTML;
 our @ISA = qw();
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 
 
