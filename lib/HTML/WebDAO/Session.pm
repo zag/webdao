@@ -10,7 +10,7 @@ use base qw( HTML::WebDAO::Base );
 use Encode qw(encode decode is_utf8);
 use strict;
 __PACKAGE__->attributes
-  qw( Cgi_obj Cgi_env U_id Header Params  Switch_sos_id Switch_sos_flag _store_obj _response_obj);
+  qw( Cgi_obj Cgi_env U_id Header Params  _store_obj _response_obj _is_absolute_url);
 
 sub _init() {
     my $self = shift;
@@ -26,9 +26,14 @@ sub Init {
     my %args = @_;
     Header $self ( {} );
     U_id $self undef;
-    Cgi_obj $self $args{cv} || new HTML::WebDAO::CVcgi::;#create default controller
-    #create response object
-    $self->_response_obj(new HTML::WebDAO::Response:: session => $self, cv => $self->Cgi_obj);
+    Cgi_obj $self $args{cv}
+      || new HTML::WebDAO::CVcgi::;    #create default controller
+                                       #create response object
+    $self->_response_obj(
+        new HTML::WebDAO::Response::
+          session => $self,
+        cv => $self->Cgi_obj
+    );
     _store_obj $self ( $args{store} || new HTML::WebDAO::Store::Abstract:: );
     Cgi_env $self (
         {
@@ -49,11 +54,6 @@ sub Init {
     $self->Cgi_env->{path_info_elments} =
       [ grep { defined $_ } split( /\//, $self->Cgi_env->{path_info} ) ];
 
-    #init hash of describe content
-    # single object state
-    Switch_sos_id $self   ( {} );
-    Switch_sos_flag $self ("0");
-
 }
 
 #Can be overlap if you choose another
@@ -70,11 +70,26 @@ sub get_id {
 Return ref to array of element from $url or from CGI ENV
 
 =cut
+
 sub call_path {
     my $self = shift;
     my $url = shift || return $self->Cgi_env->{path_info_elments};
-    return  [ grep { defined $_ } split( /\//, $url) ];
+    return [ grep { defined $_ } split( /\//, $url ) ];
 
+}
+
+=head2  set_absolute_url 1|0
+
+Set flag for build absolute pathes. Return previus value.
+
+=cut
+
+sub set_absolute_url {
+    my $self = shift;
+    my $value = shift;
+    my $prev_value = $self->_is_absolute_url;
+    $self->_is_absolute_url($value) if defined $value;
+    return $prev_value
 }
 
 sub _load_attributes_by_path {
@@ -94,19 +109,7 @@ sub flush_session {
 
 sub response_obj {
     my $self = shift;
-    return $self->_response_obj
-}
-
-#--------------------------------------------------
-#$ref_sos={	data_type=>"text\/html",
-#	raw_data=>\@,
-#	obj_ref=>$self,
-#	obj_method=>\&read_image
-#	store_session=>0}
-sub switch2sos {
-    my ( $self, $name, $ref_sos ) = @_;
-    Switch_sos_id $self   ($ref_sos);
-    Switch_sos_flag $self ("1");
+    return $self->_response_obj;
 }
 
 #Session interface to device(HTTP protocol) specific function
@@ -120,7 +123,6 @@ sub sess_servise {
     my ( $self, $event_name, $par ) = @_;
     my %service = (
         geturl  => sub { $self->sess_servise_geturl(@_) },
-        getform => sub { $self->sess_servise_getform(@_) },
         getenv  => sub { $self->sess_servise_getenv(@_) },
         getsess => sub { return $self },
     );
@@ -163,18 +165,9 @@ sub sess_servise_geturl {
         }
         $str .= "?" . join "&" => @pars;
     }
+    #set absolute path
+    $str = $self->Cgi_env->{base_url} . $str if  $self->set_absolute_url;
     return $str;
-}
-
-#sess_servise_getform({data =>\@,url=>"root for form")
-sub sess_servise_getform {
-    my ( $self, $par ) = @_;
-    my ( $data, $ref, $enctype ) = @{$par}{ "data", "sendto", "enctype" };
-    my $root_url =
-      ($ref) ? $ref : $self->Cgi_env->{path_info} . $self->Cgi_env->{file};
-    return \eval '<<END;
-<form action="$root_url" method="post" name="tester" id="test" enctype="$enctype">@{$data}</form>
-END';
 }
 
 #get current session enviro-ent
@@ -222,7 +215,7 @@ sub ExecEngine() {
 
 #for setup Output headers
 sub set_header {
-    my $self = shift;
+    my $self     = shift;
     my $response = $self->response_obj;
     return $self->response_obj->set_header(@_)
 

@@ -11,7 +11,6 @@ use HTML::WebDAO::Container;
 use HTML::WebDAO::Engine;
 use HTML::WebDAO::Session;
 use HTML::WebDAO::Sessionco;
-use HTML::WebDAO::Sessiong;
 use HTML::WebDAO::Lib::RawHTML;
 our @ISA = qw();
 

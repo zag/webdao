@@ -115,7 +115,7 @@ sub __store_session_attributes {
 
 sub response {
     my $self = shift;
-    return $self->_session->response_obj
+    return $self->_session->response_obj;
 }
 
 sub Work {
@@ -126,17 +126,19 @@ sub Work {
     #    _log1 $self "WOKR: '@path'".Dumper(\@path);
     ####
     my $res = $self->_call_method( \@path, %{ $sess->Params } ) if @path;
-    
+
     #if not defined $res
 
     #first prepare response object
     my $response = $sess->response_obj;
-    unless ( $res ) {
-#        $response->print_header();
+    unless ($res) {
+
+        #        $response->print_header();
         $response->print($_) for @{ $self->fetch($sess) };
-#        $response->error404("Url not found:".join "/",@path);
+
+        #        $response->error404("Url not found:".join "/",@path);
         $response->flush;
-        return ;#end
+        return;    #end
     }
 
     if ( ref($res) eq 'HASH'
@@ -153,10 +155,11 @@ sub Work {
             $response->set_callback($call_back)
               if ref($call_back) eq 'CODE';
         }
-        $response->print($res->{data}) if exists $res->{data};
+        $response->print( $res->{data} ) if exists $res->{data};
         $res = $response;
     }
     if ( ref($res) eq 'HTML::WebDAO::Response' ) {
+
         #we gor response !
         $res->flush;
         return;
@@ -166,9 +169,9 @@ sub Work {
         $response->flush();
         return;
     }
-    _log1 $self "Unknow response : $res";
-        $response->print($_) for @{ $self->fetch($sess) };
-        $response->flush;
+    _log1 $self "Unknown response : $res";
+    $response->print($_) for @{ $self->fetch($sess) };
+    $response->flush;
 }
 
 #fill $self->__events hash event - method
@@ -226,6 +229,7 @@ sub _createObj {
 sub _parse_html {
     my ( $self, $raw_html ) = @_;
     return [] unless $raw_html;
+
     #Mac and DOS line endings
     $raw_html =~ s/\r\n?/\n/g;
     my $mass;
