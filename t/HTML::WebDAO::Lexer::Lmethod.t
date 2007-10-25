@@ -5,7 +5,8 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More (no_plan);
+use Test::More tests=>13;
+#use Test::More (no_plan);
 use Data::Dumper;
 use strict;
 

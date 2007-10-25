@@ -1,4 +1,6 @@
 Revision history for Perl extension HTML::WebDAO.
+
+    - add _get_object_by_path methods to Container, Element
 0.83
     - clean deprecated code
     - add set_absolute_url (Session.pm)

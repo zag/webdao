@@ -211,4 +211,14 @@ sub _set_vars {
     }
 }
 
+=head2 __get_objects_by_path [path], $session
+
+Check if exist method in $path and return $self or undef
+
+=cut
+
+sub __get_objects_by_path {
+    my $self = shift;
+    return 
+}
 1;
