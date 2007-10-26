@@ -158,7 +158,7 @@ sub Work {
         $response->print( $res->{data} ) if exists $res->{data};
         $res = $response;
     }
-    if ( ref($res) eq 'HTML::WebDAO::Response' ) {
+    if ( UNIVERSAL::isa( $res, 'HTML::WebDAO::Response' ) ) {
 
         #we gor response !
         $res->flush;
