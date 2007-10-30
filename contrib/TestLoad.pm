@@ -26,6 +26,6 @@ sub __get_objects_by_path {
 }
 
 sub view {
-    return "Ok"
+    return 1
 }
 1;

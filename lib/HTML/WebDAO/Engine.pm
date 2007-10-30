@@ -118,6 +118,74 @@ sub response {
     return $self->_session->response_obj;
 }
 
+=head2 resolove_path $session or (path ?)
+
+Resolve path, find object and call method
+Can return:
+
+    undef - not found path or object not have method
+    $object_ref - if object return $self (????)
+    HTML::WebDAO::Response - objects
+
+    
+
+=cut
+
+sub resolve_path {
+    my $self = shift;
+    my $sess = shift;
+    my $url  = shift;
+    my @path = grep { $_ } @{ $sess->call_path($url) };
+    my $result;
+
+    #try to get object by path
+    if ( my $object = $self->_get_object_by_path( \@path, $sess ) ) {
+        my $method = ( shift @path ) || 'index_x';
+
+        #check if $object have method
+        if ( UNIVERSAL::can( $object, $method ) ) {
+
+            #Ok have method
+            #check if path have more elements
+            my %args = %{ $sess->Params };
+            if ( @path > 1 ) {
+
+                #add  special variable
+                $args{__extra_path__} = \@path;
+            }
+
+            #call method
+            $result = $object->$method(%args);
+
+            #if object return $self ?
+            return $result if $object eq $result;    #return then
+                  #if method return non response object
+                  #then create them
+            unless ( UNIVERSAL::isa( $result, 'HTML::WebDAO::Response' ) ) {
+                my $response = $self->response;
+                for ($response) {
+
+                    #set default format : html
+                    html $_= $result;
+                }
+                $result = $response;
+            }
+        }
+        else {
+
+           #don't have method
+           #error404 - not found
+           #            $result = $self->response->error404("Not Found : $url");
+        }
+    }
+    else {
+
+        #not found objects by path !
+        #        $result = $self->response->error404("Not Found : $url");
+    }
+    return $result
+}
+
 sub Work {
     my $self = shift;
     my $sess = shift;

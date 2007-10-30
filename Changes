@@ -1,5 +1,6 @@
 Revision history for Perl extension HTML::WebDAO.
-
+    - add resolve_path method
+    - add html context to response class
     - add _get_object_by_path methods to Container, Element
 0.83
     - clean deprecated code

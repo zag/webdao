@@ -280,8 +280,15 @@ sub error404 {
     $self->print(@_) if @_;
     return $self; 
 }
+
+sub html : lvalue {
+    my $self = shift;
+    $self->{__html};
+}
+
 sub _destroy {
     my $self = shift;
+    $self->{__html} = undef;
     $self->auto( [] );
 }
 1;

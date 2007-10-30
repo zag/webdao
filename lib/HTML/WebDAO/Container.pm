@@ -134,6 +134,8 @@ sub _destroy {
 
 =head2 _get_object_by_path <$path>, [$session]
 
+Return first Element object for path.
+Try to load objects for current object.
 
 =cut
 

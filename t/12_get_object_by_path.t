@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 
-use Test::More tests=>21;
-#use Test::More qw(no_plan);
+#use Test::More tests => 25;
+use Test::More qw(no_plan);
 use Data::Dumper;
 use lib 'contrib';
 use lib '../contrib';
@@ -41,7 +41,7 @@ $eng->_add_childs($container_autoload);
 
 my $u1 = '/container/test/test_method';
 my @p1 = grep { $_ } @{ $session->call_path($u1) };
-ok  my $o1 = $eng->_get_object_by_path( \@p1, $session ) ,
+ok my $o1 = $eng->_get_object_by_path( \@p1, $session ),
   'non exists method:' . $u1;
 
 my $u2 = '/container/test/test_echo';
@@ -74,4 +74,21 @@ ok !( my $o6 = $eng->_get_object_by_path( \@p6, $session ) ),
 my @p7 = grep { $_ } @{ $session->call_path($u6) };
 ok !( my $o7 = $eng->_get_object_by_path( \@p7 ) ),
   'self controlled objects(without session) not found:' . $u6;
+#test get valide object
+
+my $tu1 = '/container/test/test_method';
+my $ou1 = $eng->resolve_path($session, $tu1 );
+ok !$ou1, 'resolve call by non_exists method';
+my $tu2 = '/container/test/test_echo';
+my $ou2 = $eng->resolve_path($session, $tu2 );
+is $ou2->html , 0, 'check return result';
+my $tu3 = '/container/test/';
+my $ou3 = $eng->resolve_path($session, $tu3 );
+is $ou3->html, 2, 'check default method call';
+
+my $tu4 = '/container/test/test_resonse';
+my $ou4 = $eng->resolve_path($session, $tu4 );
+is $ou4->html, 'ok', 'check returned response';
+
+#ok  ! $ou1, 'resolve call by non_exists method';
 
