@@ -10,13 +10,41 @@ sub init {
     my $self = shift;
     my ( $path, @args ) = @_;
     $self->_path($path);
-    $self->_args(\@args);
+    $self->_args( \@args );
     1;
 }
 
 sub fetch {
     my $self = shift;
-    return  $self->call_path($self->_path, @{$self->_args})
+    my $sess = shift;
+
+    #first get object;
+    my @path   = @{ $sess->call_path( $self->_path ) };
+    my $method = pop @path;
+
+    #try get object by path
+    if ( my $object = $self->getEngine->_get_object_by_path( \@path ) ) {
+        unless ($method) {
+            _log1 $self "Method not found by path " . $self->_path;
+            return;
+        }
+        else {
+
+            #check and call method
+            if ( UNIVERSAL::can( $object, $method ) ) {
+                return $object->$method( @{ $self->_args } );
+            }
+            else {
+                _log1 $self "Method: $method not found at class $object";
+                return;
+            }
+        }
+
+    }
+    else {
+        _log1 $self "ERRR: Not found object for path " . $self->_path;
+    }
+    return undef;
 }
 
 1;

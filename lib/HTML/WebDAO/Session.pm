@@ -74,6 +74,8 @@ Return ref to array of element from $url or from CGI ENV
 sub call_path {
     my $self = shift;
     my $url = shift || return $self->Cgi_env->{path_info_elments};
+    $url =~ s%^/%%;
+    $url =~ s%/$%%;
     return [ grep { defined $_ } split( /\//, $url ) ];
 
 }

@@ -6,7 +6,7 @@ use HTML::WebDAO::Base;
 use base qw/ HTML::WebDAO::Base/;
 use strict 'vars';
 __PACKAGE__->attributes
-  qw/ _format_subs __attribute_names __my_name __parent __path2me  __engine/;
+  qw/ _format_subs __attribute_names __my_name __parent __path2me  __engine  __extra_path /;
 
 sub _init {
     my $self = shift;
@@ -163,19 +163,6 @@ sub _format {
     \@res;
 }
 
-sub _format1 {
-    my $self = shift;
-    my @res;
-    my $format_subs = $self->_format_subs();
-    push( @res, @{ $format_subs->[0]->() } );
-    if ( my $result = $self->fetch(@_) ) {
-        push @res,
-          map { $format_subs->[1]->($_) }
-          ( ref($result) eq 'ARRAY' ? @{$result} : $result );
-    }
-    push( @res, @{ $format_subs->[2]->() } );
-    return \@res;
-}
 
 sub format {
     my $self = shift;

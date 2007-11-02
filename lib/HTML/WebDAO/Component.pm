@@ -6,7 +6,7 @@ use base qw(HTML::WebDAO::Element);
 use strict 'vars';
 use Data::Dumper;
 
-sub url_method {
+sub _url_method {
     my $self   = shift;
     my $method = shift;
     my $ref;
@@ -25,6 +25,32 @@ sub url_method {
     return $res;
 
 }
+
+sub url_method {
+    my $self   = shift;
+    my $method = shift;
+    my @upath  = ();
+    push @upath, $self->__path2me if $self->__path2me;
+    if ( defined $self->__extra_path ) {
+        my $extr = $self->__extra_path;
+        $extr = [$extr] unless ( ref($extr) eq 'ARRAY' );
+        push @upath, @$extr;
+    }
+    push @upath, $method if defined $method;
+    my $path = join '/' => @upath;
+    my $str = '';
+    if (@_) {
+        my %args = @_;
+        my @pars;
+        while ( my ( $key, $val ) = each %args ) {
+            push @pars, "$key=$val";
+        }
+        $str .= "?" . join "&" => @pars;
+    }
+    return $path . $str;
+}
+
+
 sub response {
     my $self = shift;
     return $self->getEngine->response;

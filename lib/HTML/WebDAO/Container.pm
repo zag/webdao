@@ -151,7 +151,34 @@ sub _get_object_by_path {
         shift @$path;    #skip first name
                          #ok got it
                          #check if it container
+                         #skip extra path
+        if ( UNIVERSAL::can( $obj, '__extra_path' ) ) {
+            my $extra_path = $obj->__extra_path;
+
+            #if extra path defined and not ref convert to ref
+            if ( defined $extra_path ) {
+                $extra_path = [$extra_path] unless ref($extra_path);
+            }
+            if ( ref($extra_path) ) {
+                my @extra = @$extra_path;
+
+                #now skip extra
+                for (@extra) {
+                    if ( $path->[0] eq $_ ) {
+                        shift @$path;
+                    }
+                    else {
+                        _log2 $self "Break __extra_path "
+                          . $path->[0] . " <> "
+                          . $_
+                          . " for : $obj";
+                        last;
+                    }
+                }
+            }
+        }
         if ( $obj->isa('HTML::WebDAO::Container') ) {
+            return $obj unless @$path;    # return object if end of path
             return $obj->_get_object_by_path( $path, $session );
         }
         else {
@@ -179,6 +206,8 @@ sub _get_object_by_path {
         #now try find object in returned array
         my $next;
         foreach (@$dyn) {
+
+            #skip non objects
             next unless $_->_obj_name eq $next_name;
             $next = $_;
             last;    #exit from loop loop
@@ -197,8 +226,7 @@ sub _get_object_by_path {
             else {
 
                 #if query without session
-                #try
-
+                #try to find  by name
                 #ok got it
                 #check if it container
                 if ( $next->isa('HTML::WebDAO::Container') ) {
@@ -208,11 +236,6 @@ sub _get_object_by_path {
 
                     #return object referense in any way
                     return $next;
-
-                #                    my $method = $path->[0] || 'index_html';
-                #                    _log1 $self "tray can $next :: $method!";
-                #                    #if it element try to can method
-                #                    return $next->can($method) ? $next : undef;
                 }
             }
 

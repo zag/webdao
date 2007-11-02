@@ -1,4 +1,7 @@
 Revision history for Perl extension HTML::WebDAO.
+    - adopt Lexer::Lmethod to use _get_object_by_path
+    - handle __extra_path attribute
+    - check loaded mods
     - add resolve_path method
     - add html context to response class
     - add _get_object_by_path methods to Container, Element
