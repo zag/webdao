@@ -75,6 +75,9 @@ my @p7 = grep { $_ } @{ $session->call_path($u6) };
 ok !( my $o7 = $eng->_get_object_by_path( \@p7 ) ),
   'self controlled objects(without session) not found:' . $u6;
 #test get valide object
+my @p8 = grep { $_ } @{ $session->call_path('/auto') };
+ok my $o8 = $eng->_get_object_by_path( \@p8 ) ,
+  'self object (without session) found:' .'/auto' ;
 
 my $tu1 = '/container/test/test_method';
 my $ou1 = $eng->resolve_path($session, $tu1 );

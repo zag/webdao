@@ -5,7 +5,8 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests=>13;
+use Test::More tests => 13;
+
 #use Test::More (no_plan);
 use Data::Dumper;
 use strict;
@@ -40,7 +41,7 @@ isa_ok(
     my $method_call = $lmethod->value($eng),
     "HTML::WebDAO::Lib::MethodByPath"
 );
-is( $method_call->fetch, 111, "Check call" );
+is( $method_call->fetch($session), 111, "Check call" );
 
 #########################
 
