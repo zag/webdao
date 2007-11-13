@@ -143,9 +143,9 @@ sub _get_object_by_path {
     my $self        = shift;
     my $path        = shift;
     my $session     = shift;
+#    _log1 $self Dumper {'$self'=>ref($self), path=>$path};
     my @backup_path = @$path;
     my $next_name   = $path->[0];
-
     #first try get by name
     if ( my $obj = $self->_get_obj_by_name($next_name) ) {
         shift @$path;    #skip first name
@@ -193,7 +193,7 @@ sub _get_object_by_path {
     }
     else {
 
-        #try get objects by spesial methods
+        #try get objects by special methods
         my $dyn = $self->__get_objects_by_path( $path, $session )
           || return;    #break search
 
@@ -252,6 +252,8 @@ Return next object for path
 sub __get_objects_by_path {
     my $self = shift;
     my ( $path, $session ) = @_;
+    # check if path point to method
+    return $self if $self->can($path->[0]);
     return;    # default return undef
 }
 
