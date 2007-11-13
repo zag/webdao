@@ -118,7 +118,10 @@ sub _set_path2me {
     my $parent = $self->__parent;
     if ( $self != $parent ) {
         ( my $parents_path = $parent->__path2me ) ||= "";
-        my $my_path = $parents_path . "/" . $self->__my_name;
+        my $extr = $parent->__extra_path;
+        $extr = [] unless defined $extr;
+        $extr = [$extr] unless ( ref($extr) eq 'ARRAY' );
+        my $my_path = join "/", $parents_path, @$extr, $self->__my_name;
         $self->__path2me($my_path);
     }
     else {
@@ -154,15 +157,14 @@ sub pre_format {
 sub _format {
     my $self = shift;
     my @res;
-    push( @res, @{ $self->pre_format(@_) } );#for compat
+    push( @res, @{ $self->pre_format(@_) } );    #for compat
     if ( my $result = $self->fetch(@_) ) {
         push @res, ( ref($result) eq 'ARRAY' ? @{$result} : $result );
     }
-    push( @res, @{ $self->post_format(@_) } );#for compat
+    push( @res, @{ $self->post_format(@_) } );    #for compat
 
     \@res;
 }
-
 
 sub format {
     my $self = shift;
@@ -206,6 +208,6 @@ Check if exist method in $path and return $self or undef
 
 sub __get_objects_by_path {
     my $self = shift;
-    return 
+    return;
 }
 1;
