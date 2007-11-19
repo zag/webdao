@@ -1,4 +1,5 @@
 Revision history for Perl extension HTML::WebDAO.
+0.84
     - adopt Lexer::Lmethod to use _get_object_by_path
     - handle __extra_path attribute
     - check loaded mods
