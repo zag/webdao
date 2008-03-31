@@ -7,39 +7,20 @@
 #       AUTHOR:  Aliaksandr P. Zahatski (Mn), <zag@cpan.org>
 #===============================================================================
 #$Id: wd_fcgi.fpl,v 1.1 2006/10/13 12:39:09 zag Exp $
-BEGIN {
-$ENV{FCGI_SOCKET_PATH} = '/tmp/listen';
-$ENV{FCGI_LISTEN_QUEUE} = 100;
-
-}
 use HTML::WebDAO;
 use FCGI;
-use FCGI::ProcManager;
 use HTML::WebDAO::CVcgi;
 use HTML::WebDAO::Session;
 use HTML::WebDAO::Lex;
+use HTML::WebDAO::FCGI::ProcManager;
 use Data::Dumper;
 use Getopt::Long;
 use Pod::Usage;
 use strict;
 use warnings;
 use POSIX;
-use Test::More;
+#use Test::More;
 use Carp;
-
-=pod
-
-GetOptions(
-    'help|?'      => \$help,
-    'listen|l=s'  => \$listen,
-    'nproc|n=i'   => \$nproc,
-    'pidfile|p=s' => \$pidfile,
-    'manager|M=s' => \$manager,
-    'daemon|d'    => \$detach,
-    'man'         => \$man
-);
-
-=cut
 
 my ( $listen, $nproc, $pidfile, $manager, $detach, $man, $help, $maxreq );
 
@@ -59,40 +40,26 @@ GetOptions(
 pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
 
-$ENV{FCGI_SOCKET_PATH} = $listen;
-$ENV{FCGI_LISTEN_QUEUE} = 100;
-#evaluse CGI::Fast qw(:standard);
-#   eval "use CGI::Fast qw(:standard); 1" or die $@;
-
-my %env;
 #begin init socket
 my $sock = 0;
 if ($listen) {
     my $saved_umask = umask(0);
-    $sock = FCGI::OpenSocket( $listen, 100 )
-      or die "failed to open FastCGI socket; $!";
+    $ENV{FCGI_SOCKET_PATH}  = $listen;
+    $ENV{FCGI_LISTEN_QUEUE} = 100;
+    eval "use CGI::Fast qw(:standard); 1" or die $@;
     umask($saved_umask);
 }
 elsif ( $^O ne 'MSWin32' ) {
     -S STDIN
       or die "STDIN is not a socket; specify a listen location";
+    eval "use CGI::Fast qw(:standard); 1" or die $@;
+
 }
-my $options ||= {};
 
-my $error = \*STDERR;    # send STDERR to the web server
-$error = \*STDOUT                # send STDERR to stdout (a logfile)
-  if $options->{keep_stderr};    # (if asked to)
-
-
-my $request =
-  FCGI::Request( \*STDIN, \*STDOUT, $error, \%env, $sock,
-    ( $options->{nointr} ? 0 : &FCGI::FAIL_ACCEPT_ON_INTR ),
-  );
-local(*ENV) = \%env;
 my $proc_manager;
 if ($listen) {
     &daemon_fork() if $detach;
-    $proc_manager = new FCGI::ProcManager::(
+    $proc_manager = new HTML::WebDAO::FCGI::ProcManager::(
         {
             n_processes => $nproc,
             pid_fname   => $pidfile,
@@ -113,7 +80,6 @@ forking.  STDERR, etc are still connected to a terminal.
 
 sub daemon_fork {
 
-    #    require POSIX;
     fork && exit;
 }
 
@@ -155,8 +121,6 @@ sub load_module {
     use strict 'refs';
 }
 
-#diag Dumper({})
-#exit;
 sub _parse_str_to_hash {
     my $str = shift;
     return unless $str;
@@ -169,70 +133,52 @@ sub _parse_str_to_hash {
 }
 
 my ( $def_store_class, $def_session_class, $def_eng_class );
-my ( $store_class,     $session_class,     $eng_class ) = map {
-
-    #    eval "require $_"
-    #      or die $@;
+my ( $store_class, $session_class, $eng_class ) = map {
     &load_module($_);
     $_
   } (
-    $def_store_class   = $ENV{WD_STORE}   || 'HTML::WebDAO::Store::Abstract',
-    $def_session_class = $ENV{WD_SESSION} || 'HTML::WebDAO::Session',
+    $def_store_class = $ENV{WD_STORE}
+      || $ENV{wdStore}
+      || 'HTML::WebDAO::Store::Abstract',
+    $def_session_class =
+      $ENV{WD_SESSION} || $ENV{wdSession} || 'HTML::WebDAO::Session',
     $def_eng_class = $ENV{WD_ENGINE} || $ENV{wdEngine} || 'HTML::WebDAO::Engine'
   );
 my $count_req = $maxreq || $ENV{wdFCGIreq} || -1;
 
-#while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
-
-while ( $count_req != 0 and $request->Accept >= 0 ) {
-     CGI->_reset_globals;
+while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
 
     $proc_manager && $proc_manager->pm_pre_dispatch();
-
-    # If we're running under Lighttpd, swap PATH_INFO and SCRIPT_NAME
-    # http://lists.rawmode.org/pipermail/catalyst/2006-June/008361.html
-    # Thanks to Mark Blythe for this fix
+#    diag Dumper(\%ENV);
     if ( $ENV{SERVER_SOFTWARE} && $ENV{SERVER_SOFTWARE} =~ /lighttpd/ ) {
         $ENV{PATH_INFO} ||= delete $ENV{SCRIPT_NAME};
     }
     
-    diag Dumper \%ENV;
-
     #customize ENV
+    $store_class   = $ENV{WD_STORE}   || $ENV{wdStore}   || $def_store_class;
+    $session_class = $ENV{WD_SESSION} || $ENV{wdSession} || $def_session_class;
+    $eng_class     = $ENV{WD_ENGINE}  || $ENV{wdEngine}  || $def_eng_class;
     foreach my $rec (
-        [
-            \$store_class,
-            $ENV{WD_STORE} || $ENV{wdStore} || $def_store_class,
-            ( $ENV{WD_STORE} || $ENV{wdStore} || '' ) eq $def_store_class
-        ],
-        [
-            \$session_class,
-            $ENV{WD_SESSION} || $ENV{wdSession} || $def_session_class,
-            ( $ENV{WD_SESSION} || $ENV{wdSession} || '' ) eq $def_session_class
-        ],
-        [
-            \$eng_class,
-            $ENV{WD_ENGINE} || $ENV{wdEngine} || $def_eng_class,
-            ( $ENV{WD_ENGINE} || $ENV{wdEngine} || '' ) eq $def_eng_class
-        ]
+        [ $store_class,   $store_class   eq $def_store_class ],
+        [ $session_class, $session_class eq $def_session_class ],
+        [ $eng_class,     $eng_class     eq $def_eng_class ]
       )
     {
-        next unless defined $rec->[1];
-        next if ${ $rec->[0] } eq $rec->[1] or $rec->[2];
-        &load_module( $rec->[1] );
-
-        #        eval "require @{[$rec->[1]]}" or die $@;
-        ${ $rec->[0] } = $rec->[1]
-
+        next if $rec->[1];
+        &load_module( $rec->[0] );
     }
-    my $store_obj =
-      $store_class->new( %{ &_parse_str_to_hash( $ENV{wdStorePar} ) || {} } );
+    my $store_obj = $store_class->new(
+        %{
+            &_parse_str_to_hash( $ENV{wdStorePar} || $ENV{WD_STORE_PAR} ) || {}
+          }
+    );
     my $sess = $session_class->new(
-        %{ &_parse_str_to_hash( $ENV{wdSessionPar} ) || {} },
+        %{
+            &_parse_str_to_hash( $ENV{wdSessionPar} || $ENV{WD_SESSION_PAR} )
+              || {}
+          },
         store => $store_obj,
-
-#             cv    => new HTML::WebDAO::CVcgi:: $fcgi_obj,
-        cv => new HTML::WebDAO::CVcgi::
+        cv    => new HTML::WebDAO::CVcgi:: $fcgi_obj,
 
     );
     $sess->set_header( -type => 'text/html; charset=utf-8' );
@@ -258,7 +204,7 @@ while ( $count_req != 0 and $request->Accept >= 0 ) {
               || {}
           },
         %ini_pars,
-        register => { 'HTML::WebDAO::Comp::ListEnv' => 'listenv' },
+#        register => { 'HTML::WebDAO::Comp::ListEnv' => 'listenv' },
         session  => $sess,
     );
     $sess->ExecEngine($eng);
@@ -288,7 +234,6 @@ wd_fcgi.fpl [options]
 
 =head1 SETUP
 
-    -initial-env wdEnginePar=test=test;
 
 
 =head1 SEE ALSO

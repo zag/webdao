@@ -8,6 +8,9 @@ Module::Build->new
 	      'XML::LibXML'=>'0',
 	      'DateTime'=> 0.37,
 	      'DateTime::Format::HTTP'=>0.37,
+	      'Encode'=> 0,
+	      'Getopt::Long'=>2.35,
+	      'FCGI'=>0.67
 	       },
   script_files=>[qw!
     script/wd_cgi.pl

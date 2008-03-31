@@ -225,6 +225,10 @@ sub execute {
 
     #check referense or not
     if ( UNIVERSAL::isa( $ans, 'HTML::WebDAO::Response' ) ) {
+        
+        $ans->_print_dep_on_context($sess) unless $ans->_is_file_send;
+        $ans->flush;
+        return;
         my $res = $ans->html;
         $ans->print( ref($res) eq 'CODE' ? $res->() : $res );
         $ans->flush;

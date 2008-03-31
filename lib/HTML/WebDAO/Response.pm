@@ -36,7 +36,7 @@ sub init {
     my $self = shift;
     my %par  = @_;
     $self->_headers( {} );
-    $self->_call_backs([]);
+    $self->_call_backs( [] );
     $self->_cv_obj( $par{cv} );
     $self->__session( $par{session} );
     return 1;
@@ -80,8 +80,8 @@ return str
 =cut
 
 sub get_mime_for_filename {
-    my $self         = shift;
-    my $filename         = shift;
+    my $self          = shift;
+    my $filename      = shift;
     my %types_for_ext = (
         avi  => 'video/x-msvideo',
         bmp  => 'image/bmp',
@@ -110,9 +110,9 @@ sub get_mime_for_filename {
         wav  => 'audio/x-wav',
         zip  => 'application/zip',
     );
-    my ( $ext ) = $filename =~ /\.(\w+)$/;
-    if ( my $type = $types_for_ext{lc $ext})  {
-        return $type
+    my ($ext) = $filename =~ /\.(\w+)$/;
+    if ( my $type = $types_for_ext{ lc $ext } ) {
+        return $type;
     }
     return 'application/octet-stream';
 }
@@ -221,8 +221,9 @@ sub send_file {
     }
     else {
         ##
-        if ( $file_name ) {
-            $self->set_header(-type=> $self->get_mime_for_filename( $file_name))
+        if ($file_name) {
+            $self->set_header(
+                -type => $self->get_mime_for_filename($file_name) );
         }
     }
     $self->_is_file_send(1);
@@ -231,11 +232,18 @@ sub send_file {
 
 sub print {
     my $self = shift;
-    my $cv = $self->_cv_obj;
+    my $cv   = $self->_cv_obj;
     $self->print_header;
     $cv->print(@_);
-    return $self
+    return $self;
 }
+
+sub _print_dep_on_context {
+    my ( $self, $session ) = @_;
+    my $res = $self->html;
+    $self->print( ref($res) eq 'CODE' ? $res->() : $res );
+}
+
 =head2 flush
 
 Flush current state of response.
@@ -250,22 +258,26 @@ sub flush {
     #do self print file
     if ( $self->_is_file_send ) {
         my $fd = $self->__fh;
-#        open FH,">/tmp/DATA.jpg";
-#        print FH <$fd>;
-#        close FH;
+
+        #        open FH,">/tmp/DATA.jpg";
+        #        print FH <$fd>;
+        #        close FH;
         $self->_cv_obj->print(<$fd>);
-#        binmode ($fd);
-#        print <$fd>;
+
+        #        binmode ($fd);
+        #        print <$fd>;
         close($fd) if $self->_is_need_close_fh;
     }
     $self->_is_flushed(1);
+
     #do callbacks
     my $ref_calls = $self->_call_backs;
-    while (my $code = pop @$ref_calls) {
+    while ( my $code = pop @$ref_calls ) {
         $code->();
     }
+
     #clear callbacks
-    @{$self->_call_backs} = ();
+    @{ $self->_call_backs } = ();
     $self;
 }
 
@@ -274,11 +286,12 @@ sub flush {
 Set HTTP 404 headers
 
 =cut
+
 sub error404 {
     my $self = shift;
-    $self->set_header("-status", '404 Not Found');
+    $self->set_header( "-status", '404 Not Found' );
     $self->print(@_) if @_;
-    return $self; 
+    return $self;
 }
 
 sub html : lvalue {
