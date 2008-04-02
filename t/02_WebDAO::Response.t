@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More (tests =>32);
+use Test::More ( tests => 32 );
 use Data::Dumper;
 use strict;
 
@@ -46,8 +46,8 @@ isa_ok my $response1 =
   ( new HTML::WebDAO::Response:: session => $session, cv => $session->Cgi_obj )
   ->redirect2url('http://test.com'), 'HTML::WebDAO::Response',
   'test redirect2url';
-is_deeply { '-LOCATION' => 'http://test.com' }, $response1->_headers,
-  'check redirect2url headers';
+is_deeply { '-LOCATION' => 'http://test.com', '-STATUS' => '302 Found' },
+  $response1->_headers, 'check redirect2url headers';
 
 isa_ok my $response2 =
   ( new HTML::WebDAO::Response:: session => $session, cv => $session->Cgi_obj )
