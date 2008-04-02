@@ -149,6 +149,7 @@ Set headers for redirect to url.return $self reference
 
 sub redirect2url {
     my ( $self, $redirect_url ) = @_;
+    $self->set_header( "-status", '302 Found' );
     $self->set_header( '-Location', $redirect_url );
 }
 

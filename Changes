@@ -1,4 +1,6 @@
 Revision history for Perl extension HTML::WebDAO.
+0.86 
+   - add status 302 for redirect
 0.85
     - add standalone FastCGI server
 0.84
