@@ -56,7 +56,6 @@ my $lex     = new HTML::WebDAO::Lex:: content => $content;
 my $eng = $eng_class->new(
     %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },
     lexer    => $lex,
-    register => { 'HTML::WebDAO::Comp::ListEnv' => 'listenv' },
     session  => $sess,
 );
 $sess->ExecEngine($eng);

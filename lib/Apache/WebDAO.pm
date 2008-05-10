@@ -61,7 +61,6 @@ sub handler {
     my $eng = HTML::WebDAO::Engine->new(
         "index", $content,
         lexer    => $lexer,
-        register => { 'HTML::WebDAO::Comp::ListEnv' => 'listenv' },
         session  => $sess
     );
     $sess->ExecEngine($eng);

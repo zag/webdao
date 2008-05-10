@@ -204,7 +204,6 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
               || {}
           },
         %ini_pars,
-#        register => { 'HTML::WebDAO::Comp::ListEnv' => 'listenv' },
         session  => $sess,
     );
     $sess->ExecEngine($eng);
