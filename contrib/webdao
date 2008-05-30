@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# $FreeBSD: ports/databases/mysql50-server/files/mysql-server.sh.in,v 1.3 2006/03/07 16:25:00 ale Exp $
+#
+
+# PROVIDE: webdao
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+#
+# Add the following line to /etc/rc.conf to enable mysql:
+# webdao_enable (bool):	Set to "NO" by default.
+#			Set it to "YES" to enable WebDAO.
+# webdao_limits (bool):	Set to "NO" by default.
+#			Set it to yes to run `limits -e -U mysql`
+#			just before mysql starts.
+# mysql_dbdir (str):	Default to "/var/db/mysql"
+#			Base database directory.
+# mysql_args (str):	Custom additional arguments to be passed
+#			to mysqld_safe (default empty).
+#
+
+. /etc/rc.subr
+
+name="webdao"
+rcvar=`set_rcvar`
+
+load_rc_config $name
+
+: ${webdao_enable="NO"}
+: ${webdao_pidfile="/tmp/webdao.pid"}
+: ${webdao_inc="/home/zag/lib"}
+: ${webdao_mod="HTML::WebDAO HTML::WebDAO::Engine"}
+: ${webdao_socket="/tmp/socket.sock"}
+: ${webdao_args="-n 3 -maxreq 1000"}
+: ${webdao_bin="/home/zag/Work/projects/WebDAO/script/wd_fcgi.fpl"}
+ mmods=
+ for _mod in $webdao_mod; do
+    mmods="${mmods} -M${_mod}"
+ done
+ inclide=
+ for _inc in $webdao_inc; do
+    inclide="${inclide} -I${_inc}"
+ done
+
+pidfile="${webdao_pidfile}"
+command="/usr/local/bin/perl"
+procname="perl-fcgi-pm"
+command_args="$mmods $inclide ${webdao_bin} -l $webdao_socket -p $webdao_pidfile -d ${webdao_args}"
+
+run_rc_command "$1"
