@@ -1,5 +1,7 @@
 Revision history for Perl extension HTML::WebDAO.
 
+0.88
+   -  workaround for CGI.pm: http://rt.cpan.org/Ticket/Display.html?id=36435
 0.87
    - clean ( register 'HTML::WebDAO::Comp::ListEnv') from scripts
 0.86 
