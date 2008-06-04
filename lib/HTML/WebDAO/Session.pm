@@ -44,13 +44,13 @@ sub Init {
     }
     Cgi_env $self (
         {
-            url => $self->$cv->url( -base => 1 ),    #http://eng.zag
-            path_info => $self->$cv->url( -absolute => 1, -path_info => 1 ),
+            url => $cv->url( -base => 1 ),    #http://eng.zag
+            path_info         => $cv->url( -absolute => 1, -path_info => 1 ),
             path_info_elments => [],
             file              => "",
-            base_url     => $self->$cv->url( -base => 1 ),  #http://base.com
-            query_string => $self->$cv->query_string,
-            referer      => $self->$cv->referer(),
+            base_url     => $cv->url( -base => 1 ),    #http://base.com
+            query_string => $cv->query_string,
+            referer      => $cv->referer(),
             accept       => \%accept
         }
     );
