@@ -1,5 +1,7 @@
 Revision history for Perl extension HTML::WebDAO.
 
+0.89
+   - fix empty accept hash in session object
 0.88
    -  workaround for CGI.pm: http://rt.cpan.org/Ticket/Display.html?id=36435
 0.87

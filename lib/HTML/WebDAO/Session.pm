@@ -40,7 +40,7 @@ sub Init {
     #workaround for CGI.pm: http://rt.cpan.org/Ticket/Display.html?id=36435
     my %accept = ();
     if ( $cv->http('accept') ) {
-        map { $_ => $cv->Accept($_) } $cv->Accept();
+        %accept = map { $_ => $cv->Accept($_) } $cv->Accept();
     }
     Cgi_env $self (
         {
