@@ -1,5 +1,7 @@
 Revision history for Perl extension HTML::WebDAO.
 
+0.90
+   - add relative path
 0.89
    - fix empty accept hash in session object
 0.88
