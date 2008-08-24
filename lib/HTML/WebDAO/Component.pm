@@ -37,6 +37,11 @@ sub url_method {
         push @upath, @$extr;
     }
     push @upath, $method if defined $method;
+    my $sess = $self->getEngine->_session;
+    if ( $sess->set_absolute_url() ) {
+        unshift @upath, $sess->Cgi_env->{base_url};
+    }
+
     my $path = join '/' => @upath;
     my $str = '';
     if (@_) {
@@ -49,7 +54,6 @@ sub url_method {
     }
     return $path . $str;
 }
-
 
 sub response {
     my $self = shift;
