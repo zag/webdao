@@ -188,6 +188,7 @@ sub _log {
     my $self = shift;
     my %args = @_;
     my ($mod_sub,$str) = (caller(2))[3,2];
+    ($str) = (caller(1))[2];
     print STDERR "$$ [$args{level}] $mod_sub:$str  @{$args{par}} \n";
 }
 
