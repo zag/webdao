@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 
-#use Test::More tests => 25;
-use Test::More qw(no_plan);
+use Test::More tests => 26;
+#use Test::More qw(no_plan);
 use Data::Dumper;
 use lib 'contrib';
 use lib '../contrib';

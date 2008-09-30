@@ -1,5 +1,7 @@
 Revision history for Perl extension HTML::WebDAO.
 
+0.91
+   - fix str number in logs message (HTML::WebDAO::Base::_log)
 0.90
    - add relative path
 0.89
