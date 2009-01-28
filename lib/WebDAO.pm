@@ -1,6 +1,6 @@
 #$Id$
 
-package HTML::WebDAO;
+package WebDAO;
 
 use strict;
 use warnings;

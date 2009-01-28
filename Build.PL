@@ -1,6 +1,6 @@
 use Module::Build;
 Module::Build->new
-    ( module_name => 'HTML::WebDAO',
+    ( module_name => 'WebDAO',
     license => 'perl',
    prereq => {
 	      'MLDBM'	=> '0',
