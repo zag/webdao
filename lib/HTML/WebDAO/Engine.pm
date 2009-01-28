@@ -348,7 +348,7 @@ create object by <class or alias>.
 
 sub _createObj {
     my ( $self, $name_obj, $name_func, @par ) = @_;
-    if ( my $pack = _pack4name $self $name_func ) {
+    my $pack = $self->_pack4name($name_func) || $name_func;
         my $ref_init_hash = {
             ref_engine => $self->getEngine()
             ,    #! Setup _engine refernce for childs!
@@ -360,8 +360,6 @@ sub _createObj {
           : eval "'$pack'\-\>new(\@par)";
         carp "Error in eval:  _createObj $@" if $@;
         return $obj_ref;
-    }
-    else { _log1 $self "Not registered alias: $name_func"; return }
 }
 
 #sub _parse_html(\@html)
@@ -421,7 +419,8 @@ sub register_class {
             }
         }
         use strict 'refs';
-        $$_obj{$alias} = $class;
+        #check if register_class used for eval ( see Lobject )
+        $$_obj{$alias} = $class if defined $alias;
     }
     return;
 }
