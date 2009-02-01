@@ -1,23 +1,23 @@
 #$Id: Lex.pm 106 2007-06-25 10:35:07Z zag $
 
-package HTML::WebDAO::Response;
+package WebDAO::Response;
 use Data::Dumper;
-use HTML::WebDAO::Base;
+use WebDAO::Base;
 use IO::File;
 use DateTime;
 use DateTime::Format::HTTP;
-use base qw( HTML::WebDAO::Base );
+use base qw( WebDAO::Base );
 __PACKAGE__->attributes
   qw/  __session _headers _is_headers_printed _cv_obj _is_file_send _is_need_close_fh __fh _is_flushed _call_backs/;
 use strict;
 
 =head1 NAME
 
-HTML::WebDAO::Response - Response class
+WebDAO::Response - Response class
 
 =head1 SYNOPSIS
 
-  use HTML::WebDAO;
+  use WebDAO;
 
 =head1 DESCRIPTION
 

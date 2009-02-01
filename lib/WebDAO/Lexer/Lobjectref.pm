@@ -1,8 +1,8 @@
 #$Id$
 
-package HTML::WebDAO::Lexer::Lobjectref;
-use HTML::WebDAO::Lexer::Lbase;
+package WebDAO::Lexer::Lobjectref;
+use WebDAO::Lexer::Lbase;
 use Data::Dumper;
-use base qw( HTML::WebDAO::Lexer::Lregclass );
+use base qw( WebDAO::Lexer::Lregclass );
 use strict;
 1;

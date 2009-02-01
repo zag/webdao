@@ -1,4 +1,7 @@
-Revision history for Perl extension HTML::WebDAO.
+Revision history for Perl extension WebDAO.
+
+1.00
+    - rename namespace to WebDAO
 
 0.91
    - fix str number in logs message (HTML::WebDAO::Base::_log)

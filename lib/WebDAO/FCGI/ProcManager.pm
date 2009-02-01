@@ -1,4 +1,4 @@
-package HTML::WebDAO::FCGI::ProcManager;
+package WebDAO::FCGI::ProcManager;
 
 # Copyright (c) 2000, FundsXpress Financial Network, Inc.
 # This library is free software released under the GNU Lesser General
@@ -22,7 +22,7 @@ BEGIN {
 		  pm_warn pm_notify pm_abort pm_exit
 		  $SIG_CODEREF);
   $EXPORT_TAGS{all} = \@EXPORT_OK;
-  $HTML::WebDAO::FCGI::ProcManager::Default = 'HTML::WebDAO::FCGI::ProcManager';
+  $WebDAO::FCGI::ProcManager::Default = 'HTML::WebDAO::FCGI::ProcManager';
 }
 
 =head1 NAME
@@ -159,9 +159,9 @@ sub new {
   # initialize signal constructions.
   unless ($this->no_signals()) {
     $this->{sigaction_no_sa_restart} =
-	POSIX::SigAction->new('HTML::WebDAO::FCGI::ProcManager::sig_sub');
+	POSIX::SigAction->new('WebDAO::FCGI::ProcManager::sig_sub');
     $this->{sigaction_sa_restart} =
-	POSIX::SigAction->new('HTML::WebDAO::FCGI::ProcManager::sig_sub',undef,POSIX::SA_RESTART);
+	POSIX::SigAction->new('WebDAO::FCGI::ProcManager::sig_sub',undef,POSIX::SA_RESTART);
   }
 
   return $this;
@@ -546,10 +546,10 @@ default object if one is not passed in, e.g., a method call.
 =cut
 
 sub self_or_default {
-  return @_ if defined $_[0] and !ref $_[0] and $_[0] eq 'HTML::WebDAO::FCGI::ProcManager';
-  if (!defined $_[0] or (ref($_[0]) ne 'HTML::WebDAO::FCGI::ProcManager' and
-			 !UNIVERSAL::isa($_[0],'HTML::WebDAO::FCGI::ProcManager'))) {
-    $Q or $Q = $HTML::WebDAO::FCGI::ProcManager::Default->new;
+  return @_ if defined $_[0] and !ref $_[0] and $_[0] eq 'WebDAO::FCGI::ProcManager';
+  if (!defined $_[0] or (ref($_[0]) ne 'WebDAO::FCGI::ProcManager' and
+			 !UNIVERSAL::isa($_[0],'WebDAO::FCGI::ProcManager'))) {
+    $Q or $Q = $WebDAO::FCGI::ProcManager::Default->new;
     unshift @_, $Q;
   }
   return wantarray ? @_ : $Q;

@@ -1,6 +1,6 @@
 package TestWDAO;
-use HTML::WebDAO::Element;
-use base 'HTML::WebDAO::Element';
+use WebDAO::Element;
+use base 'WebDAO::Element';
 __PACKAGE__->attributes(qw/ __test1 _test2/);
 __PACKAGE__->sess_attributes(qw/ _sess1 _sess2/);
 

@@ -1,10 +1,10 @@
 #$Id$
 
-package HTML::WebDAO::Store::Storable;
+package WebDAO::Store::Storable;
 use Storable qw(lock_nstore lock_retrieve);
-use HTML::WebDAO::Store::MLDBM;
+use WebDAO::Store::MLDBM;
 use strict 'vars';
-use base 'HTML::WebDAO::Store::MLDBM';
+use base 'WebDAO::Store::MLDBM';
 
 sub load {
     my $self =shift;

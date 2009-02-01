@@ -1,9 +1,9 @@
 #$Id$
 
-package HTML::WebDAO::Lexer::Lbase;
-use HTML::WebDAO::Base;
+package WebDAO::Lexer::Lbase;
+use WebDAO::Base;
 use Data::Dumper;
-use base qw( HTML::WebDAO::Base );
+use base qw( WebDAO::Base );
 use strict;
 __PACKAGE__->attributes qw/ all  /;
 

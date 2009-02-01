@@ -1,14 +1,14 @@
 #$Id$
 
-package HTML::WebDAO::Store::MLDBM;
+package WebDAO::Store::MLDBM;
 use File::Path;
 use Fcntl ":flock";
 use IO::File;
 use MLDBM qw (DB_File Data::Dumper);
-use HTML::WebDAO::Store::Abstract;
+use WebDAO::Store::Abstract;
 use Data::Dumper;
 use strict 'vars';
-use base 'HTML::WebDAO::Store::Abstract';
+use base 'WebDAO::Store::Abstract';
 __PACKAGE__->attributes qw/ _dir _cache _is_loaded/;
 
 sub init {

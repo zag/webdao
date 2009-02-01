@@ -1,7 +1,7 @@
 #$Id$
 
-package HTML::WebDAO::Comp::ListEnv;
-use base qw(HTML::WebDAO::Component);
+package WebDAO::Comp::ListEnv;
+use base qw(WebDAO::Component);
 
 sub pre_format {
     my $self = shift;

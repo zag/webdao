@@ -1,9 +1,9 @@
 #$Id$
 
-package HTML::WebDAO::Lib::MethodByPath;
-use HTML::WebDAO::Base;
+package WebDAO::Lib::MethodByPath;
+use WebDAO::Base;
 use Data::Dumper;
-use base qw(HTML::WebDAO::Component);
+use base qw(WebDAO::Component);
 __PACKAGE__->attributes qw( _path _args );
 
 sub init {

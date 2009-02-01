@@ -1,10 +1,10 @@
 #$Id$
 
-package HTML::WebDAO::CVcgi;
-use HTML::WebDAO::Base;
+package WebDAO::CVcgi;
+use WebDAO::Base;
 use CGI;
 use Data::Dumper;
-use base qw( HTML::WebDAO::Base );
+use base qw( WebDAO::Base );
 use strict;
 
 __PACKAGE__->attributes qw (Cgi_obj);
@@ -50,8 +50,8 @@ sub referer {
 #path_info param url header
 sub AUTOLOAD { 
     my $self = shift;
-    return if $HTML::WebDAO::CVcgi::AUTOLOAD =~ /::DESTROY$/;
-    ( my $auto_sub ) = $HTML::WebDAO::CVcgi::AUTOLOAD =~ /.*::(.*)/;
+    return if $WebDAO::CVcgi::AUTOLOAD =~ /::DESTROY$/;
+    ( my $auto_sub ) = $WebDAO::CVcgi::AUTOLOAD =~ /.*::(.*)/;
     return $self->Cgi_obj->$auto_sub(@_)
 }
 1;

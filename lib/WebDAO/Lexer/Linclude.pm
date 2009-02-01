@@ -1,9 +1,9 @@
 #$Id$
 
-package HTML::WebDAO::Lexer::Linclude;
-use HTML::WebDAO::Lexer::Lbase;
+package WebDAO::Lexer::Linclude;
+use WebDAO::Lexer::Lbase;
 use Data::Dumper;
-use base qw( HTML::WebDAO::Lexer::Lbase );
+use base qw( WebDAO::Lexer::Lbase );
 use strict;
 __PACKAGE__->attributes qw/ ret_obj /;
 

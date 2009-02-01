@@ -1,8 +1,8 @@
 #$Id$
 
-package HTML::WebDAO::Component;
-use HTML::WebDAO::Base;
-use base qw(HTML::WebDAO::Element);
+package WebDAO::Component;
+use WebDAO::Base;
+use base qw(WebDAO::Element);
 use strict 'vars';
 use Data::Dumper;
 

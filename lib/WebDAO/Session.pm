@@ -1,12 +1,12 @@
 #$Id$
 
-package HTML::WebDAO::Session;
-use HTML::WebDAO::Base;
-use HTML::WebDAO::CVcgi;
-use HTML::WebDAO::Store::Abstract;
-use HTML::WebDAO::Response;
+package WebDAO::Session;
+use WebDAO::Base;
+use WebDAO::CVcgi;
+use WebDAO::Store::Abstract;
+use WebDAO::Response;
 use Data::Dumper;
-use base qw( HTML::WebDAO::Base );
+use base qw( WebDAO::Base );
 use Encode qw(encode decode is_utf8);
 use strict;
 __PACKAGE__->attributes
@@ -27,15 +27,15 @@ sub Init {
     Header $self ( {} );
     U_id $self undef;
     Cgi_obj $self $args{cv}
-      || new HTML::WebDAO::CVcgi::;    #create default controller
+      || new WebDAO::CVcgi::;    #create default controller
     my $cv = $self->Cgi_obj;           # Store Cgi_obj in local var
                                        #create response object
     $self->_response_obj(
-        new HTML::WebDAO::Response::
+        new WebDAO::Response::
           session => $self,
         cv => $cv
     );
-    _store_obj $self ( $args{store} || new HTML::WebDAO::Store::Abstract:: );
+    _store_obj $self ( $args{store} || new WebDAO::Store::Abstract:: );
 
     #workaround for CGI.pm: http://rt.cpan.org/Ticket/Display.html?id=36435
     my %accept = ();

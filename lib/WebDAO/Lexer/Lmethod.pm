@@ -1,9 +1,9 @@
 #$Id$
 
-package HTML::WebDAO::Lexer::Lmethod;
-use HTML::WebDAO::Lexer::Lobject;
+package WebDAO::Lexer::Lmethod;
+use WebDAO::Lexer::Lobject;
 use Data::Dumper;
-use base qw( HTML::WebDAO::Lexer::Lobject );
+use base qw( WebDAO::Lexer::Lobject );
 use strict;
 
 sub Init {

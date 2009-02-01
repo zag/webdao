@@ -1,13 +1,13 @@
 #$Id$
 
-package HTML::WebDAO::CVapache2;
-use HTML::WebDAO::Base;
+package WebDAO::CVapache2;
+use WebDAO::Base;
 use CGI;
 use Data::Dumper;
 use strict;
 use warnings;
 
-use base qw( HTML::WebDAO::Base );
+use base qw( WebDAO::Base );
 #__PACKAGE__->
 attributes qw ( _req _cgi );
 
@@ -77,8 +77,8 @@ sub header {
 }
 sub AUTOLOAD { 
     my $self = shift;
-    return if $HTML::WebDAO::CVapache2::AUTOLOAD =~ /::DESTROY$/;
-    ( my $auto_sub ) = $HTML::WebDAO::CVapache2::AUTOLOAD =~ /.*::(.*)/;
+    return if $WebDAO::CVapache2::AUTOLOAD =~ /::DESTROY$/;
+    ( my $auto_sub ) = $WebDAO::CVapache2::AUTOLOAD =~ /.*::(.*)/;
 #    print STDERR  "$self do $auto_sub ";
     $self->_log2("sub $auto_sub not handle in ".__PACKAGE__."called from\n".Dumper([map {[caller($_)]} (1..6)])) unless my $sub = $met2sub{$auto_sub};
     return  $sub->(@_)

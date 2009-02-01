@@ -1,16 +1,16 @@
 package TestContainer;
 use strict;
 use warnings;
-use HTML::WebDAO::Container;
-use base 'HTML::WebDAO::Container';
+use WebDAO::Container;
+use base 'WebDAO::Container';
 
 1;
 
 package TestTraverse;
 use strict;
 use warnings;
-use HTML::WebDAO::Component;
-use base 'HTML::WebDAO::Component';
+use WebDAO::Component;
+use base 'WebDAO::Component';
 
 sub test {
     my $self = shift;
@@ -39,19 +39,19 @@ use Test::More tests => 15;
 #use Test::More qw(no_plan);
 
 BEGIN {
-    use_ok('HTML::WebDAO::Store::Abstract');
-    use_ok('HTML::WebDAO::SessionSH');
-    use_ok('HTML::WebDAO::Engine');
-    use_ok('HTML::WebDAO::Container');
+    use_ok('WebDAO::Store::Abstract');
+    use_ok('WebDAO::SessionSH');
+    use_ok('WebDAO::Engine');
+    use_ok('WebDAO::Container');
 }
 
 my $ID = "extra";
-ok my $store_ab = ( new HTML::WebDAO::Store::Abstract:: ), "Create store";
-ok my $session = ( new HTML::WebDAO::SessionSH:: store => $store_ab ),
+ok my $store_ab = ( new WebDAO::Store::Abstract:: ), "Create store";
+ok my $session = ( new WebDAO::SessionSH:: store => $store_ab ),
   "Create session";
 $session->U_id($ID);
 
-my $eng = new HTML::WebDAO::Engine:: session => $session;
+my $eng = new WebDAO::Engine:: session => $session;
 
 our $sess = $eng->_session;
 our $eng1 = $eng;
@@ -63,7 +63,7 @@ sub path2obj {
 }
 
 $eng->register_class(
-    'HTML::WebDAO::Container' => 'testmain',
+    'WebDAO::Container' => 'testmain',
     'TestTraverse'            => 'traverse',
     'TestContainer'           => 'testcont'
 );

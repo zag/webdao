@@ -1,9 +1,9 @@
 #$Id$
 
-package HTML::WebDAO::Container;
-use HTML::WebDAO::Element;
+package WebDAO::Container;
+use WebDAO::Element;
 use Data::Dumper;
-use base qw(HTML::WebDAO::Element);
+use base qw(WebDAO::Element);
 use strict 'vars';
 
 #no strict 'refs';
@@ -177,7 +177,7 @@ sub _get_object_by_path {
                 }
             }
         }
-        if ( $obj->isa('HTML::WebDAO::Container') ) {
+        if ( $obj->isa('WebDAO::Container') ) {
             return $obj unless @$path;    # return object if end of path
             return $obj->_get_object_by_path( $path, $session );
         }
@@ -229,7 +229,7 @@ sub _get_object_by_path {
                 #try to find  by name
                 #ok got it
                 #check if it container
-                if ( $next->isa('HTML::WebDAO::Container') ) {
+                if ( $next->isa('WebDAO::Container') ) {
                     return $next->_get_object_by_path( $path, $session );
                 }
                 else {

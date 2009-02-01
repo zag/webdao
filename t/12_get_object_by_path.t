@@ -11,23 +11,23 @@ use lib '../contrib';
 BEGIN {
     use_ok('TestLoad');
     use_ok('Test_t');
-    use_ok('HTML::WebDAO::Store::Abstract');
-    use_ok('HTML::WebDAO::SessionSH');
-    use_ok('HTML::WebDAO::Engine');
+    use_ok('WebDAO::Store::Abstract');
+    use_ok('WebDAO::SessionSH');
+    use_ok('WebDAO::Engine');
 }
 
 my $ID = "resoler";
-ok( ( my $store_ab = new HTML::WebDAO::Store::Abstract:: ), "Create store" );
-ok( ( my $session = new HTML::WebDAO::SessionSH:: store => $store_ab ),
+ok( ( my $store_ab = new WebDAO::Store::Abstract:: ), "Create store" );
+ok( ( my $session = new WebDAO::SessionSH:: store => $store_ab ),
     "Create session" );
 $session->U_id($ID);
 
-my $eng = new HTML::WebDAO::Engine:: session => $session;
+my $eng = new WebDAO::Engine:: session => $session;
 
 #register alias
 $eng->register_class( 'Test_t',                  'testtr' );
 $eng->register_class( 'TestLoad',                'test_autoload' );
-$eng->register_class( 'HTML::WebDAO::Container', 'poll' );
+$eng->register_class( 'WebDAO::Container', 'poll' );
 
 ok my $test_obj = $eng->_createObj( 'test', 'testtr' ), 'create element';
 ok my $container = $eng->_createObj( 'container', 'poll' ), 'create container';

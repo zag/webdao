@@ -1,10 +1,10 @@
 #$Id$
-package HTML::WebDAO::SessionID;
-use HTML::WebDAO::Base;
+package WebDAO::SessionID;
+use WebDAO::Base;
 use CGI;
 use Data::Dumper;
 use MIME::Base64;
-use base qw( HTML::WebDAO::Sessionco);
+use base qw( WebDAO::Sessionco);
 
 use strict 'vars';
 

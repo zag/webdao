@@ -1,17 +1,17 @@
 #$Id$
 
-package HTML::WebDAO::Lex;
+package WebDAO::Lex;
 use XML::LibXML;
 use Data::Dumper;
-use HTML::WebDAO::Lexer::Lobject;
-use HTML::WebDAO::Lexer::Lbase;
-use HTML::WebDAO::Lexer::Lregclass;
-use HTML::WebDAO::Lexer::Lobjectref;
-use HTML::WebDAO::Lexer::Ltext;
-use HTML::WebDAO::Lexer::Linclude;
-use HTML::WebDAO::Lexer::Lmethod;
-use HTML::WebDAO::Base;
-use base qw( HTML::WebDAO::Base );
+use WebDAO::Lexer::Lobject;
+use WebDAO::Lexer::Lbase;
+use WebDAO::Lexer::Lregclass;
+use WebDAO::Lexer::Lobjectref;
+use WebDAO::Lexer::Ltext;
+use WebDAO::Lexer::Linclude;
+use WebDAO::Lexer::Lmethod;
+use WebDAO::Base;
+use base qw( WebDAO::Base );
 __PACKAGE__->attributes qw/ tree auto / ;
 use strict;
 
@@ -41,10 +41,10 @@ sub buld_tree {
         my @ref;
         unless ( $text =~ /^<wd/i ) {
             push @ref,
-              HTML::WebDAO::Lexer::Lobject->new(
+              WebDAO::Lexer::Lobject->new(
                 class   => "_rawhtml_element",
                 id      => "none",
-                childs  => [ HTML::WebDAO::Lexer::Ltext->new( value => \$text ) ],
+                childs  => [ WebDAO::Lexer::Ltext->new( value => \$text ) ],
                 context => $self
               )  unless $text =~/^\s*$/;
         }
@@ -63,13 +63,13 @@ sub buld_tree {
 sub get_obj_tree {
     my $self = shift;
     my %map  = (
-        object    => 'HTML::WebDAO::Lexer::Lobject',
-        regclass  => 'HTML::WebDAO::Lexer::Lregclass',
-        objectref => 'HTML::WebDAO::Lexer::Lobjectref',
-        text      => 'HTML::WebDAO::Lexer::Ltext',
-        include   => 'HTML::WebDAO::Lexer::Linclude',
-        default   => 'HTML::WebDAO::Lexer::Lbase',
-        method    => 'HTML::WebDAO::Lexer::Lmethod'
+        object    => 'WebDAO::Lexer::Lobject',
+        regclass  => 'WebDAO::Lexer::Lregclass',
+        objectref => 'WebDAO::Lexer::Lobjectref',
+        text      => 'WebDAO::Lexer::Ltext',
+        include   => 'WebDAO::Lexer::Linclude',
+        default   => 'WebDAO::Lexer::Lbase',
+        method    => 'WebDAO::Lexer::Lmethod'
     );
     my @result;
     foreach my $node (@_) {

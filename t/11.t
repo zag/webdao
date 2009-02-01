@@ -9,23 +9,23 @@ use Test::More tests=>17;
 #use Test::More (no_plan);
 use Data::Dumper;
 use strict;
-BEGIN { use_ok('HTML::WebDAO') }
-BEGIN { use_ok('HTML::WebDAO::Engine') }
-BEGIN { use_ok('HTML::WebDAO::Store::MLDBM') }
-BEGIN { use_ok('HTML::WebDAO::Container') }
-BEGIN { use_ok('HTML::WebDAO::SessionSH') }
+BEGIN { use_ok('WebDAO') }
+BEGIN { use_ok('WebDAO::Engine') }
+BEGIN { use_ok('WebDAO::Store::MLDBM') }
+BEGIN { use_ok('WebDAO::Container') }
+BEGIN { use_ok('WebDAO::SessionSH') }
 BEGIN { use lib 'contrib'; use_ok('TestWDAO') }
 
 my $ID       = "tcontainer";
-my $store_ml = new HTML::WebDAO::Store::MLDBM:: path => 'tmp';
-my $session  = new HTML::WebDAO::SessionSH:: store => $store_ml;
+my $store_ml = new WebDAO::Store::MLDBM:: path => 'tmp';
+my $session  = new WebDAO::SessionSH:: store => $store_ml;
 $session->U_id($ID);
 my $test_class = 'TestWDAO';
 my $test_alias = "testclass";
-my $eng        = new HTML::WebDAO::Engine::
+my $eng        = new WebDAO::Engine::
   session  => $session,
   register =>
-  { $test_class => $test_alias, 'HTML::WebDAO::Container' => 'contaner' };
+  { $test_class => $test_alias, 'WebDAO::Container' => 'contaner' };
 my $telement = $eng->_createObj( "t1", $test_alias );
 ok( $telement, "Create test1 object" );
 ok( $telement->_obj_name eq 't1', " test obj name" );
@@ -48,13 +48,13 @@ $tcontainer->_add_childs($t3);
 $eng->_destroy;
 $session->flush_session;
 
-my $store_ml1 = new HTML::WebDAO::Store::MLDBM:: path => 'tmp';
-my $session1  = new HTML::WebDAO::SessionSH:: store   => $store_ml1;
+my $store_ml1 = new WebDAO::Store::MLDBM:: path => 'tmp';
+my $session1  = new WebDAO::SessionSH:: store   => $store_ml1;
 $session1->U_id($ID);
-my $eng1 = new HTML::WebDAO::Engine::
+my $eng1 = new WebDAO::Engine::
   session  => $session1,
   register =>
-  { $test_class => $test_alias, 'HTML::WebDAO::Container' => 'contaner' };
+  { $test_class => $test_alias, 'WebDAO::Container' => 'contaner' };
 my $telement_ = $eng1->_createObj( "t1", $test_alias );
 ok( $telement_, "Create test1 object" );
 ok( $telement_->_obj_name eq 't1', " test obj name" );

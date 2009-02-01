@@ -1,10 +1,10 @@
 package Apache::WebDAO;
-use HTML::WebDAO;
-use HTML::WebDAO::CVapache2;
-use HTML::WebDAO::SessionID;
-use HTML::WebDAO::Sessiondb;
-use HTML::WebDAO::Lex;
-use HTML::WebDAO::Store::MLDBM;
+use WebDAO;
+use WebDAO::CVapache2;
+use WebDAO::SessionID;
+use WebDAO::Sessiondb;
+use WebDAO::Lex;
+use WebDAO::Store::MLDBM;
 use strict;
 use warnings;
 use Apache2::RequestRec();
@@ -37,13 +37,13 @@ sub handler {
         $cfg{$key} = $val;
     }
     my $store_obj =
-      ( $cfg{wdStore} || 'HTML::WebDAO::Store::Abstract' )->new( %{ $cfg{wdStorePar} || {} } );
-    my $sess_class = $cfg{wdSession} || 'HTML::WebDAO::Session';
+      ( $cfg{wdStore} || 'WebDAO::Store::Abstract' )->new( %{ $cfg{wdStorePar} || {} } );
+    my $sess_class = $cfg{wdSession} || 'WebDAO::Session';
     my $sess = $sess_class->new(
         {
             %{ $cfg{wdSessionPar} || {} },
             store => $store_obj,
-            cv    => new HTML::WebDAO::CVapache2:: $r,
+            cv    => new WebDAO::CVapache2:: $r,
 
         }
     );
@@ -57,8 +57,8 @@ sub handler {
 
     my $filename = $index_file;
     my $content  = qq!<wD><include file="$filename"/></wD>!;
-    $lexer = HTML::WebDAO::Lex->new( content => $content ) unless $lexer;
-    my $eng = HTML::WebDAO::Engine->new(
+    $lexer = WebDAO::Lex->new( content => $content ) unless $lexer;
+    my $eng = WebDAO::Engine->new(
         "index", $content,
         lexer    => $lexer,
         session  => $sess

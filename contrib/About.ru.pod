@@ -37,8 +37,8 @@ B<WebDAO> - лекговесный фрэймворк, предназначен�
 Создадим файл F<MyTest.pm> слеудющего содержания:
 
     package MyTest;
-    use HTML::WebDAO;
-    use base 'HTML::WebDAO::Component';
+    use WebDAO;
+    use base 'WebDAO::Component';
     
     sub fetch {
         "Hello Web X.0!";

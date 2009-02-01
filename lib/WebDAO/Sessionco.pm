@@ -1,12 +1,12 @@
 #$Id$
 
-package HTML::WebDAO::Sessionco;
-use HTML::WebDAO::Base;
+package WebDAO::Sessionco;
+use WebDAO::Base;
 use CGI;
 use MIME::Base64;
 use Digest::MD5 qw(md5_hex);
 
-use base qw( HTML::WebDAO::Session );
+use base qw( WebDAO::Session );
 
 use strict 'vars';
 __PACKAGE__->attributes qw( Cookie_name Db_file );

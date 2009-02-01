@@ -1,8 +1,8 @@
 #$Id$
 
-package HTML::WebDAO::Lib::RawHTML;
-use HTML::WebDAO::Base;
-use base qw(HTML::WebDAO::Component);
+package WebDAO::Lib::RawHTML;
+use WebDAO::Base;
+use base qw(WebDAO::Component);
 attributes (_raw_html);
 sub init {
     my ($self,$ref_raw_html)=@_;

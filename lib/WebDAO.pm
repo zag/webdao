@@ -4,14 +4,14 @@ package WebDAO;
 
 use strict;
 use warnings;
-use HTML::WebDAO::Base;
-use HTML::WebDAO::Element;
-use HTML::WebDAO::Component;
-use HTML::WebDAO::Container;
-use HTML::WebDAO::Engine;
-use HTML::WebDAO::Session;
-use HTML::WebDAO::Sessionco;
-use HTML::WebDAO::Lib::RawHTML;
+use WebDAO::Base;
+use WebDAO::Element;
+use WebDAO::Component;
+use WebDAO::Container;
+use WebDAO::Engine;
+use WebDAO::Session;
+use WebDAO::Sessionco;
+use WebDAO::Lib::RawHTML;
 our @ISA = qw();
 
 our $VERSION = '0.91';
@@ -23,11 +23,11 @@ __END__
 
 =head1 NAME
 
-HTML::WebDAO - Perl extension for create complex web application
+WebDAO - Perl extension for create complex web application
 
 =head1 SYNOPSIS
 
-  use HTML::WebDAO;
+  use WebDAO;
 
 =head1 ABSTRACT
  

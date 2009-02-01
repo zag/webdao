@@ -1,11 +1,11 @@
 #$Id$
 
-package HTML::WebDAO::Base;
+package WebDAO::Base;
 
 use Data::Dumper;
 use Carp;
-@HTML::WebDAO::Base::ISA    = qw(Exporter);
-@HTML::WebDAO::Base::EXPORT = qw(attributes sess_attributes);
+@WebDAO::Base::ISA    = qw(Exporter);
+@WebDAO::Base::EXPORT = qw(attributes sess_attributes);
 
 $DEBUG = 0;    # assign 1 to it to see code generated on the fly
 

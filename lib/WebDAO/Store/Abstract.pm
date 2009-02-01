@@ -1,10 +1,10 @@
 #$Id$
 
-package HTML::WebDAO::Store::Abstract;
-use HTML::WebDAO::Base;
+package WebDAO::Store::Abstract;
+use WebDAO::Base;
 use Data::Dumper;
 use strict;
-@HTML::WebDAO::Store::Abstract::ISA = ('HTML::WebDAO::Base');
+@WebDAO::Store::Abstract::ISA = ('WebDAO::Base');
 sub _init {
     my $self = shift;
     return $self->init(@_);

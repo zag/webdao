@@ -1,12 +1,12 @@
 #$Id$
 
-package HTML::WebDAO::Engine;
+package WebDAO::Engine;
 use Data::Dumper;
-use HTML::WebDAO::Container;
-use HTML::WebDAO::Lex;
-use HTML::WebDAO::Lib::MethodByPath;
-use HTML::WebDAO::Lib::RawHTML;
-use base qw(HTML::WebDAO::Container);
+use WebDAO::Container;
+use WebDAO::Lex;
+use WebDAO::Lib::MethodByPath;
+use WebDAO::Lib::RawHTML;
+use base qw(WebDAO::Container);
 use Carp;
 use strict;
 __PACKAGE__->attributes qw( _session __obj __events);
@@ -46,8 +46,8 @@ sub init {
 
     #register default clasess
     $self->register_class(
-        'HTML::WebDAO::Lib::RawHTML'      => '_rawhtml_element',
-        'HTML::WebDAO::Lib::MethodByPath' => '_method_call'
+        'WebDAO::Lib::RawHTML'      => '_rawhtml_element',
+        'WebDAO::Lib::MethodByPath' => '_method_call'
     );
 
     #Register by init classes
@@ -125,7 +125,7 @@ Can return:
 
     undef - not found path or object not have method
     $object_ref - if object return $self (????)
-    HTML::WebDAO::Response - objects
+    WebDAO::Response - objects
 
     
 
@@ -174,7 +174,7 @@ sub resolve_path {
             return $result if $object eq $result;    #return then
                   #if method return non response object
                   #then create them
-            unless ( UNIVERSAL::isa( $result, 'HTML::WebDAO::Response' ) ) {
+            unless ( UNIVERSAL::isa( $result, 'WebDAO::Response' ) ) {
                 my $response = $self->response;
                 for ($response) {
 
@@ -224,7 +224,7 @@ sub execute {
     }
 
     #check referense or not
-    if ( UNIVERSAL::isa( $ans, 'HTML::WebDAO::Response' ) ) {
+    if ( UNIVERSAL::isa( $ans, 'WebDAO::Response' ) ) {
         
         $ans->_print_dep_on_context($sess) unless $ans->_is_file_send;
         $ans->flush;
@@ -234,7 +234,7 @@ sub execute {
         $ans->flush;
         return;    #end
     }
-    elsif ( UNIVERSAL::isa( $ans, 'HTML::WebDAO::Element' ) ) {
+    elsif ( UNIVERSAL::isa( $ans, 'WebDAO::Element' ) ) {
 
         #got Element object
         #do walk over objects
@@ -298,7 +298,7 @@ sub Work {
         $response->print( $res->{data} ) if exists $res->{data};
         $res = $response;
     }
-    if ( UNIVERSAL::isa( $res, 'HTML::WebDAO::Response' ) ) {
+    if ( UNIVERSAL::isa( $res, 'WebDAO::Response' ) ) {
 
         #we gor response !
         $res->flush;
@@ -355,7 +355,7 @@ sub _createObj {
             name_obj => $name_obj
         };    #! Setup _my_name
         my $obj_ref =
-          $pack->isa('HTML::WebDAO::Element')
+          $pack->isa('WebDAO::Element')
           ? eval "'$pack'\-\>new(\$ref_init_hash,\@par)"
           : eval "'$pack'\-\>new(\@par)";
         carp "Error in eval:  _createObj $@" if $@;
@@ -380,7 +380,7 @@ sub _parse_html {
               ;    #if $text =~ /\s+/;
         }
         else {
-            my $lex = new HTML::WebDAO::Lex:: engine => $self;
+            my $lex = new WebDAO::Lex:: engine => $self;
             @ref = $lex->lex_data($text);    #clean 'empty'
 
           #        _log3 $self "LEXED:".Dumper([ map {"$_"} @ref])."from $text";

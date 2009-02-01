@@ -11,10 +11,10 @@
 use strict;
 use warnings;
 use Carp;
-use HTML::WebDAO;
-use HTML::WebDAO::SessionSH;
-use HTML::WebDAO::Store::Abstract;
-use HTML::WebDAO::Lex;
+use WebDAO;
+use WebDAO::SessionSH;
+use WebDAO::Store::Abstract;
+use WebDAO::Lex;
 use Data::Dumper;
 use Getopt::Long;
 use Pod::Usage;
@@ -35,9 +35,9 @@ my ( $store_class, $session_class, $eng_class ) = map {
       or die $@;
     $_
   } (
-    $ENV{wdStore}   || 'HTML::WebDAO::Store::Abstract',
-    $ENV{wdSession} || 'HTML::WebDAO::SessionSH',
-    $ENV{wdEngine}  || 'HTML::WebDAO::Engine'
+    $ENV{wdStore}   || 'WebDAO::Store::Abstract',
+    $ENV{wdSession} || 'WebDAO::SessionSH',
+    $ENV{wdEngine}  || 'WebDAO::Engine'
   );
 
 my ( $help, $man, $sess_id );
@@ -91,7 +91,7 @@ my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile} || $opt{f};
 die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
   unless $filename;
 my $content = qq!<wD><include file="$filename"/></wD>!;
-my $lex = new HTML::WebDAO::Lex:: content => $content;
+my $lex = new WebDAO::Lex:: content => $content;
 $eng = $eng_class->new(
     %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },
     lexer    => $lex,
@@ -146,7 +146,7 @@ B<wd_shell.pl>  - tool for debug .
 
 =head1 SEE ALSO
 
-http://sourceforge.net/projects/webdao, HTML::WebDAO
+http://sourceforge.net/projects/webdao, WebDAO
 
 =head1 AUTHOR
 

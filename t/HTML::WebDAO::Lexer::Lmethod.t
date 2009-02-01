@@ -12,34 +12,34 @@ use Data::Dumper;
 use strict;
 
 BEGIN {
-    use_ok('HTML::WebDAO');
-    use_ok('HTML::WebDAO::Engine');
-    use_ok('HTML::WebDAO::Lex');
-    use_ok('HTML::WebDAO::Container');
-    use_ok('HTML::WebDAO::SessionSH');
+    use_ok('WebDAO');
+    use_ok('WebDAO::Engine');
+    use_ok('WebDAO::Lex');
+    use_ok('WebDAO::Container');
+    use_ok('WebDAO::SessionSH');
     use lib 'contrib';
     use_ok('TestWDAO');
 }
 my $ID = "tcontainer";
-ok( ( my $store_ab = new HTML::WebDAO::Store::Abstract:: ), "Create store" );
-ok( ( my $session = new HTML::WebDAO::SessionSH:: store => $store_ab ),
+ok( ( my $store_ab = new WebDAO::Store::Abstract:: ), "Create store" );
+ok( ( my $session = new WebDAO::SessionSH:: store => $store_ab ),
     "Create session" );
 $session->U_id($ID);
 
-ok( my $lex = ( new HTML::WebDAO::Lex:: content => join "", <DATA> ),
+ok( my $lex = ( new WebDAO::Lex:: content => join "", <DATA> ),
     "Create Lexer" );
-isa_ok( $lex, "HTML::WebDAO::Lex" );
-my $eng = new HTML::WebDAO::Engine::
+isa_ok( $lex, "WebDAO::Lex" );
+my $eng = new WebDAO::Engine::
   session => $session,
   lexer   => $lex,
   ;
 map { $_->value($eng) } @{ $lex->auto };
 my ($lmethod) =
-  grep { $_->isa('HTML::WebDAO::Lexer::Lmethod') } @{ $lex->tree };
-isa_ok( $lmethod, "HTML::WebDAO::Lexer::Lmethod" );
+  grep { $_->isa('WebDAO::Lexer::Lmethod') } @{ $lex->tree };
+isa_ok( $lmethod, "WebDAO::Lexer::Lmethod" );
 isa_ok(
     my $method_call = $lmethod->value($eng),
-    "HTML::WebDAO::Lib::MethodByPath"
+    "WebDAO::Lib::MethodByPath"
 );
 is( $method_call->fetch($session), 111, "Check call" );
 

@@ -1,9 +1,9 @@
 #$Id$
 
-package HTML::WebDAO::Lexer::Ltext;
-use HTML::WebDAO::Lexer::Lbase;
+package WebDAO::Lexer::Ltext;
+use WebDAO::Lexer::Lbase;
 use Data::Dumper;
-use base qw( HTML::WebDAO::Lexer::Lbase );
+use base qw( WebDAO::Lexer::Lbase );
 use strict;
 sub Init {
     my $self = shift;

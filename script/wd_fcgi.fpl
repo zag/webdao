@@ -7,12 +7,12 @@
 #       AUTHOR:  Aliaksandr P. Zahatski (Mn), <zag@cpan.org>
 #===============================================================================
 #$Id: wd_fcgi.fpl,v 1.1 2006/10/13 12:39:09 zag Exp $
-use HTML::WebDAO;
+use WebDAO;
 use FCGI;
-use HTML::WebDAO::CVcgi;
-use HTML::WebDAO::Session;
-use HTML::WebDAO::Lex;
-use HTML::WebDAO::FCGI::ProcManager;
+use WebDAO::CVcgi;
+use WebDAO::Session;
+use WebDAO::Lex;
+use WebDAO::FCGI::ProcManager;
 use Data::Dumper;
 use Getopt::Long;
 use Pod::Usage;
@@ -59,7 +59,7 @@ elsif ( $^O ne 'MSWin32' ) {
 my $proc_manager;
 if ($listen) {
     &daemon_fork() if $detach;
-    $proc_manager = new HTML::WebDAO::FCGI::ProcManager::(
+    $proc_manager = new WebDAO::FCGI::ProcManager::(
         {
             n_processes => $nproc,
             pid_fname   => $pidfile,
@@ -139,10 +139,10 @@ my ( $store_class, $session_class, $eng_class ) = map {
   } (
     $def_store_class = $ENV{WD_STORE}
       || $ENV{wdStore}
-      || 'HTML::WebDAO::Store::Abstract',
+      || 'WebDAO::Store::Abstract',
     $def_session_class =
-      $ENV{WD_SESSION} || $ENV{wdSession} || 'HTML::WebDAO::Session',
-    $def_eng_class = $ENV{WD_ENGINE} || $ENV{wdEngine} || 'HTML::WebDAO::Engine'
+      $ENV{WD_SESSION} || $ENV{wdSession} || 'WebDAO::Session',
+    $def_eng_class = $ENV{WD_ENGINE} || $ENV{wdEngine} || 'WebDAO::Engine'
   );
 my $count_req = $maxreq || $ENV{wdFCGIreq} || -1;
 
@@ -178,7 +178,7 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
               || {}
           },
         store => $store_obj,
-        cv    => new HTML::WebDAO::CVcgi:: $fcgi_obj,
+        cv    => new WebDAO::CVcgi:: $fcgi_obj,
 
     );
     $sess->set_header( -type => 'text/html; charset=utf-8' );
@@ -192,7 +192,7 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
         die "$0 ERR:: file not found or can't access (WD_INDEXFILE): $env_var"
           unless $filename;
         my $content = qq!<wD><include file="$filename"/></wD>!;
-        my $lex = new HTML::WebDAO::Lex:: content => $content;
+        my $lex = new WebDAO::Lex:: content => $content;
         $ini_pars{lexer} = $lex;
     }
     else {
@@ -237,7 +237,7 @@ wd_fcgi.fpl [options]
 
 =head1 SEE ALSO
 
-http://sourceforge.net/projects/webdao, HTML::WebDAO
+http://sourceforge.net/projects/webdao, WebDAO
 
 =head1 AUTHOR
 

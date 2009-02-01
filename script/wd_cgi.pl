@@ -8,10 +8,10 @@
 #===============================================================================
 #$Id: wd_cgi.pl,v 1.1 2006/10/13 12:39:09 zag Exp $
 
-use HTML::WebDAO;
-use HTML::WebDAO::CVcgi;
-use HTML::WebDAO::Session;
-use HTML::WebDAO::Lex;
+use WebDAO;
+use WebDAO::CVcgi;
+use WebDAO::Session;
+use WebDAO::Lex;
 
 use Data::Dumper;
 use strict;
@@ -32,9 +32,9 @@ my ( $store_class, $session_class, $eng_class ) = map {
       or die $@;
     $_
   } (
-    $ENV{wdStore}   || 'HTML::WebDAO::Store::Abstract',
-    $ENV{wdSession} || 'HTML::WebDAO::Session',
-    $ENV{wdEngine}  || 'HTML::WebDAO::Engine'
+    $ENV{wdStore}   || 'WebDAO::Store::Abstract',
+    $ENV{wdSession} || 'WebDAO::Session',
+    $ENV{wdEngine}  || 'WebDAO::Engine'
   );
 
 my $store_obj =
@@ -42,7 +42,7 @@ my $store_obj =
 my $sess = $session_class->new(
     %{ &_parse_str_to_hash( $ENV{wdSessionPar} ) || {} },
     store => $store_obj,
-    cv    => new HTML::WebDAO::CVcgi::,
+    cv    => new WebDAO::CVcgi::,
 
 );
 $sess->set_header( -type => 'text/html; charset=utf-8' );
@@ -51,7 +51,7 @@ my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile},
 die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
   unless $filename;
 my $content = qq!<wD><include file="$filename"/></wD>!;
-my $lex     = new HTML::WebDAO::Lex:: content => $content;
+my $lex     = new WebDAO::Lex:: content => $content;
 
 my $eng = $eng_class->new(
     %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },
@@ -74,7 +74,7 @@ wd_cgi.pl - CGI script for WebDAO project
 
 =head1 SEE ALSO
 
-http://sourceforge.net/projects/webdao, HTML::WebDAO
+http://sourceforge.net/projects/webdao, WebDAO
 
 =head1 AUTHOR
 

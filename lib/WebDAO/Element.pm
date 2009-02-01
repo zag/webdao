@@ -1,9 +1,9 @@
 #$Id$
 
-package HTML::WebDAO::Element;
+package WebDAO::Element;
 use Data::Dumper;
-use HTML::WebDAO::Base;
-use base qw/ HTML::WebDAO::Base/;
+use WebDAO::Base;
+use base qw/ WebDAO::Base/;
 use strict 'vars';
 __PACKAGE__->attributes
   qw/ _format_subs __attribute_names __my_name __parent __path2me  __engine  __extra_path /;

@@ -1,18 +1,18 @@
-package HTML::WebDAO::Test;
+package WebDAO::Test;
 
 #$Id$
 
 require Exporter;
-@HTML::WebDAO::Test::ISA    = qw(Exporter);
-@HTML::WebDAO::Test::EXPORT = qw/ t_get_engine t_get_tlib/;
+@WebDAO::Test::ISA    = qw(Exporter);
+@WebDAO::Test::EXPORT = qw/ t_get_engine t_get_tlib/;
 use strict;
 use warnings;
 use Data::Dumper;
 use Test::More;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
-use HTML::WebDAO::Lex;
-use HTML::WebDAO::SessionSH;
-our $default_engine_class = 'HTML::WebDAO::Kernel';
+use WebDAO::Lex;
+use WebDAO::SessionSH;
+our $default_engine_class = 'WebDAO::Kernel';
 
 =head1 NAME
 
@@ -49,13 +49,13 @@ sub main::t_get_engine {
     my %eng_pars   = ();
     if ( $index_file && -e $index_file ) {
         my $content = qq!<wD><include file="$index_file"/></wD>!;
-        my $lex = new HTML::WebDAO::Lex:: content => $content;
+        my $lex = new WebDAO::Lex:: content => $content;
         $eng_pars{lexer} = $lex;
     }
     else {
         $eng_pars{source} = '';
     }
-    my $session = new HTML::WebDAO::SessionSH::;
+    my $session = new WebDAO::SessionSH::;
     my $eng     = $__PACKAGE__::default_engine_class->new(
         config  => $ini,
         session => $session,

@@ -3,9 +3,9 @@ use strict;
 use warnings;
 use Test::More;
 use Data::Dumper;
-use HTML::WebDAO::Container;
-use HTML::WebDAO::Component;
-use base ( 'HTML::WebDAO::Container','HTML::WebDAO::Component' );
+use WebDAO::Container;
+use WebDAO::Component;
+use base ( 'WebDAO::Container','HTML::WebDAO::Component' );
 
 sub __get_objects_by_path {
     my $self = shift;

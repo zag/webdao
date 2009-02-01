@@ -1,12 +1,12 @@
 #$Id$
 
-package HTML::WebDAO::SessionSH;
+package WebDAO::SessionSH;
 use strict;
 use warnings;
-use HTML::WebDAO::Base;
-use HTML::WebDAO::Session;
+use WebDAO::Base;
+use WebDAO::Session;
 use Data::Dumper;
-use base qw( HTML::WebDAO::Session );
+use base qw( WebDAO::Session );
 
 #Need to be forever called from over classes;
 sub Init {
