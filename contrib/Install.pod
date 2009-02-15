@@ -1,5 +1,110 @@
-=head1 Name
+=head1 NAME
 
 Install B<Webdao>.
 
+=begin table
+
+Проверка таблицы
+center, left, right
+Первый стольбец, второй столбец, третий столбец
+1,2213|123123
+234,234,634
+2134,"1234,12",123
+
+=end table
+
+=head1 test
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+aasd
+asd
+
+L<"test">
+=cut
 

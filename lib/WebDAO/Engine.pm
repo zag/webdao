@@ -1,6 +1,17 @@
+package WebDAO::Engine;
+
 #$Id$
 
-package WebDAO::Engine;
+=head1 NAME
+
+WebDAO::Engine - WebDAO::Engine.
+
+=head1 SYNOPSIS
+
+
+=cut
+
+
 use Data::Dumper;
 use WebDAO::Container;
 use WebDAO::Lex;

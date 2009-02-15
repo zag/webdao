@@ -1,12 +1,23 @@
+package WebDAO::Element;
+
 #$Id$
 
-package WebDAO::Element;
 use Data::Dumper;
 use WebDAO::Base;
 use base qw/ WebDAO::Base/;
 use strict 'vars';
 __PACKAGE__->attributes
   qw/ _format_subs __attribute_names __my_name __parent __path2me  __engine  __extra_path /;
+
+
+=head1 NAME
+
+WebDAO::Element - WebDAO::Element.
+
+=head1 SYNOPSIS
+
+
+=cut
 
 sub _init {
     my $self = shift;
@@ -69,7 +80,7 @@ sub _get_vars {
     return $res;
 }
 
-=head3 _get_childs()
+=head2 _get_childs()
 
 Return ref to childs array
 

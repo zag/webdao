@@ -1,6 +1,17 @@
+package WebDAO::Container;
+
 #$Id$
 
-package WebDAO::Container;
+=head1 NAME
+
+WebDAO::Container - WebDAO::Container.
+
+=head1 SYNOPSIS
+
+
+=cut
+
+
 use WebDAO::Element;
 use Data::Dumper;
 use base qw(WebDAO::Element);
@@ -8,6 +19,9 @@ use strict 'vars';
 
 #no strict 'refs';
 __PACKAGE__->attributes qw/ __childs/;
+
+
+
 
 sub _sysinit {
     my $self = shift;
@@ -33,7 +47,7 @@ sub _set_vars {
     $self->SUPER::_set_vars($ref);
 }
 
-=head3 _get_childs()
+=head2 _get_childs()
 
 Return ref to childs array
 

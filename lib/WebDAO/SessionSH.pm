@@ -14,14 +14,8 @@ sub Init {
     my %args = @_;
     $self->SUPER::Init(@_);
     delete $args{store};
+    $self->U_id( rand(100) );
     Params $self ( \%args );
-}
-
-#Can be overlap if you choose another
-#alghoritm generate unique session ID (i.e cookie,http_auth)
-sub ___get_id {
-    die "aaa";
-    return rand(100);
 }
 
 sub print_header() {
@@ -37,13 +31,6 @@ sub sess_servise {
 sub ExecEngine() {
     my ( $self, $eng_ref ) = @_;
     $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
-
-    #print $self->print_header();
-#    $eng_ref->Work($self);
-
-    #print @{$eng_ref->Fetch()};
-#    $self->store_session($eng_ref);
-#    $eng_ref->_destroy;
 }
 
 1;

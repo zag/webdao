@@ -11,10 +11,10 @@ $DEBUG = 0;    # assign 1 to it to see code generated on the fly
 
 sub sess_attributes {
     my ($pkg) = caller;
-    shift if $_[0] =~ /\:\:/ or  $_[0] eq $pkg;
+    shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
     croak "Error: attributes() invoked multiple times"
       if scalar @{"${pkg}::_SESS_ATTRIBUTES_"};
-    @{"${pkg}::_SESS_ATTRIBUTES_"} = @_;#grep { !/^_+/ } @_;
+    @{"${pkg}::_SESS_ATTRIBUTES_"} = @_;
     my $code = "";
     print STDERR "Creating methods for $pkg\n" if $DEBUG;
     foreach my $attr (@_) {
@@ -40,11 +40,9 @@ sub sess_attributes {
     }
 }
 
-
-
 sub attributes {
     my ($pkg) = caller;
-    shift if $_[0] =~ /\:\:/ or  $_[0] eq $pkg;
+    shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
     my $code = "";
     foreach my $attr (@_) {
         print STDERR "  defining method $attr\n" if $DEBUG;
@@ -186,9 +184,13 @@ sub _log5 { my $self = shift; $self->_log( level => 5, par => \@_ ) }
 
 sub _log {
     my $self = shift;
+    my $dbg_level = $ENV{wdDebug} || $ENV{WD_DEBUG} || 0;
+    return 0 unless $dbg_level ;
+    return $dbg_level unless ( scalar @_ );
     my %args = @_;
-    my ($mod_sub,$str) = (caller(2))[3,2];
-    ($str) = (caller(1))[2];
+    return $dbg_level if $dbg_level < $args{level}; 
+    my ( $mod_sub, $str ) = ( caller(2) )[ 3, 2 ];
+    ($str) = ( caller(1) )[2];
     print STDERR "$$ [$args{level}] $mod_sub:$str  @{$args{par}} \n";
 }
 
