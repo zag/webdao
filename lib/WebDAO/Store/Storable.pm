@@ -1,6 +1,20 @@
+package WebDAO::Store::Storable;
+
 #$Id$
 
-package WebDAO::Store::Storable;
+=head1 NAME
+
+WebDAO::Store::Storable - Implement session store using Storable
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+WebDAO::Store::Storable - Implement session store using Storable
+
+=cut
+
+
 use Storable qw(lock_nstore lock_retrieve);
 use WebDAO::Store::MLDBM;
 use strict 'vars';

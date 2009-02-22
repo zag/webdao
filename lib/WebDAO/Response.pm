@@ -1,6 +1,16 @@
-#$Id: Lex.pm 106 2007-06-25 10:35:07Z zag $
-
 package WebDAO::Response;
+#$Id: CVapache2.pm 423 2009-02-01 09:31:44Z zag $
+
+=head1 NAME
+
+WebDAO::Response - Response class
+
+=head1 DESCRIPTION
+
+Class for set response headers
+
+=cut
+
 use Data::Dumper;
 use WebDAO::Base;
 use IO::File;
@@ -10,18 +20,6 @@ use base qw( WebDAO::Base );
 __PACKAGE__->attributes
   qw/  __session _headers _is_headers_printed _cv_obj _is_file_send _is_need_close_fh __fh _is_flushed _call_backs/;
 use strict;
-
-=head1 NAME
-
-WebDAO::Response - Response class
-
-=head1 SYNOPSIS
-
-  use WebDAO;
-
-=head1 DESCRIPTION
-
-Class for set response headers
 
 =head1 METHODS
 
@@ -306,11 +304,22 @@ sub _destroy {
     $self->auto( [] );
 }
 1;
-__END__
+__DATA__
+
+=head1 SEE ALSO
+
+http://sourceforge.net/projects/webdao
 
 =head1 AUTHOR
 
 Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Zahatski Aliaksandr
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut
 

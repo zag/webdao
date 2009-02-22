@@ -1,6 +1,18 @@
+package WebDAO::Lexer::Lregclass;
 #$Id$
 
-package WebDAO::Lexer::Lregclass;
+=head1 NAME
+
+WebDAO::Lexer::Lregclass - Process regclass tag
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+WebDAO::Lexer::Lregclass - Process regclass tag
+
+=cut
+
 use WebDAO::Lexer::Lbase;
 use Data::Dumper;
 use base qw( WebDAO::Lexer::Lobject );

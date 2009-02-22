@@ -1,16 +1,13 @@
 package WebDAO::Engine;
-
 #$Id$
 
 =head1 NAME
 
-WebDAO::Engine - WebDAO::Engine.
+=head1 DESCRIPTION
 
-=head1 SYNOPSIS
-
+WebDAO::Engine - Class for root object of application model
 
 =cut
-
 
 use Data::Dumper;
 use WebDAO::Container;
@@ -369,7 +366,7 @@ sub _createObj {
           $pack->isa('WebDAO::Element')
           ? eval "'$pack'\-\>new(\$ref_init_hash,\@par)"
           : eval "'$pack'\-\>new(\@par)";
-        carp "Error in eval:  _createObj $@" if $@;
+        $self->_log1("Error in eval:  _createObj $@") if $@;
         return $obj_ref;
 }
 
@@ -445,3 +442,22 @@ sub _destroy {
     $self->__events(undef);
 }
 1;
+__DATA__
+
+=head1 SEE ALSO
+
+http://sourceforge.net/projects/webdao
+
+=head1 AUTHOR
+
+Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Zahatski Aliaksandr
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=cut
+

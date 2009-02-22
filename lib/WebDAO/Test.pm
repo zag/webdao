@@ -1,10 +1,25 @@
 package WebDAO::Test;
-
 #$Id$
+
+=head1 NAME
+
+WebDAO::Test - Class for tests 
+
+=head1 SYNOPSIS
+
+    use WebDAO::Test;
+    my $eng = t_get_engine( 'contrib/www/index.xhtm');
+    my $tlib = t_get_tlib($eng);
+
+=head1 DESCRIPTION
+
+Class for tests
+
+=cut
 
 require Exporter;
 @WebDAO::Test::ISA    = qw(Exporter);
-@WebDAO::Test::EXPORT = qw/ t_get_engine t_get_tlib/;
+#@WebDAO::Test::EXPORT = qw/ t_get_engine t_get_tlib/;
 use strict;
 use warnings;
 use Data::Dumper;
@@ -12,25 +27,8 @@ use Test::More;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
 use WebDAO::Lex;
 use WebDAO::SessionSH;
-our $default_engine_class = 'WebDAO::Kernel';
-
-=head1 NAME
-
-Class for tests 
-
-=head1 SYNOPSIS
-
-    use WebDAO::Test  'HomeTV';
-    my $eng = t_get_engine( 'tests.ini', 'data/www/index.xhtm' );
-    my $tlib = t_get_tlib($eng);
-
-    my $eng = t_get_engine( 'tests.ini', 'data/www/index.xhtm' );
-    my $tlib = t_get_tlib($eng);
-    $tlib->clean_db('data/tools/empty.sql')->restore('data/tools/default.xml');
-    $tlib->set_current_user('zag');
-
-
-=cut
+use WebDAO::Engine;
+our $default_engine_class = 'WebDAO::Engine';
 
 =head1 FUNCTIONS
 
@@ -38,15 +36,13 @@ Class for tests
 
 Return Engine
 
- my $eng =  t_get_engine ('ini_file.ini', 'www/index.html');
+ my $eng =  t_get_engine ('www/index.html', config=>'tests.ini');
 
 =cut
 
 sub main::t_get_engine {
-    my $ini = shift || return;
-    $ini = "t/data/$ini" unless $ini =~ m%/%;
     my $index_file = shift;
-    my %eng_pars   = ();
+    my %eng_pars   = @_;
     if ( $index_file && -e $index_file ) {
         my $content = qq!<wD><include file="$index_file"/></wD>!;
         my $lex = new WebDAO::Lex:: content => $content;
@@ -57,7 +53,6 @@ sub main::t_get_engine {
     }
     my $session = new WebDAO::SessionSH::;
     my $eng     = $__PACKAGE__::default_engine_class->new(
-        config  => $ini,
         session => $session,
         %eng_pars
     );
@@ -66,17 +61,14 @@ sub main::t_get_engine {
 
 sub import {
     my $self = shift;
-    if ( my $engine_class = shift ) {
-        $__PACKAGE__::default_engine_class = $engine_class;
-    }
-    $self->export_to_level( 1, 't_get_engine' );
+    my $engine_class = shift || $default_engine_class;
+    $__PACKAGE__::default_engine_class = $engine_class;
+#    $self->export_to_level( 1, 't_get_engine' );
     $self->export_to_level( 1, 't_get_tlib' );
 }
 
 sub t_get_tlib {
-#    my $class = shift;
     my $eng = shift || die "need \$eng";
-#    warn " CREATE::".__PACKAGE__;
     my $tlib = __PACKAGE__->new( eng => $eng );
     return $tlib;
 }
@@ -146,3 +138,22 @@ sub get_by_path {
 
 
 1;
+__DATA__
+
+=head1 SEE ALSO
+
+http://sourceforge.net/projects/webdao
+
+=head1 AUTHOR
+
+Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Zahatski Aliaksandr
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=cut
+

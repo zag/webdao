@@ -1,6 +1,18 @@
+package WebDAO::CVapache2;
 #$Id$
 
-package WebDAO::CVapache2;
+=head1 NAME
+
+WebDAO::CVapache2 - Apache2 mod_perl controller
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+WebDAO::CVapache2 - Apache2 mod_perl controller
+
+=cut
+
 use WebDAO::Base;
 use CGI;
 use Data::Dumper;
@@ -85,3 +97,21 @@ sub AUTOLOAD {
 #    die "errrr"
 }
 1;
+__DATA__
+
+=head1 SEE ALSO
+
+http://sourceforge.net/projects/webdao
+
+=head1 AUTHOR
+
+Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Zahatski Aliaksandr
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=cut

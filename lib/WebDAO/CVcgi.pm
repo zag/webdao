@@ -1,6 +1,19 @@
+package WebDAO::CVcgi;
 #$Id$
 
-package WebDAO::CVcgi;
+=head1 NAME
+
+WebDAO::CVcgi - CGI controller
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+WebDAO::CVcgi - CGI controller
+
+=cut
+
+
 use WebDAO::Base;
 use CGI;
 use Data::Dumper;
@@ -55,3 +68,21 @@ sub AUTOLOAD {
     return $self->Cgi_obj->$auto_sub(@_)
 }
 1;
+__DATA__
+
+=head1 SEE ALSO
+
+http://sourceforge.net/projects/webdao
+
+=head1 AUTHOR
+
+Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Zahatski Aliaksandr
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=cut

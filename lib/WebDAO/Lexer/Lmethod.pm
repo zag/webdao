@@ -1,6 +1,18 @@
+package WebDAO::Lexer::Lmethod;
 #$Id$
 
-package WebDAO::Lexer::Lmethod;
+=head1 NAME
+
+WebDAO::Lexer::Lmethod - Process method tag
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+WebDAO::Lexer::Lmethod - Process method tag
+
+=cut
+
 use WebDAO::Lexer::Lobject;
 use Data::Dumper;
 use base qw( WebDAO::Lexer::Lobject );

@@ -1,6 +1,20 @@
+package WebDAO::Store::Abstract;
+
 #$Id$
 
-package WebDAO::Store::Abstract;
+=head1 NAME
+
+WebDAO::Store::Abstract - Abstract session store
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+WebDAO::Store::Abstract - Abstract session store
+
+=cut
+
+
 use WebDAO::Base;
 use Data::Dumper;
 use strict;

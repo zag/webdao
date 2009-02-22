@@ -1,6 +1,19 @@
+package WebDAO::Store::MLDBM;
+
 #$Id$
 
-package WebDAO::Store::MLDBM;
+=head1 NAME
+
+WebDAO::Store::Storable - Implement session store using MLDBM
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+WebDAO::Store::Storable - Implement session store using MLDBM
+
+=cut
+
 use File::Path;
 use Fcntl ":flock";
 use IO::File;

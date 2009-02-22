@@ -1,6 +1,17 @@
 package WebDAO::Element;
-
 #$Id$
+
+=head1 NAME
+
+WebDAO::Element - Base class for simple object
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+WebDAO::Element - Base class for simple object
+
+=cut
 
 use Data::Dumper;
 use WebDAO::Base;
@@ -51,15 +62,6 @@ sub _sysinit {
 
     #        _attribute_names $self $ref_names_hash;
     $self->__attribute_names($ref_names_hash);
-
-    #init array of _format sub's references
-    #    $self->_format_subs(
-    #        [
-    #            sub { $self->pre_format(@_) },
-    #            sub { $self->format(@_) },
-    #            sub { $self->post_format(@_) },
-    #        ]
-    #    );
 
 }
 
@@ -222,3 +224,22 @@ sub __get_objects_by_path {
     return;
 }
 1;
+__DATA__
+
+=head1 SEE ALSO
+
+http://sourceforge.net/projects/webdao
+
+=head1 AUTHOR
+
+Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Zahatski Aliaksandr
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=cut
+
