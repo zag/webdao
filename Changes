@@ -1,6 +1,7 @@
 Revision history for Perl extension WebDAO.
 
 1.00
+    - add examples
     - add debug levels; wdEngine Env var;
     - fix: generate session id in constructor( SessionSH)
     - rename namespace to WebDAO
