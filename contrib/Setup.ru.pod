@@ -275,5 +275,5 @@ Web root                                          | /usr/zag/www
     -f filename
             Set filename set root [x]html file for load domain
 
-Для написания тестов используетяс L<WebDAO::Test>.
+Для написания тестов используется L<WebDAO::Test>.
 
