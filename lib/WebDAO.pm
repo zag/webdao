@@ -38,7 +38,7 @@ There are many environments in which the web applications work:
     | FastCGI                       CGI         |
     |           ------------------------        |
     |     nginx |                      |        |
-    |           |     You code         | isapi  |
+    |           |     Your code        | isapi  |
     |           |                      |        |
     |            ----------------------         |
     |  Shell            Test::More      IIS     |
