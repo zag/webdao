@@ -9,25 +9,29 @@
 =begin table
 
 Конфигурационные параметры
-left, center, center
+center, center, center
 Имя, описание, пример 
 
-wdIndexFile |" index.html - наименование файла, который будет обрабатываться при поступлении запросов. В качестве значения возможны: полный путь, относительно C<DOCUMENT_ROOT>. По умолчанию: F<$ENV{DOCUMENT_ROOT}/index.xhtml> "|  index.html
+wdIndexFile |" index.html - наименование файла, который будет обрабатываться при поступлении запросов. В качестве значения возможны: полный путь, или путь относительно C<DOCUMENT_ROOT>. По умолчанию: F<$ENV{DOCUMENT_ROOT}/index.xhtml> "|  index.html
 
 
 wdEngine | наименование пакета основного модуля. Этот модуль обслуживает все запросы поступающие к I</>. По умолчанию: I<WebDAO::Engine> | ShowPrice
 
 wdEnginePar |" параметры инициализации при создании основного модуля. Значение - строка, содержащая пары I<ключ=значние>. Пары отделяются друг от друга I<;>. По умолчанию: I<undef> "| config=/home/zag/showprice.ini
 
-wdSession |" Имя пакета модуля, обслуживающего сессионность. Этот модуль используется для идентификации web сессии. По умолчанию: I<WebDAO::Session> "| WebDAO::Sessionco 
+wdSession |" имя пакета модуля, обслуживающего сессионность. Этот модуль используется для идентификации web сессии. По умолчанию: I<WebDAO::Session> "| WebDAO::Sessionco 
 
 wdStore |" имя модуля, обеспечивающего хранение сессионных параметров пользователя. По умолчанию: I<WebDAO::Store::Abstract>"| WebDAO::Store::MLDBM 
 
 wdStorePar| параметры инициализации для модуля хранения сессионных параметров. По умолчанию: I<undef>| path=/home/zag/Work/Recomendator/bin/tmp 
 
-wdFCGIreq  | Количество запросов на I<FastCGI> процесс. Параметр используется при работе в режиме I<FastCGi>. По умолчанию: -1 - unlimited | 1000
+wdFCGIreq  | количество запросов на I<FastCGI> процесс. Параметр используется при работе в режиме I<FastCGi>. По умолчанию: -1 - unlimited | 1000
+
+wdDebug  |" уровень отладки. 1 - критические ошибки, 2 .. n - warns, info.  По умолчанию: 0 - отключен "| 2
 
 =end table
+
+Для сервера lighttpd используются имена соответвенно: WD_INDEXFILE, WD_ENGINE, WD_ENGINE_PAR, WD_SESSION, WD_STORE, WD_STORE_PAR, WD_DEBUG.
 
 
 =head2 Конфигурирование Web сервера
@@ -95,7 +99,7 @@ Web root                                          | /usr/zag/www
         location ~ / {
             include        fastcgi_params;
             fastcgi_pass   unix:/tmp/webdao.sock;
-            fastcgi_param wdSession HTML::WebDAO::Sessionco;
+            fastcgi_param wdSession WebDAO::Sessionco;
             fastcgi_param wdIndexFile index.xhtm;
         }
 
@@ -121,7 +125,7 @@ Web root                                          | /usr/zag/www
         location ~ / {
             include        fastcgi_params;
             fastcgi_pass   unix:/tmp/webdao.sock;
-            fastcgi_param wdSession HTML::WebDAO::Sessionco;
+            fastcgi_param wdSession WebDAO::Sessionco;
             fastcgi_param wdIndexFile index.xhtm;
     	    fastcgi_param wdEngine MySite;
 	    fastcgi_param wdEnginePar config=/home/zag/www/mysite.ini;
@@ -167,7 +171,7 @@ Web root                                          | /usr/zag/www
 
 Настройки секции B<VirtualHost>:
 
-
+ <VirtualHost>
     DocumentRoot /usr/zag/www
     ServerName example.org
     ErrorLog /var/log/example.org-error_log
@@ -271,5 +275,5 @@ Web root                                          | /usr/zag/www
     -f filename
             Set filename set root [x]html file for load domain
 
-Использование I<wd_shell.pl> устарело. Используйте L<WebDAO::Test>.
+Для написания тестов используетяс L<WebDAO::Test>.
 

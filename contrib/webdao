@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Sturtup script fro FreeBS 7.x
+# Sturtup script for FreeBS 7.x
 #
 
 # PROVIDE: webdao
@@ -17,7 +17,7 @@
 #                       Default set to ""
 #                       "/path1 /path2" or "/path1:/path2"
 # webdao_mod (str)      Compile modules at start ( using -M arg for perl )
-#                       Default set to "WebDAO HTML::WebDAO::Engine"
+#                       Default set to "WebDAO WebDAO::Engine"
 # webdao_socket (str)   Set socket for bind (file or net socket 127.0.0.1:9090)
 #                       Default set to "/tmp/webdao.sock". 
 # webdao_user (str)     User to run webdao as (default:www)
@@ -44,7 +44,7 @@ load_rc_config $name
 : ${webdao_enable="NO"}
 : ${webdao_pidfile="/tmp/webdao.pid"}
 : ${webdao_inc=""}
-: ${webdao_mod="WebDAO HTML::WebDAO::Engine"}
+: ${webdao_mod="WebDAO WebDAO::Engine"}
 : ${webdao_socket="/tmp/webdao.sock"}
 : ${webdao_args="-n 3 -maxreq 1000"}
 : ${webdao_bin="/usr/local/bin/wd_fcgi.fpl"}

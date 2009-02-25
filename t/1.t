@@ -4,18 +4,19 @@
 #########################
 
 # change 'tests => 1' to 'tests => last_test_to_print';
-use Test::More tests=>12;
-#use Test::More (no_plan);
+use Test::More tests=>10;
+use File::Temp qw/tempdir/;
 use Data::Dumper;
 use strict;
-BEGIN { use_ok('WebDAO') }
-BEGIN { use_ok('WebDAO::Store::Abstract') }
+BEGIN { 
+    use_ok('WebDAO');
+    use_ok('WebDAO::Store::Abstract');
+    use_ok('WebDAO::Store::Storable'); 
+    use_ok('WebDAO::Container'); 
+    use_ok('WebDAO::Engine'); 
+    use_ok('WebDAO::SessionSH');
 
-#BEGIN { use_ok('WebDAO::Store::MLDBM') };
-BEGIN { use_ok('WebDAO::Store::Storable') }
-BEGIN { use_ok('WebDAO::Container') }
-BEGIN { use_ok('WebDAO::Engine') }
-BEGIN { use_ok('WebDAO::SessionSH') }
+}
 
 sub test_storage {
     my $object = shift;
@@ -25,10 +26,9 @@ sub test_storage {
     $object->store( $id, $ref );
     ok( $object->load($id)->{test} eq $ref->{test}, "Test load" );
 }
-my $store_st = new WebDAO::Store::Storable:: path => 'tmp';
+my $dir = tempdir( CLEANUP => 1 );
+my $store_st = new WebDAO::Store::Storable:: path => $dir;
 test_storage($store_st);
-my $store_ml = new WebDAO::Store::MLDBM:: path => 'tmp';
-test_storage($store_ml);
 my $store_ab = new WebDAO::Store::Abstract::;
 ok( $store_ab, "Create abstract Store" );
 my $session = new WebDAO::SessionSH::;

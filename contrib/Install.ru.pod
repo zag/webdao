@@ -2,4 +2,7 @@
 
 Install B<Webdao>.
 
+Documentation on how to write bindings/addons forthcoming.. 
+
+=cut
 

@@ -3,7 +3,7 @@
 WebDAO 
 ========================
 
-Environment which provide object-oriented stuff for create complex web application
+Platform for easy creation of high-performance and scalable web applications
 
 INSTALLATION
 
@@ -30,16 +30,16 @@ DEPENDENCIES
 This module requires  Perl 5.005 or greater and libraries:
 
 
-
 AUTHOR
 
 Zahatski Aliaksandr
 zagap@users.sourceforge.net
+http://webdao.sourceforge.net
 
 COPYRIGHT AND LICENCE
 
 
-Copyright (C) 2003-2009 Zahatski Aliaksandr
+Copyright (C) 2002-2009 Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

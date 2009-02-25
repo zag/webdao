@@ -22,7 +22,7 @@ BEGIN {
 		  pm_warn pm_notify pm_abort pm_exit
 		  $SIG_CODEREF);
   $EXPORT_TAGS{all} = \@EXPORT_OK;
-  $WebDAO::FCGI::ProcManager::Default = 'HTML::WebDAO::FCGI::ProcManager';
+  $WebDAO::FCGI::ProcManager::Default = 'WebDAO::FCGI::ProcManager';
 }
 
 =head1 NAME

@@ -3,7 +3,6 @@ Module::Build->new
     ( module_name => 'WebDAO',
     license => 'perl',
    prereq => {
-	      'MLDBM'	=> '0',
 	      'XML::LibXML'=>'0',
 	      'DateTime'=> 0.37,
 	      'DateTime::Format::HTTP'=>0.37,

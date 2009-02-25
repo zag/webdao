@@ -4,7 +4,6 @@ use WebDAO::CVapache2;
 use WebDAO::SessionID;
 use WebDAO::Sessiondb;
 use WebDAO::Lex;
-use WebDAO::Store::MLDBM;
 use strict;
 use warnings;
 use Apache2::RequestRec();

@@ -5,27 +5,33 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests=>17;
+use Test::More tests => 17;
+
 #use Test::More (no_plan);
 use Data::Dumper;
+use File::Temp qw/tempdir/;
 use strict;
-BEGIN { use_ok('WebDAO') }
-BEGIN { use_ok('WebDAO::Engine') }
-BEGIN { use_ok('WebDAO::Store::MLDBM') }
-BEGIN { use_ok('WebDAO::Container') }
-BEGIN { use_ok('WebDAO::SessionSH') }
-BEGIN { use lib 'contrib'; use_ok('TestWDAO') }
 
+BEGIN {
+    use_ok('WebDAO');
+    use_ok('WebDAO::Engine');
+    use_ok('WebDAO::Store::Storable');
+    use_ok('WebDAO::Container');
+    use_ok('WebDAO::SessionSH');
+    use lib 'contrib';
+    use_ok('TestWDAO');
+}
+
+my $dir      = tempdir( CLEANUP => 1 );
 my $ID       = "tcontainer";
-my $store_ml = new WebDAO::Store::MLDBM:: path => 'tmp';
+my $store_ml = new WebDAO::Store::Storable:: path => $dir;
 my $session  = new WebDAO::SessionSH:: store => $store_ml;
 $session->U_id($ID);
 my $test_class = 'TestWDAO';
 my $test_alias = "testclass";
 my $eng        = new WebDAO::Engine::
   session  => $session,
-  register =>
-  { $test_class => $test_alias, 'WebDAO::Container' => 'contaner' };
+  register => { $test_class => $test_alias, 'WebDAO::Container' => 'contaner' };
 my $telement = $eng->_createObj( "t1", $test_alias );
 ok( $telement, "Create test1 object" );
 ok( $telement->_obj_name eq 't1', " test obj name" );
@@ -48,13 +54,12 @@ $tcontainer->_add_childs($t3);
 $eng->_destroy;
 $session->flush_session;
 
-my $store_ml1 = new WebDAO::Store::MLDBM:: path => 'tmp';
-my $session1  = new WebDAO::SessionSH:: store   => $store_ml1;
+my $store_ml1 = new WebDAO::Store::Storable:: path => $dir;
+my $session1  = new WebDAO::SessionSH:: store      => $store_ml1;
 $session1->U_id($ID);
 my $eng1 = new WebDAO::Engine::
   session  => $session1,
-  register =>
-  { $test_class => $test_alias, 'WebDAO::Container' => 'contaner' };
+  register => { $test_class => $test_alias, 'WebDAO::Container' => 'contaner' };
 my $telement_ = $eng1->_createObj( "t1", $test_alias );
 ok( $telement_, "Create test1 object" );
 ok( $telement_->_obj_name eq 't1', " test obj name" );

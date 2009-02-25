@@ -5,7 +5,7 @@ use Test::More;
 use Data::Dumper;
 use WebDAO::Container;
 use WebDAO::Component;
-use base ( 'WebDAO::Container','HTML::WebDAO::Component' );
+use base ( 'WebDAO::Container','WebDAO::Component' );
 
 sub __get_objects_by_path {
     my $self = shift;
@@ -14,7 +14,7 @@ sub __get_objects_by_path {
     my $eng =  $self->getEngine;
     my $name = $path->[0];
     if ( $name eq 'test.html') {
-        diag $self->_obj_name .": detect self handler";
+#        diag $self->_obj_name .": detect self handler";
         shift @$path;
         unshift @$path,"view", $name;
         return $self;

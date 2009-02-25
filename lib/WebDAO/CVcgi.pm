@@ -72,7 +72,7 @@ __DATA__
 
 =head1 SEE ALSO
 
-http://sourceforge.net/projects/webdao
+http://webdao.sourceforge.net
 
 =head1 AUTHOR
 

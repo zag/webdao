@@ -23,23 +23,33 @@ __END__
 
 =head1 NAME
 
-WebDAO - Perl extension for create complex web application
+WebDAO - platform for easy creation of high-performance and scalable web applications
 
 =head1 SYNOPSIS
 
   use WebDAO;
 
-=head1 ABSTRACT
- 
-    Perl extension for create complex web application
-
 =head1 DESCRIPTION
 
-Perl extension for create complex web application
+There are many environments in which the web applications work: 
+
+    ---------------------------------------------
+    |           mod_perl             Apache     |
+    | FastCGI                       CGI         |
+    |           ------------------------        |
+    |     nginx |                      |        |
+    |           |     You code         | isapi  |
+    |           |                      |        |
+    |            ----------------------         |
+    |  Shell            Test::More      IIS     |
+    |        lighttpd                           |
+    ---------------------------------------------
+
+WebDAO designed to save developers from the details of the application environment, reduce costs with a change of environment, and to simplify debugging and testing applications. An important goal is to simplify and increase the speed of web development.
 
 =head1 SEE ALSO
 
-http://sourceforge.net/projects/webdao
+http://webdao.sourceforge.net
 
 =head1 AUTHOR
 
