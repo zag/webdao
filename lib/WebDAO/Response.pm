@@ -257,14 +257,7 @@ sub flush {
     #do self print file
     if ( $self->_is_file_send ) {
         my $fd = $self->__fh;
-
-        #        open FH,">/tmp/DATA.jpg";
-        #        print FH <$fd>;
-        #        close FH;
         $self->_cv_obj->print(<$fd>);
-
-        #        binmode ($fd);
-        #        print <$fd>;
         close($fd) if $self->_is_need_close_fh;
     }
     $self->_is_flushed(1);

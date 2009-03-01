@@ -143,8 +143,6 @@ sub response_obj {
 sub sess_servise {
     my ( $self, $event_name, $par ) = @_;
     my %service = (
-        geturl  => sub { $self->sess_servise_geturl(@_) },
-        getenv  => sub { $self->sess_servise_getenv(@_) },
         getsess => sub { return $self },
     );
     if ( exists( $service{ $par->{funct} } ) ) {
@@ -153,49 +151,6 @@ sub sess_servise {
     else {
         logmsgs $self "not exist request funct !" . $par->{funct};
     }
-}
-
-#
-#{variable=>{
-#			name=>Par,
-#			value=>"10"},
-#event	=>{
-#			name=>"_info_on",
-#			value=>"10"
-#			}})
-sub sess_servise_geturl {
-    my ( $self, $par ) = @_;
-    my $str;
-    $str = $par->{path} || '';
-    if ( exists( $par->{event} ) ) {
-        $str .= "ev/evn_"
-          . $par->{event}->{name} . "/"
-          . $par->{event}->{value} . "/";
-    }
-    if ( exists( $par->{variable} ) ) {
-        $par->{variable}->{name} =~ s/\./\//g;
-        $str .= "par/"
-          . $par->{variable}->{name} . "/"
-          . $par->{variable}->{value} . "/";
-    }
-    $str .= ( exists( $par->{file} ) ) ? $par->{file} : $self->Cgi_env->{file};
-    if ( ref( $par->{pars} ) eq 'HASH' ) {
-        my @pars;
-        while ( my ( $key, $val ) = each %{ $par->{pars} } ) {
-            push @pars, "$key=$val";
-        }
-        $str .= "?" . join "&" => @pars;
-    }
-
-    #set absolute path
-    $str = $self->Cgi_env->{base_url} . $str if $self->set_absolute_url;
-    return $str;
-}
-
-#get current session enviro-ent
-sub sess_servise_getenv {
-    my ($self) = @_;
-    return $self->Cgi_env;
 }
 
 sub response {
@@ -226,7 +181,7 @@ sub ExecEngine() {
 
     #print $self->print_header();
     $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
-    $eng_ref->Work($self);
+    $eng_ref->execute($self);
     $eng_ref->SendEvent("_sess_ended");
 
     #print @{$eng_ref->Fetch()};

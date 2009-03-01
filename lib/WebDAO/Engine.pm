@@ -266,62 +266,6 @@ sub execute {
     }
 }
 
-sub Work {
-    my $self = shift;
-    my $sess = shift;
-    my @path = @{ $sess->call_path };
-
-    #    _log1 $self "WOKR: '@path'".Dumper(\@path);
-    ####
-    my $res = $self->_call_method( \@path, %{ $sess->Params } ) if @path;
-
-    #if not defined $res
-
-    #first prepare response object
-    my $response = $sess->response_obj;
-    unless ($res) {
-
-        #        $response->print_header();
-        $response->print($_) for @{ $self->fetch($sess) };
-
-        #        $response->error404("Url not found:".join "/",@path);
-        $response->flush;
-        return;    #end
-    }
-
-    if ( ref($res) eq 'HASH'
-        and ( exists $res->{header} or exists $res->{data} ) )
-    {
-
-        #set headers
-        if ( exists $res->{header} ) {
-            while ( my ( $key, $val ) = each %{ $res->{header} } ) {
-                $response->set_header( $key, $val );
-            }
-        }
-        if ( my $call_back = $res->{call_back} ) {
-            $response->set_callback($call_back)
-              if ref($call_back) eq 'CODE';
-        }
-        $response->print( $res->{data} ) if exists $res->{data};
-        $res = $response;
-    }
-    if ( UNIVERSAL::isa( $res, 'WebDAO::Response' ) ) {
-
-        #we gor response !
-        $res->flush;
-        return;
-    }
-    unless ( ref($res) ) {
-        $response->print($res);
-        $response->flush();
-        return;
-    }
-    _log1 $self "Unknown response : $res";
-    $response->print($_) for @{ $self->fetch($sess) };
-    $response->flush;
-}
-
 #fill $self->__events hash event - method
 sub RegEvent {
     my ( $self, $ref_obj, $event_name, $ref_sub ) = @_;

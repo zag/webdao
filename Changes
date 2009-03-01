@@ -1,5 +1,8 @@
 Revision history for Perl extension WebDAO.
-
+1.02
+    - clean deprecated code
+1.01
+    - fix docs
 1.00
     - add examples
     - add debug levels; wdEngine Env var;
