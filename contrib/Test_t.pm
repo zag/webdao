@@ -14,8 +14,13 @@ sub test_echo {
     return @_
 }
 
+sub Test_echo {
+    my $self = shift;
+    return @_
+}
+
 #default method for methods call
-sub index_x {
+sub Index_x {
     my $self = shift;
     return '2'
 }
@@ -24,7 +29,7 @@ sub index_html {
     my $self = shift;
     return "aaaa"
 }
-sub test_resonse {
+sub Test_resonse {
     my $self = shift;
     my $resonse = $self->response;
     $resonse->html = 'ok';

@@ -291,10 +291,17 @@ sub html : lvalue {
     $self->{__html};
 }
 
+sub json: lvalue {
+
+}
 sub _destroy {
     my $self = shift;
     $self->{__html} = undef;
-    $self->auto( [] );
+#    $self->_headers( {} );
+#    $self->_call_backs( [] );
+#    $self->_cv_obj( undef );
+    $self->__session( undef);
+#    $self->auto( [] );
 }
 1;
 __DATA__

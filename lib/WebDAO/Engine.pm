@@ -1,4 +1,5 @@
 package WebDAO::Engine;
+
 #$Id$
 
 =head1 NAME
@@ -160,7 +161,13 @@ sub resolve_path {
     if ( my $object = $self->_get_object_by_path( \@path, $sess ) ) {
 
         #if object have index_x then stop traverse and call them
-        my $method = ( shift @path ) || 'index_x';
+        my $method = ( shift @path ) || 'Index_x';
+
+        #Check upper case First letter for method
+        if ( ucfirst($method) ne $method ) {
+            _log2 $self "Deny method : $method";
+            return;
+        }
 
         #check if $object have method
         if ( UNIVERSAL::can( $object, $method ) ) {
@@ -168,7 +175,7 @@ sub resolve_path {
             #Ok have method
             #check if path have more elements
             my %args = %{ $sess->Params };
-            if ( @path ) {
+            if (@path) {
 
                 #add  special variable
                 $args{__extra_path__} = \@path;
@@ -176,7 +183,7 @@ sub resolve_path {
 
             #call method
             $result = $object->$method(%args);
-            return unless defined $result; #return undef if empty result 
+            return unless defined $result;    #return undef if empty result
 
             #if object return $self ?
             return $result if $object eq $result;    #return then
@@ -220,6 +227,7 @@ sub execute {
         my $response = $sess->response_obj;
         $response->error404( "Url not found:" . join "/", @path );
         $response->flush;
+        $response->_destroy;
         return;    #end
     }
     unless ( ref $ans ) {
@@ -228,18 +236,21 @@ sub execute {
         $response->error404(
             "Unknown response path: " . join( "/", @path ) . " ans: $ans" );
         $response->flush;
+        $response->_destroy;
         return;    #end
     }
 
     #check referense or not
     if ( UNIVERSAL::isa( $ans, 'WebDAO::Response' ) ) {
-        
+
         $ans->_print_dep_on_context($sess) unless $ans->_is_file_send;
         $ans->flush;
+        $ans->_destroy;
         return;
         my $res = $ans->html;
         $ans->print( ref($res) eq 'CODE' ? $res->() : $res );
         $ans->flush;
+        $ans->_destroy;
         return;    #end
     }
     elsif ( UNIVERSAL::isa( $ans, 'WebDAO::Element' ) ) {
@@ -249,6 +260,7 @@ sub execute {
         my $response = $sess->response_obj;
         $response->print($_) for @{ $self->fetch($sess) };
         $response->flush;
+        $response->_destroy;
         return;    #end
     }
     else {
@@ -261,6 +273,7 @@ sub execute {
         $response->error404(
             "Unknown response path: " . join( "/", @path ) . " ans: $ans" );
         $response->flush;
+        $response->_destroy;
         return;    #end
 
     }
@@ -301,17 +314,16 @@ create object by <class or alias>.
 sub _createObj {
     my ( $self, $name_obj, $name_func, @par ) = @_;
     my $pack = $self->_pack4name($name_func) || $name_func;
-        my $ref_init_hash = {
-            ref_engine => $self->getEngine()
-            ,    #! Setup _engine refernce for childs!
-            name_obj => $name_obj
-        };    #! Setup _my_name
-        my $obj_ref =
-          $pack->isa('WebDAO::Element')
-          ? eval "'$pack'\-\>new(\$ref_init_hash,\@par)"
-          : eval "'$pack'\-\>new(\@par)";
-        $self->_log1("Error in eval:  _createObj $@") if $@;
-        return $obj_ref;
+    my $ref_init_hash = {
+        ref_engine => $self->getEngine(),  #! Setup _engine refernce for childs!
+        name_obj   => $name_obj
+    };    #! Setup _my_name
+    my $obj_ref =
+      $pack->isa('WebDAO::Element')
+      ? eval "'$pack'\-\>new(\$ref_init_hash,\@par)"
+      : eval "'$pack'\-\>new(\@par)";
+    $self->_log1("Error in eval:  _createObj $@") if $@;
+    return $obj_ref;
 }
 
 #sub _parse_html(\@html)
@@ -328,7 +340,8 @@ sub _parse_html {
     foreach my $text (@$mass) {
         my @ref;
         unless ( $text =~ /^<wd/i ) {
-            push @ref, $self->_createObj( "none", "_rawhtml_element", \$text )
+            push @ref,
+              $self->_createObj( "none", "_rawhtml_element", \$text )
               ;    #if $text =~ /\s+/;
         }
         else {
@@ -371,6 +384,7 @@ sub register_class {
             }
         }
         use strict 'refs';
+
         #check if register_class used for eval ( see Lobject )
         $$_obj{$alias} = $class if defined $alias;
     }

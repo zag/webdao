@@ -201,10 +201,6 @@ sub _get_object_by_path {
 
             #if element return point in any way
             return $obj
-
-              #            my $method = $path->[0] || 'index_html';
-              #            #if it element try to can method
-              #            return $obj->can($method) ? $obj : undef;
         }
     }
     else {

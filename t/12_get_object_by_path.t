@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 26;
+use Test::More tests => 28;
+
 #use Test::More qw(no_plan);
 use Data::Dumper;
 use lib 'contrib';
@@ -25,8 +26,8 @@ $session->U_id($ID);
 my $eng = new WebDAO::Engine:: session => $session;
 
 #register alias
-$eng->register_class( 'Test_t',                  'testtr' );
-$eng->register_class( 'TestLoad',                'test_autoload' );
+$eng->register_class( 'Test_t',            'testtr' );
+$eng->register_class( 'TestLoad',          'test_autoload' );
 $eng->register_class( 'WebDAO::Container', 'poll' );
 
 ok my $test_obj = $eng->_createObj( 'test', 'testtr' ), 'create element';
@@ -74,24 +75,27 @@ ok !( my $o6 = $eng->_get_object_by_path( \@p6, $session ) ),
 my @p7 = grep { $_ } @{ $session->call_path($u6) };
 ok !( my $o7 = $eng->_get_object_by_path( \@p7 ) ),
   'self controlled objects(without session) not found:' . $u6;
+
 #test get valide object
 my @p8 = grep { $_ } @{ $session->call_path('/auto') };
-ok my $o8 = $eng->_get_object_by_path( \@p8 ) ,
-  'self object (without session) found:' .'/auto' ;
+ok my $o8 = $eng->_get_object_by_path( \@p8 ),
+  'self object (without session) found:' . '/auto';
 
 my $tu1 = '/container/test/test_method';
-my $ou1 = $eng->resolve_path($session, $tu1 );
+my $ou1 = $eng->resolve_path( $session, $tu1 );
 ok !$ou1, 'resolve call by non_exists method';
-my $tu2 = '/container/test/test_echo';
-my $ou2 = $eng->resolve_path($session, $tu2 );
-is $ou2->html , 0, 'check return result';
+my $tu20 = '/container/test/test_echo';
+my $ou20 = $eng->resolve_path( $session, $tu20 );
+ok !$ou20, "deny for non public method : $tu20";
+my $tu21 = '/container/test/Test_echo';
+my $ou2 = $eng->resolve_path( $session, $tu21 );
+ok $ou2, "access to public method : $tu21";
+is $ou2->html, 0, 'check return result';
 my $tu3 = '/container/test/';
-my $ou3 = $eng->resolve_path($session, $tu3 );
+my $ou3 = $eng->resolve_path( $session, $tu3 );
 is $ou3->html, 2, 'check default method call';
 
-my $tu4 = '/container/test/test_resonse';
-my $ou4 = $eng->resolve_path($session, $tu4 );
+my $tu4 = '/container/test/Test_resonse';
+my $ou4 = $eng->resolve_path( $session, $tu4 );
 is $ou4->html, 'ok', 'check returned response';
-
-#ok  ! $ou1, 'resolve call by non_exists method';
 
