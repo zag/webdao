@@ -1,5 +1,6 @@
 Revision history for Perl extension WebDAO.
 1.02
+    - fix memleaks
     - clean deprecated code
     - add method access  control
 1.01
