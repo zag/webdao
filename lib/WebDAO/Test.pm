@@ -59,6 +59,26 @@ sub main::t_get_engine {
     return $eng;
 }
 
+sub t_get_engine {
+    my $index_file = shift;
+    warn "$index_file" unless -e $index_file;
+    my %eng_pars   = @_;
+    if ( $index_file && -e $index_file ) {
+        my $content = qq!<wD><include file="$index_file"/></wD>!;
+        my $lex = new WebDAO::Lex:: content => $content;
+        $eng_pars{lexer} = $lex;
+    }
+    else {
+        $eng_pars{source} = '';
+    }
+    my $session = new WebDAO::SessionSH::;
+    my $eng     = $__PACKAGE__::default_engine_class->new(
+        session => $session,
+        %eng_pars
+    );
+    return $eng;
+}
+
 sub import {
     my $self = shift;
     my $engine_class = shift || $default_engine_class;

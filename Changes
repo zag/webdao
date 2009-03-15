@@ -1,4 +1,6 @@
 Revision history for Perl extension WebDAO.
+    
+    - use defined for methods in url
 1.02
     - fix memleaks
     - clean deprecated code
@@ -10,7 +12,6 @@ Revision history for Perl extension WebDAO.
     - add debug levels; wdEngine Env var;
     - fix: generate session id in constructor( SessionSH)
     - rename namespace to WebDAO
-
 0.91
    - fix str number in logs message (HTML::WebDAO::Base::_log)
 0.90

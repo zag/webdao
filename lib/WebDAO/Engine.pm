@@ -152,16 +152,16 @@ sub resolve_path {
         @path = @{ $sess->call_path($url) };
     }
     my $result;
-
     #return $self for / pathes
     return $self unless @path;
 
     #try to get object by path
 
     if ( my $object = $self->_get_object_by_path( \@path, $sess ) ) {
-
+        
         #if object have index_x then stop traverse and call them
-        my $method = ( shift @path ) || 'Index_x';
+        my $method = shift @path;
+        $method = 'Index_x' unless defined $method;
 
         #Check upper case First letter for method
         if ( ucfirst($method) ne $method ) {
