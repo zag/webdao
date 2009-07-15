@@ -20,28 +20,107 @@ use Carp;
 
 $DEBUG = 0;    # assign 1 to it to see code generated on the fly
 
-sub sess_attributes {
+sub mk_sess_attr {
     my ($pkg) = caller;
     shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
-    croak "Error: attributes() invoked multiple times"
-      if scalar @{"${pkg}::_SESS_ATTRIBUTES_"};
-    @{"${pkg}::_SESS_ATTRIBUTES_"} = @_;
+#    croak "Error: attributes() invoked multiple times"
+#      if scalar @{"${pkg}::_SESS_ATTRIBUTES_"};
+    my %attrs = @_;
+    %{"${pkg}::_SESS_ATTRIBUTES_"} = %attrs;
     my $code = "";
-    print STDERR "Creating methods for $pkg\n" if $DEBUG;
-    foreach my $attr (@_) {
-        print STDERR "  defining method $attr\n" if $DEBUG;
-
+    foreach my $attr (keys %attrs) {
         # If the accessor is already present, give a warning
         if ( UNIVERSAL::can( $pkg, "$attr" ) ) {
             carp "$pkg already has method: $attr";
             next;
         }
+        $code .= _define_sess_accessor( $pkg, $attr, $attrs{$attr} );
+    }
+    eval $code;
+    if ($@) {
+        die "ERROR defining and attributes for '$pkg':"
+          . "\n\t$@\n"
+          . "-----------------------------------------------------"
+          . $code;
+    }
+}
 
-#    $code .= (UNIVERSAL::can($pkg,"__define_accessor")) ? __define_accessor ($pkg, $attr):_define_accessor ($pkg, $attr);
+
+sub _define_sess_accessor {
+    my ( $pkg, $attr, $default ) = @_;
+
+    # qq makes this block behave like a double-quoted string
+    my $code = qq{
+    package $pkg;
+    sub $attr {                                      # Accessor ...
+      my \$self=shift;
+      my \$ret = \@_ ? \$self->set_attribute("$attr",shift):\$self->get_attribute("$attr");
+      return \${"${pkg}::_SESS_ATTRIBUTES_"}{"$attr"} unless defined \$ret;
+      \$ret
+    }
+  };
+    $code;
+}
+
+sub mk_attr {
+    my ($pkg) = caller;
+    shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
+    my %attrs = @_;
+    %{"${pkg}::_WEBDAO_ATTRIBUTES_"} = %attrs;
+    my $code = "";
+    foreach my $attr (keys %attrs) {
+        # If the accessor is already present, give a warning
+        if ( UNIVERSAL::can( $pkg, "$attr" ) ) {
+            carp "$pkg already has method: $attr";
+            next;
+        }
+        $code .= _define_attr_accessor( $pkg, $attr, $attrs{$attr} );
+    }
+    eval $code;
+    if ($@) {
+        die "ERROR defining and attributes for '$pkg':"
+          . "\n\t$@\n"
+          . "-----------------------------------------------------"
+          . $code;
+    }
+}
+
+sub _define_attr_accessor {
+    my ( $pkg, $attr, $default ) = @_;
+
+    # qq makes this block behave like a double-quoted string
+    my $code = qq{
+    package $pkg;
+    sub $attr {                                      # Accessor ...
+      my \$self=shift;
+      if (\@_) {
+      my \$prev = exists \$self->{"$attr"} ? \$self->{"$attr"} : \${"${pkg}::_WEBDAO_ATTRIBUTES_"}{"$attr"};
+      \$self->{"$attr"} = shift ;
+      return \$prev
+      }
+      return \${"${pkg}::_WEBDAO_ATTRIBUTES_"}{"$attr"} unless exists \$self->{"$attr"};
+      \$self->{"$attr"}
+    }
+  };
+    $code;
+}
+
+sub sess_attributes {
+    my ($pkg) = caller;
+    shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
+    croak "Error: attributes() invoked multiple times"
+      if scalar @{"${pkg}::_SESS_ATTRIBUTES_"};
+    my %attrs = map { $_=>undef} @_;
+    %{"${pkg}::_SESS_ATTRIBUTES_"} = %attrs;
+    my $code = "";
+    foreach my $attr (@_) {
+        # If the accessor is already present, give a warning
+        if ( UNIVERSAL::can( $pkg, "$attr" ) ) {
+            carp "$pkg already has method: $attr";
+            next;
+        }
         $code .= _define_accessor( $pkg, $attr );
     }
-
-    #  $code .= _define_constructor($pkg);
     eval $code;
     if ($@) {
         die "ERROR defining and attributes for '$pkg':"
@@ -109,7 +188,7 @@ sub _define_constructor {
 sub get_attribute_names {
     my $pkg = shift;
     $pkg = ref($pkg) if ref($pkg);
-    my @result = @{"${pkg}::_SESS_ATTRIBUTES_"};
+    my @result = keys %{"${pkg}::_SESS_ATTRIBUTES_"};
     if ( defined( @{"${pkg}::ISA"} ) ) {
         foreach my $base_pkg ( @{"${pkg}::ISA"} ) {
             push( @result, get_attribute_names($base_pkg) );
