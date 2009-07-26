@@ -1,6 +1,10 @@
 Revision history for Perl extension WebDAO.
     
-    - use defined for methods in url
+1.03
+    - enhance traverse through object tree (__any_method hook)
+    - check if defined() method in url
+    - add mk_attr ,  mk_sess_attr for create accessors
+    - fix Container::_add_childs for support ref to array
 1.02
     - fix memleaks
     - clean deprecated code

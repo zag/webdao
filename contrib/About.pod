@@ -143,9 +143,9 @@ The text of the module also need to create attributes:
     use base 'WebDAO::Component';
     
     # define list of session attributes
-         
-    __PACKAGE__->sess_attributes qw/ attr1 _attr2 /;
-    
+     
+    __PACKAGE__->mk_sess_attr( attr1 => undef, _attr2 => undef );
+   
     sub UseAttr {
         my $self = shift;
         # read

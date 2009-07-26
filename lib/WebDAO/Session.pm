@@ -178,16 +178,11 @@ sub print {
 
 sub ExecEngine() {
     my ( $self, $eng_ref ) = @_;
-
-    #print $self->print_header();
     $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
     $eng_ref->execute($self);
     $eng_ref->SendEvent("_sess_ended");
-
-    #print @{$eng_ref->Fetch()};
     $eng_ref->_destroy;
     $self->flush_session();
-
 }
 
 #for setup Output headers

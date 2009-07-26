@@ -152,15 +152,27 @@ sub resolve_path {
         @path = @{ $sess->call_path($url) };
     }
     my $result;
+
     #return $self for / pathes
     return $self unless @path;
 
     #try to get object by path
 
     if ( my $object = $self->_get_object_by_path( \@path, $sess ) ) {
-        
+
         #if object have index_x then stop traverse and call them
         my $method = shift @path;
+
+        #call __any_method unless exists defined method
+        if (    defined($method)
+            and !UNIVERSAL::can( $object, $method )
+            and UNIVERSAL::can( $object, '__any_method' ) )
+        {
+            unshift @path, $method;
+            return $object->__any_method( \@path, %{ $sess->Params } );
+
+        }
+
         $method = 'Index_x' unless defined $method;
 
         #Check upper case First letter for method

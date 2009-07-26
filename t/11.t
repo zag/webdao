@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 17;
+use Test::More tests => 28;
 
 #use Test::More (no_plan);
 use Data::Dumper;
@@ -36,7 +36,21 @@ my $telement = $eng->_createObj( "t1", $test_alias );
 ok( $telement, "Create test1 object" );
 ok( $telement->_obj_name eq 't1', " test obj name" );
 $eng->_add_childs($telement);
+is $telement->_sess1, 1, 'check defaults mk_sess_attr ';
+is $telement->_sess3, undef, 'undef default for _sess3 ';
+is $telement->_sess4, 'undef', 'undef default for _sess4 ';
 $telement->_sess2(6);
+#test mk_attr
+is $telement->_prop2, 3, 'mk_attr: check defaults';
+is $telement->_prop3, undef, 'mk_attr: check undef defaults';
+is $telement->_prop4, 'undef', 'mk_attr: check "undef" defaults';
+
+is $telement->_prop2(2), 3, 'mk_attr: check return prev default value';
+is $telement->_prop2(4), 2, 'mk_attr: check return prev value';
+is $telement->_prop2(), 4, 'mk_attr: check return value';
+ok exists $telement->{_prop2}, 'mk_attr: \$telement->{_prop2}';
+delete $telement->{_prop2};
+is $telement->_prop2(2), 3, 'mk_attr: check return prev default value after delete \$telement->{_prop2}';
 
 my $obj_by_name = $eng->_get_obj_by_name('t1');
 ok( $obj_by_name, "test get obj by name" );

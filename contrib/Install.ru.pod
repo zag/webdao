@@ -1,8 +1,30 @@
 =head1 NAME
 
-Install B<Webdao>.
+Установка B<Webdao>.
 
-Documentation on how to write bindings/addons forthcoming.. 
+
+Если есть уже установленный модуль B<CPAN>, то достаточно выполнить следующую каманду:
+
+        % perl -MCPAN -e 'install WebDAO'
+    
+Иначе, потребуется выполнить следующие шаги:
+
+=over
+
+=item * скачать последнюю версию CPAN по адресу:
+
+        http://search.cpan.org/dist/WebDAO/
+
+=item * распаковать и установить 
+
+Для  этого потребуется выполнить следующие команды (или их эквиваленты для конектретной системы ):
+
+        tar xzf WebDAO-*.tar.gz
+        cd WebDAO-*
+        perl Makefile.PL
+        make test && sudo make install
+
+=over
 
 =cut
 

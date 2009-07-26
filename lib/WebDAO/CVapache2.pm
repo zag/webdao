@@ -20,12 +20,10 @@ use strict;
 use warnings;
 
 use base qw( WebDAO::Base );
-#__PACKAGE__->
 attributes qw ( _req _cgi );
 
 my %met2sub =(
         url =>sub { return 'http://site.zag'},
-#        path_info =>sub { $r->uri},
     );
 sub _init {
     my $self = shift;
@@ -46,15 +44,10 @@ sub param {
 sub response {
     my $self = shift;
     my $res = shift || return;
-#    $self->_log1(Dumper(\$res));
-#    $self->_log1($r);
     my $r = $self->_req;
-#    $self->_log1($r);
     while ( my ($key,$val) = each %{$res->{headers}}) {
         for ($key) {
             /-TYPE/ && do { 
-                #$r->headers_out->add('Content-Type', 'text/html' );
-#                $self->_log1("type".$val);
                 $r->content_type($val) 
                 }
                 ||
@@ -66,7 +59,6 @@ sub response {
             }
         }
     }
-#    $r->content_type($res->{type});
     if ($res->{file}) {
         $r->sendfile($res->{file})
     } else {
@@ -91,10 +83,8 @@ sub AUTOLOAD {
     my $self = shift;
     return if $WebDAO::CVapache2::AUTOLOAD =~ /::DESTROY$/;
     ( my $auto_sub ) = $WebDAO::CVapache2::AUTOLOAD =~ /.*::(.*)/;
-#    print STDERR  "$self do $auto_sub ";
     $self->_log2("sub $auto_sub not handle in ".__PACKAGE__."called from\n".Dumper([map {[caller($_)]} (1..6)])) unless my $sub = $met2sub{$auto_sub};
     return  $sub->(@_)
-#    die "errrr"
 }
 1;
 __DATA__

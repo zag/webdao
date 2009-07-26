@@ -8,7 +8,8 @@ Module::Build->new
 	      'DateTime::Format::HTTP'=>0.37,
 	      'Encode'=> 0,
 	      'Getopt::Long'=>2.35,
-	      'FCGI'=>0.67
+	      'FCGI'=>0.67,
+	      'Test::Class'=>0,
 	       },
   script_files=>[qw!
     script/wd_cgi.pl

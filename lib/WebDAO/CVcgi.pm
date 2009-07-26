@@ -36,13 +36,9 @@ sub get_cookie {
 sub response {
     my $self = shift;
     my $res = shift || return;
-#    $self->_log1(Dumper(\$res));
-#    my $r = $self->_req;
-#    my $headers_out = $r->headers_out;
     my $cgi = $self->Cgi_obj;
-    print $cgi->header( map { $_ => $res->{headers}->{$_} } keys %{$res->{headers}} );
-#    $r->content_type($res->{type});
-    print $res->{data};
+    $self->print(  $cgi->header( map { $_ => $res->{headers}->{$_} } keys %{$res->{headers}} ) );
+    $self->print($res->{data});
 }
 
 sub print {

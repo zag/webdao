@@ -71,7 +71,9 @@ sub _add_childs {
       grep { ref $_ }
       map { ref($_) eq 'ARRAY' ? @$_ : $_ }
       map { $_->__get_self_refs }
-      grep { ref($_) && $_->can('__get_self_refs') } @_;
+      grep { ref($_) && $_->can('__get_self_refs') } 
+      map { ref($_) eq 'ARRAY' ? @$_ : $_ }
+      @_;
     return unless @childs;
     if ( $self->__parent ) {
         $_->_set_parent($self) for @childs;
