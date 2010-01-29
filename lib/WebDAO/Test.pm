@@ -200,6 +200,7 @@ sub xget {
 get object by resolve_path query
 
      $tlib->get_by_path('/page')
+     $tlib->get_by_path('/page', $root_object)
 =cut
 
 sub get_by_path {
@@ -207,7 +208,9 @@ sub get_by_path {
     my $path = shift;
     $path =~ s/^\///;
     my $eng  = $self->{eng};
+    my $root_obj  = shift || $eng;
     my $sess = $eng->_session;
+    return $root_obj->_get_object_by_path( $sess->call_path($path), $sess );
     return $eng->_get_object_by_path( $sess->call_path($path), $sess );
 }
 
