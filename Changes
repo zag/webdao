@@ -1,5 +1,7 @@
 Revision history for Perl extension WebDAO.
     
+1.04
+    - fix utf-8 in output stream due update FCGI module ( >0.68)
 1.03
     - enhance traverse through object tree (__any_method hook)
     - check if defined() method in url

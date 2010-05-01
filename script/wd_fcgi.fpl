@@ -10,6 +10,7 @@
 use WebDAO;
 use FCGI;
 use WebDAO::CVcgi;
+use WebDAO::CVfcgiutf8;
 use WebDAO::Session;
 use WebDAO::Lex;
 use WebDAO::FCGI::ProcManager;
@@ -19,6 +20,7 @@ use Pod::Usage;
 use strict;
 use warnings;
 use POSIX;
+
 #use Test::More;
 use Carp;
 
@@ -35,8 +37,7 @@ GetOptions(
     'daemon|d'    => \$detach,
     'maxreq|m=i'  => \$maxreq,
     'man'         => \$man
-  )
-  or pod2usage(2);
+) or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
 
@@ -56,6 +57,12 @@ elsif ( $^O ne 'MSWin32' ) {
 
 }
 
+#fix FCGI output update after FCGI::VERSION 0.68
+# https://rt.cpan.org/Public/Bug/Display.html?id=52400
+my $fcgi_controller = 'WebDAO::CVcgi';
+if ( $FCGI::VERSION > 0.68 ) {
+    $fcgi_controller = 'WebDAO::CVfcgiutf8';
+}
 my $proc_manager;
 if ($listen) {
     &daemon_fork() if $detach;
@@ -149,11 +156,12 @@ my $count_req = $maxreq || $ENV{wdFCGIreq} || -1;
 while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
 
     $proc_manager && $proc_manager->pm_pre_dispatch();
-#    diag Dumper(\%ENV);
+
+    #    diag Dumper(\%ENV);
     if ( $ENV{SERVER_SOFTWARE} && $ENV{SERVER_SOFTWARE} =~ /lighttpd/ ) {
         $ENV{PATH_INFO} ||= delete $ENV{SCRIPT_NAME};
     }
-    
+
     #customize ENV
     $store_class   = $ENV{WD_STORE}   || $ENV{wdStore}   || $def_store_class;
     $session_class = $ENV{WD_SESSION} || $ENV{wdSession} || $def_session_class;
@@ -178,7 +186,7 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
               || {}
           },
         store => $store_obj,
-        cv    => new WebDAO::CVcgi:: $fcgi_obj,
+        cv    => $fcgi_controller->new($fcgi_obj),
 
     );
     $sess->set_header( -type => 'text/html; charset=utf-8' );
@@ -204,7 +212,7 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
               || {}
           },
         %ini_pars,
-        session  => $sess,
+        session => $sess,
     );
     $sess->ExecEngine($eng);
     $sess->destroy;
