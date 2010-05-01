@@ -21,7 +21,7 @@ use strict;
 sub print {
     my $self = shift;
     foreach my $str (@_) {
-        utf8::encode( $str);
+        utf8::encode( $str) if utf8::is_utf8($str);
         print $str;
    }
 }
