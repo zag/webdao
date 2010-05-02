@@ -14,7 +14,6 @@ use Carp;
 use WebDAO;
 use WebDAO::SessionSH;
 use WebDAO::Store::Abstract;
-use WebDAO::Lex;
 use Data::Dumper;
 use Getopt::Long;
 use Pod::Usage;
@@ -42,7 +41,8 @@ my ( $store_class, $session_class, $eng_class ) = map {
 
 my ( $help, $man, $sess_id );
 my %opt = ( help => \$help, man => \$man, sid => \$sess_id );   #meta=>\$meta,);
-GetOptions( \%opt, 'help|?', 'man', 'f=s', 'sid|s=s' )
+my @urls=();
+GetOptions( \%opt, 'help|?', 'man', 'f=s', 'sid|s=s','<>'=>sub { push @urls,shift} )
   or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
@@ -55,53 +55,39 @@ else {
     pod2usage( -exitstatus => 2, -message => 'Need  file [-f] !' )
       unless $ENV{wdIndexFile} && -e $ENV{wdIndexFile};
 }
-my $evl_file = shift @ARGV;
+my $evl_file = shift @urls;
 pod2usage( -exitstatus => 2, -message => 'No file give or non exists ' )
-  unless $evl_file and -e $evl_file;
-
-open FH, "<$evl_file" or die $!;
-my $code;
-{ local $/; $/ = undef; $code = <FH> }
-close FH;
-
-#check syntax
-my $eng;
-my $evaled_sub;
-{
-    eval "\$evaled_sub = sub { $code } ";
-}
-croak $@ if $@;
+  unless $evl_file;
 
 foreach my $sname ('__DIE__') {
     $SIG{$sname} = sub {
         return if (caller(1))[3] =~ /eval/;
         push @_, "STACK:" . Dumper( [ map { [ caller($_) ] } ( 1 .. 3 ) ] );
-        print "PID: $$ $sname: @_";
+        print STDERR "PID: $$ $sname: @_";
       }
 }
 
+#Make Session object
 my $store_obj =
   $store_class->new( %{ &_parse_str_to_hash( $ENV{wdStorePar} ) || {} } );
 my $sess = $session_class->new(
         %{ &_parse_str_to_hash( $ENV{wdSessionPar} ) || {} },
         store => $store_obj,
 );
-$sess->U_id($sess_id);
+#$sess->U_id($sess_id);
 my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile} || $opt{f};
 die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
   unless $filename;
+
+
 my $content = qq!<wD><include file="$filename"/></wD>!;
 my $lex = new WebDAO::Lex:: content => $content;
-$eng = $eng_class->new(
+my $eng = $eng_class->new(
     %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },
     lexer    => $lex,
     session  => $sess,
 );
 $sess->ExecEngine($eng);
-#run
-{
-    eval "\$evaled_sub->()";
-}
 $sess->destroy;
 croak STDERR $@ if $@;
 print "\n";
@@ -114,7 +100,7 @@ print "\n";
 
 =head1 SYNOPSIS
 
-  wd_shell.pl [options] file.pl
+  wd_shell.pl [options] /some/url/query
 
    options:
 

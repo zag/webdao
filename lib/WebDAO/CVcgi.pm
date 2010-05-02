@@ -37,7 +37,7 @@ sub response {
     my $self = shift;
     my $res = shift || return;
     my $cgi = $self->Cgi_obj;
-    $self->print(  $cgi->header( map { $_ => $res->{headers}->{$_} } keys %{$res->{headers}} ) );
+    $self->print(  $cgi->header( map { $_ => $res->{headers}->{$_} } keys %{$res->{headers}} ) ) if $res->{headers};
     $self->print($res->{data});
 }
 

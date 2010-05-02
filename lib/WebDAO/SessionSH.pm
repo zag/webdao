@@ -22,6 +22,7 @@ use base qw( WebDAO::Session );
 sub Init {
     my $self = shift;
     my %args = @_;
+    #warn Dumper \%args;
     $self->SUPER::Init(@_);
     delete $args{store};
     $self->U_id( rand(100) );
@@ -36,11 +37,6 @@ sub sess_servise {
     my $self= shift;
     return $self->SUPER::sess_servise(@_)
 
-}
-
-sub ExecEngine() {
-    my ( $self, $eng_ref ) = @_;
-    $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
 }
 
 1;
