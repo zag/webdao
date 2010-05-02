@@ -1,10 +1,7 @@
 Revision history for Perl extension WebDAO.
     
-1.06
-    - make wd_shell.pm possible for run query under shell
-    - fix  encode utf-8 data ( only is  is_utf8)
-
 1.05
+    - make wd_shell.pl possible for run query under shell
     - fix encode utf-8 data (only if set utf-8 flag)
 1.04
     - fix utf-8 in output stream due update FCGI module ( >0.68)
