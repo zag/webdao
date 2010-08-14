@@ -1,4 +1,5 @@
 package WebDAO::Response;
+
 #$Id: CVapache2.pm 423 2009-02-01 09:31:44Z zag $
 
 =head1 NAME
@@ -19,6 +20,7 @@ use DateTime::Format::HTTP;
 use base qw( WebDAO::Base );
 __PACKAGE__->attributes
   qw/  __session _headers _is_headers_printed _cv_obj _is_file_send _is_need_close_fh __fh _is_flushed _call_backs/;
+
 use strict;
 
 =head1 METHODS
@@ -147,7 +149,7 @@ Set headers for redirect to url.return $self reference
 
 sub redirect2url {
     my ( $self, $redirect_url ) = @_;
-    $self->set_header( "-status", '302 Found' );
+    $self->set_header( "-status",   '302 Found' );
     $self->set_header( '-Location', $redirect_url );
 }
 
@@ -291,17 +293,35 @@ sub html : lvalue {
     $self->{__html};
 }
 
-sub json: lvalue {
+sub set_html {
+    my $self = shift;
+    my $data = shift;
+    $self->html = $data;
+    return $self;
+}
+
+sub json : lvalue {
+    my $self = shift;
+    $self->{__json};
 
 }
+sub set_json {
+    my $self = shift;
+    my $data = shift;
+    $self->json = $data;
+    return $self;
+}
+
 sub _destroy {
     my $self = shift;
     $self->{__html} = undef;
-#    $self->_headers( {} );
-#    $self->_call_backs( [] );
-#    $self->_cv_obj( undef );
-    $self->__session( undef);
-#    $self->auto( [] );
+
+    #    $self->_headers( {} );
+    #    $self->_call_backs( [] );
+    #    $self->_cv_obj( undef );
+    $self->__session(undef);
+
+    #    $self->auto( [] );
 }
 1;
 __DATA__
@@ -316,7 +336,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2009 by Zahatski Aliaksandr
+Copyright 2002-2010 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

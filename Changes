@@ -1,5 +1,7 @@
 Revision history for Perl extension WebDAO.
     
+1.06
+    - add set_* methods for output format's
 1.05
     - make wd_shell.pl possible for run query under shell
     - fix encode utf-8 data (only if set utf-8 flag)
