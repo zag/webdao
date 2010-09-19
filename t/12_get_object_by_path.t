@@ -6,8 +6,7 @@ use Test::More tests => 28;
 
 #use Test::More qw(no_plan);
 use Data::Dumper;
-use lib 'contrib';
-use lib '../contrib';
+use lib 't/lib';
 
 BEGIN {
     use_ok('TestLoad');

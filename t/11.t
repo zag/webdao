@@ -18,7 +18,7 @@ BEGIN {
     use_ok('WebDAO::Store::Storable');
     use_ok('WebDAO::Container');
     use_ok('WebDAO::SessionSH');
-    use lib 'contrib';
+    use lib 't/lib';
     use_ok('TestWDAO');
 }
 
