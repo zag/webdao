@@ -25,7 +25,10 @@ sub Init {
     #warn Dumper \%args;
     $self->SUPER::Init(@_);
     delete $args{store};
+    delete $args{cv};
     $self->U_id( rand(100) );
+    #setup default method 
+    $ENV{REQUEST_METHOD} ||="GET";
     Params $self ( \%args );
 }
 
@@ -52,7 +55,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2009 by Zahatski Aliaksandr
+Copyright 2002-2010 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
