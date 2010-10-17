@@ -1,4 +1,27 @@
+package TestCV;
+use strict;
+use warnings;
+use WebDAO::CVcgi;
+use base 'WebDAO::CVcgi';
+
+sub _init { 
+    my $self = shift;
+    $self->{ctr} = shift;
+    return $self->SUPER::_init(@_);
+
+}
+
+sub print {
+    my $self = shift;
+    my $out_ref = $self->{ctr};
+    $$out_ref .=join "",@_;
+#    print @_;
+}
+
+
+1;
 package Test;
+
 #$Id$
 
 =head1 NAME
@@ -19,7 +42,55 @@ Class for tests
 
 use Test::Class;
 use WebDAO::Test;
-use base Test::Class;
+use WebDAO::Store::Abstract;
+use WebDAO::SessionSH;
+use WebDAO::Engine;
+use Test::More;
+use warnings;
+use strict;
+use Test::Class;
+use base 'Test::Class';
 
+#don't test service class
+sub SKIP_CLASS {
+    my $t = shift;
+    my $class = ref($t) || $t;
+    return 1 if $class eq __PACKAGE__;
+}
+
+sub setup : Test(setup=>2) {
+    my $t = shift;
+    ok( ( my $store_ab = new WebDAO::Store::Abstract:: ), "Create store" );
+    my $buffer;
+    $t->{OUT}=\$buffer;
+    my $cv = new  TestCV:: \$buffer;
+    ok( ( my $session = new WebDAO::SessionSH:: store => $store_ab, cv=>$cv ),
+        "Create session" );
+    $session->U_id("sdsd");
+    my $eng = new WebDAO::Engine:: session => $session;
+    $t->{tlib} = new WebDAO::Test eng => $eng;
+    undef
+}
+
+sub teardown : Test(teardown) {
+    my $t = shift;
+    delete $t->{tlib};
+}
+
+=pod
+sub startup : Test(startup=>+2) {
+    my $t = shift;
+    ok( ( my $store_ab = new WebDAO::Store::Abstract:: ), "Create store" );
+    my $buffer;
+    $t->{OUT}=\$buffer;
+    my $cv = new  TestCV:: \$buffer;
+    ok( ( my $session = new WebDAO::SessionSH:: store => $store_ab, cv=>$cv ),
+        "Create session" );
+    $session->U_id("sdsd");
+    my $eng = new WebDAO::Engine:: session => $session;
+    $t->{tlib} = new WebDAO::Test eng => $eng;
+    undef
+}
+=cut
 1;
 
