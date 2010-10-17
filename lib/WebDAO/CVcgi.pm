@@ -45,6 +45,7 @@ sub print {
     my $self = shift;
     print @_;
 }
+
 =head2 referer
 
 Get current referer

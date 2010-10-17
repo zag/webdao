@@ -18,7 +18,7 @@ use WebDAO::Base;
 use base qw/ WebDAO::Base/;
 use strict 'vars';
 __PACKAGE__->attributes
-  qw/ _format_subs __attribute_names __my_name __parent __path2me  __engine  __extra_path /;
+  qw/ _format_subs __attribute_names __my_name __parent __path2me  __engine  __extra_path /; #deprecated  _format_subs
 
 
 =head1 NAME
@@ -82,16 +82,85 @@ sub _get_vars {
     return $res;
 }
 
-=head2 _get_childs()
+=head2 _get_childs_()
 
 Return ref to childs array
 
 =cut
-
-sub _get_childs {
+sub _get_childs_ {
     return [];
 }
 
+sub _get_childs {
+     $_[0]->_deprecated( "_get_childs_");
+    return [];
+}
+
+=head2  __any_path ($session, @path)
+
+Call for unresolved path.
+
+Return:
+
+    ($resuilt, \@rest_of_the_path)
+
+=cut
+
+sub __any_path {
+    my $self = shift;
+    my $sess = shift;
+    my ( $method, @path ) = @_;
+    #first check if Method
+    #Check upper case First letter for method
+    if ( ucfirst($method) ne $method ) {
+
+        #warn  "Deny method : $method";
+        return;    #not found
+    }
+
+    #check if $self have method
+    if ( UNIVERSAL::can( $self, $method ) ) {
+
+        #now try call method
+        #Ok have method
+        #check if path have more elements
+        my %args = %{ $sess->Params };
+        if (@path) {
+
+            #add  special variable
+            $args{__extra_path__} = \@path;
+        }
+
+        #call method (only one param may be return)
+        my ($res) = $self->$method(%args);
+        return $res, \@path;
+    }
+    undef;
+
+}
+
+#return
+#  undef  = not found
+#  [ array of object]
+#   <$self|| WebDAO::Element> ( ? for isert to parent container ?)
+#  "STRING"
+#   <WebDAO::Response>
+sub _traverse_ {
+    my $self = shift;
+    my $sess = shift;
+
+    #if empty path return $self
+    unless ( scalar(@_) ) { return ( $self, $self ) }
+    my ( $next_name, @path ) = @_;
+
+    #try get objects by special methods
+    my ( $res, $last_path ) = $self->__any_path( $sess, $next_name, @path );
+    return ( $self, undef ) unless defined $res;    #break search
+    return ( $self, $res );
+}
+
+
+#deprecated
 sub call_path {
     my $self = shift;
     my $path = shift;
@@ -99,6 +168,7 @@ sub call_path {
     return $self->getEngine->_call_method( $path, @_ );
 }
 
+#deprecated
 sub _call_method {
     my $self = shift;
     my ( $method, @path ) = @{ shift @_ };
@@ -142,9 +212,12 @@ sub _set_path2me {
     }
 }
 
+#deprecated -> $obj->__name
 sub _obj_name {
     return $_[0]->__my_name;
 }
+
+#deprecated  -> self->_engine
 
 sub getEngine {
     my $self = shift;
@@ -162,11 +235,14 @@ sub SendEvent {
     $parent->SendEvent(@_);
 }
 
+#deprecated
 sub pre_format {
     my $self = shift;
     return [];
 }
 
+
+#deprecated
 sub _format {
     my $self = shift;
     my @res;
@@ -179,11 +255,13 @@ sub _format {
     \@res;
 }
 
+#deprecated
 sub format {
     my $self = shift;
     return shift;
 }
 
+#deprecated
 sub post_format {
     my $self = shift;
     return [];
@@ -195,7 +273,7 @@ sub _destroy {
     my $self = shift;
     $self->__parent(undef);
     $self->__engine(undef);
-    $self->_format_subs(undef);
+    $self->_format_subs(undef); ##deprecated
 }
 
 sub _set_vars {
@@ -213,6 +291,7 @@ sub _set_vars {
     }
 }
 
+#deprecated ->resolve & traverse
 =head2 __get_objects_by_path [path], $session
 
 Check if exist method in $path and return $self or undef
@@ -236,7 +315,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2009 by Zahatski Aliaksandr
+Copyright 2002-2010 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

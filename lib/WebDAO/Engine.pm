@@ -67,12 +67,19 @@ sub init {
     if ( my $lex = $opt{lexer} ) {
         map { $_->value($self) } @{ $lex->auto };
         my @objs = map { $_->value($self) } @{ $lex->tree };
-        $self->_add_childs(@objs);
+        $self->_add_childs_(@objs);
+    } elsif  ( my $lex = $opt{lex} ) {
+        map { $_->value($self) } @{ $lex->auto };
+        my ($pre, $fetch, $post) = @{ $lex->__tmpl__};
+        $self->__add_childs__(0,map { $_->value($self) } @$pre );
+        $self->_add_childs_(map { $_->value($self) } @$fetch);
+        $self->__add_childs__(2,map { $_->value($self) } @$post);
+
     }
     else {
 
         #Create childs from source
-        $self->_add_childs( @{ $self->_parse_html($raw_html) } );
+        $self->_add_childs_( @{ $self->_parse_html($raw_html) } );
     }
 
 }
@@ -94,7 +101,7 @@ sub __restore_session_attributes {
     #collect paths as index
     my %paths;
     foreach my $object (@_) {
-        my @collection = ( $object, @{ $object->_get_childs } );
+        my @collection = ( $object, @{ $object->_get_childs_ } );
         $paths{ $_->__path2me } = $_ for @collection;
     }
     my $sess   = $self->_session;
@@ -111,7 +118,7 @@ sub __store_session_attributes {
     #collect paths as index
     my %paths;
     foreach my $object (@_) {
-        my @collection = ( $object, @{ $object->_get_childs } );
+        my @collection = ( $object, @{ $object->_get_childs_ } );
         foreach (@collection) {
             my $attrs = $_->_get_vars;
             next unless $attrs;
@@ -226,6 +233,191 @@ sub resolve_path {
     return $result;
 }
 
+=head2  __handle_out__ ($sess, @output)
+
+Process output by fetch methods
+
+=cut
+
+sub __handle_out__ {
+    my $self = shift;
+    my $sess = shift;
+    for (@_) {
+        if ( UNIVERSAL::isa($_, 'WebDAO::Element' ) ) {
+         $self->__handle_out__( $sess, $_->fetch($sess) );
+        } elsif ( ref($_) eq 'CODE') {
+            return $self->__handle_out__( $sess, $_->($sess) );
+        } else {
+        $sess->print($_);
+        }
+    }
+}
+
+sub __events__ {
+    my $self         = shift;
+    my $root         = shift;
+    my $inject_fetch = shift;
+    my $path         = $root->__path2me;
+    my @childs       = ();
+
+    #make inject event for objects
+    if ( my $res = $inject_fetch->{$path} ) {
+        @childs = (
+            {
+                fetch => $root->__path2me,
+                pme   => $path,
+                ,
+                event => 'inject',
+                obj   => $root,
+                res   => $res
+            }
+        );
+
+    }
+    else {
+
+        if ( UNIVERSAL::isa( $root, 'WebDAO::Container' ) ) {
+
+            #skip modal
+            for ( @{ $root->__childs() } ) {
+                push @childs, $self->__events__( $_, $inject_fetch )
+                  unless UNIVERSAL::isa( $_, 'WebDAO::Modal' );
+            }
+        }
+        else {
+            @childs = (
+                {
+                    fetch => $root->__path2me,
+                    pme   => $path,
+                    ,
+                    event => 'fetch',
+                    obj   => $root
+                }
+            );
+        }
+    }
+    my @res = (
+        {
+            st_ev => $root->__path2me,
+            pme   => $path,
+            event => 'start',
+            obj   => $root
+        },
+        @childs,
+        {
+            end_ev => $root->__path2me,
+            pme    => $path,
+            event  => 'end',
+            obj    => $root
+        }
+    );
+}
+
+sub execute2 {
+    my $self = shift;
+    my $sess = shift;
+    my $url  = shift;
+    my @path = @{ $sess->call_path($url) };
+    my ( $src, $res ) = $self->_traverse_( $sess, @path );
+#    use WebDAO::Test;
+#    my $tlib = new WebDAO::Test:: eng=>$self->getEngine;
+#    warn Dumper $tlib->tree;    
+#    exit;
+
+    #now analyze answers
+    # undef -> not Found
+    unless ( defined($res) ) {
+        my $response = $sess->response_obj;
+        $response->error404( "Url not found:" . join "/", @path );
+        $response->flush;
+        $response->_destroy;
+        return;    #end
+    }
+
+    #check if  response modal
+    if ( UNIVERSAL::isa( $res, 'WebDAO::Response' ) and $res->_is_modal() ) {
+        #handle response
+        $res->_print_dep_on_context($sess) unless $res->_is_file_send;
+        $res->flush;
+        $res->_destroy;
+        return;
+
+    }
+
+    #extract all objects to evenets
+    my $root = $self;
+
+    #if object modal ?
+    if ( UNIVERSAL::isa( $src, 'WebDAO::Modal' ) ) {
+
+        #warn "GO MODSAD". $src;
+        #set him as root of putput
+        $root = $src;
+    }
+    my $need_inject_result = 1;
+
+    #special handle strings
+    if ( !ref($res) or ( ref($res) eq 'SCALAR' ) ) {
+
+        #    warn "GOT STRING";
+
+        #now walk
+    }
+    elsif
+
+      #if result ref to object and it eq $src run flow
+      ( $res == $src ) {
+
+        $need_inject_result = 0;
+    }
+    if ( UNIVERSAL::isa( $res, 'WebDAO::Element' ) ) {
+
+        # warn " Got $src, $res  \$need_inject_result $need_inject_result" ;
+        #nothing  to do
+    }
+    my %injects = ();
+
+    #if need inject check flow by path
+    if ($need_inject_result) {
+        $injects{ $src->__path2me } = $res;
+    }
+    my $response = $sess->response_obj;
+    $response->print_header;
+#     $response->print($_) for @{ $self->fetch($sess) };
+
+    my @ev_flow = $self->__events__( $root, \%injects );
+    foreach my $ev (@ev_flow) {
+        my $obj = $ev->{obj};
+    #    _log1 $self "DO " . $ev->{event}. " for $obj";
+        if ( $ev->{event} eq 'start' ) {
+
+            $self->__handle_out__( $sess, $obj->pre_fetch($sess) )
+              if UNIVERSAL::can( $obj, 'pre_fetch' );
+
+        }
+        elsif ( $ev->{event} eq 'inject' ) {
+            $self->__handle_out__( $sess, $ev->{res} )
+
+        }
+        elsif ( $ev->{event} eq 'fetch' ) {
+
+            #skip fetch method for container
+
+            $self->__handle_out__( $sess, $obj->fetch($sess) )
+              if UNIVERSAL::can( $obj, 'fetch' );
+
+        }
+        elsif ( $ev->{event} eq 'end' ) {
+
+            $self->__handle_out__( $sess, $obj->post_fetch($sess) )
+              if UNIVERSAL::can( $obj, 'post_fetch' );
+        }
+
+    }
+        $response->flush;
+        $response->_destroy;
+}
+
 sub execute {
     my $self = shift;
     my $sess = shift;
@@ -322,8 +514,7 @@ sub SendEvent {
 create object by <class or alias>.
 
 =cut
-
-sub _createObj {
+sub _create_ {
     my ( $self, $name_obj, $name_func, @par ) = @_;
     my $pack = $self->_pack4name($name_func) || $name_func;
     my $ref_init_hash = {
@@ -336,6 +527,12 @@ sub _createObj {
       : eval "'$pack'\-\>new(\@par)";
     $self->_log1("Error in eval:  _createObj $@") if $@;
     return $obj_ref;
+}
+
+sub _createObj {
+    my $self =shift;
+#    _deprecated $self "_create_";
+    return $self->_create_( @_ );
 }
 
 #sub _parse_html(\@html)
@@ -405,7 +602,7 @@ sub register_class {
 
 sub _destroy {
     my $self = shift;
-    $self->__store_session_attributes( @{ $self->_get_childs } );
+    $self->__store_session_attributes( @{ $self->_get_childs_ } );
     $self->SUPER::_destroy;
     $self->_session(undef);
     $self->__obj(undef);
@@ -424,7 +621,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2009 by Zahatski Aliaksandr
+Copyright 2002-2010 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

@@ -95,6 +95,7 @@ sub make_engine {
     my %eng_pars = @_;
     my $class = delete $eng_pars{class} || 'WebDAO::Kernel';
     if ( my $index_file = delete $eng_pars{index_file} ) {
+        warn "$index_file not found!!!" unless -e $index_file;
         if ( $index_file && -e $index_file ) {
             my $content = qq!<wD><include file="$index_file"/></wD>!;
             my $lex = new WebDAO::Lex:: content => $content;
@@ -104,7 +105,7 @@ sub make_engine {
             $eng_pars{source} = '';
         }
     }
-    my $session = new WebDAO::SessionSH::;
+    my $session =  new WebDAO::SessionSH::;
     my $eng     = $class->new(
         session => $session,
         %eng_pars
@@ -163,7 +164,7 @@ sub tree {
     my $self = shift;
     my $obj  = shift || $self->{eng};
     my @res  = ();
-    foreach my $o ( @{ $obj->_get_childs } ) {
+    foreach my $o ( @{ $obj->_get_childs_ } ) {
         push @res, $self->tree($o),;
     }
     return { $obj->__my_name . ":" . ref($obj) => \@res };
@@ -236,6 +237,31 @@ sub get_session {
 
 1;
 
+package TestCV;
+use strict;
+use warnings;
+use WebDAO::CVcgi;
+use base 'WebDAO::CVcgi';
+
+sub _init { 
+    my $self = shift;
+    $self->{ctr} = shift;
+    return $self->SUPER::_init(@_);
+
+}
+
+sub print {
+    my $self = shift;
+    my $out_ref = $self->{ctr};
+    if ( grep { ! defined $_} @_ ) {
+        warn "NOT DEFINED IN PUT";
+
+    }
+    $$out_ref .=join "",grep {defined $_ } @_ if scalar(@_);
+}
+
+
+1;
 __DATA__
 
 =head1 SEE ALSO

@@ -21,7 +21,7 @@ use base qw( WebDAO::Base );
 use Encode qw(encode decode is_utf8);
 use strict;
 __PACKAGE__->attributes
-  qw( Cgi_obj Cgi_env U_id Header Params  _store_obj _response_obj _is_absolute_url);
+  qw( Cgi_obj Cgi_env U_id Header Params  _store_obj _response_obj _is_absolute_url _request_method);
 
 sub _init() {
     my $self = shift;
@@ -40,7 +40,7 @@ sub Init {
     Cgi_obj $self $args{cv}
       || new WebDAO::CVcgi::;    #create default controller
     my $cv = $self->Cgi_obj;           # Store Cgi_obj in local var
-                                       #create response object
+                                      #create response object
     $self->_response_obj(
         new WebDAO::Response::
           session => $self,
@@ -72,7 +72,8 @@ sub Init {
     Params $self ( $self->_get_params() );
     $self->Cgi_env->{path_info_elments} =
       [ grep { defined $_ } split( /\//, $self->Cgi_env->{path_info} ) ];
-
+    #save request method
+    $self->request_method($ENV{REQUEST_METHOD});
 }
 
 #Can be overlap if you choose another
@@ -177,9 +178,9 @@ sub print {
 }
 
 sub ExecEngine() {
-    my ( $self, $eng_ref ) = @_;
+    my ( $self, $eng_ref,$path ) = @_;
     $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
-    $eng_ref->execute($self);
+    $eng_ref->execute($self, $path);
     $eng_ref->SendEvent("_sess_ended");
     $eng_ref->_destroy;
     $self->flush_session();
@@ -217,6 +218,19 @@ sub print_header() {
     return $_cgi->header( map { $_ => $ref->{$_} } keys %{ $self->Header() } );
 }
 
+=head2 request_method
+
+return Req Method
+
+=cut
+sub request_method {
+    my $self = shift;
+    if (@_) {
+        $self->_request_method( shift );
+    } 
+    $self->_request_method()
+}
+
 sub destroy {
     my $self = shift;
     $self->_response_obj(undef);
@@ -234,7 +248,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2009 by Zahatski Aliaksandr
+Copyright 2002-2010 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

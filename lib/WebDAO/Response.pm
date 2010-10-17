@@ -19,7 +19,7 @@ use DateTime;
 use DateTime::Format::HTTP;
 use base qw( WebDAO::Base );
 __PACKAGE__->attributes
-  qw/  __session _headers _is_headers_printed _cv_obj _is_file_send _is_need_close_fh __fh _is_flushed _call_backs/;
+  qw/  __session _headers _is_headers_printed _cv_obj _is_file_send _is_need_close_fh __fh _is_flushed _call_backs _is_modal/;
 
 use strict;
 
@@ -149,7 +149,7 @@ Set headers for redirect to url.return $self reference
 
 sub redirect2url {
     my ( $self, $redirect_url ) = @_;
-    $self->set_header( "-status",   '302 Found' );
+    $self->set_modal->set_header( "-status",   '302 Found' );
     $self->set_header( '-Location', $redirect_url );
 }
 
@@ -227,7 +227,8 @@ sub send_file {
                 -type => $self->get_mime_for_filename($file_name) );
         }
     }
-    $self->_is_file_send(1);
+    #set modal mode and flag for send file
+    $self->set_modal->_is_file_send(1);
     $self;
 }
 
@@ -275,6 +276,18 @@ sub flush {
     $self;
 }
 
+=head2 set_modal
+
+Set modal mode for answer
+
+=cut
+
+sub set_modal {
+    my $self = shift;
+    $self->_is_modal(1);
+    $self
+}
+
 =head2 error404
 
 Set HTTP 404 headers
@@ -283,7 +296,7 @@ Set HTTP 404 headers
 
 sub error404 {
     my $self = shift;
-    $self->set_header( "-status", '404 Not Found' );
+    $self->set_modal->set_header( "-status", '404 Not Found' );
     $self->print(@_) if @_;
     return $self;
 }
@@ -305,6 +318,7 @@ sub json : lvalue {
     $self->{__json};
 
 }
+
 sub set_json {
     my $self = shift;
     my $data = shift;
