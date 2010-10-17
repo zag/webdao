@@ -1,25 +1,3 @@
-package TestCV;
-use strict;
-use warnings;
-use WebDAO::CVcgi;
-use base 'WebDAO::CVcgi';
-
-sub _init { 
-    my $self = shift;
-    $self->{ctr} = shift;
-    return $self->SUPER::_init(@_);
-
-}
-
-sub print {
-    my $self = shift;
-    my $out_ref = $self->{ctr};
-    $$out_ref .=join "",@_;
-#    print @_;
-}
-
-
-1;
 package Test;
 
 #$Id$
