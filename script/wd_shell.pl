@@ -79,7 +79,7 @@ my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile} || $opt{f};
 die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
   unless $filename;
 
-
+=pod
 my $content = qq!<wD><include file="$filename"/></wD>!;
 my $lex = new WebDAO::Lex:: content => $content;
 my $eng = $eng_class->new(
@@ -87,7 +87,22 @@ my $eng = $eng_class->new(
     lexer    => $lex,
     session  => $sess,
 );
-$sess->ExecEngine($eng);
+=cut
+
+open FH, "<$filename" or die $!;
+my $content ='';
+{ local $/=undef;
+$content = <FH>;
+}
+close FH;
+my $lex = new WebDAO::Lex:: tmpl => $content;
+my $eng = $eng_class->new(
+    %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },
+    lex    => $lex,
+    session  => $sess,
+);
+
+$sess->ExecEngine($eng, $evl_file);
 $sess->destroy;
 croak STDERR $@ if $@;
 print "\n";

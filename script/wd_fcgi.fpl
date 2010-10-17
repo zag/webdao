@@ -199,9 +199,22 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
           "$ENV{DOCUMENT_ROOT}/$env_var", "$ENV{DOCUMENT_ROOT}/index.xhtml";
         die "$0 ERR:: file not found or can't access (WD_INDEXFILE): $env_var"
           unless $filename;
+
+=pod
         my $content = qq!<wD><include file="$filename"/></wD>!;
         my $lex = new WebDAO::Lex:: content => $content;
         $ini_pars{lexer} = $lex;
+=cut
+#=pod
+        open FH, "<$filename" or die $!;
+        my $content ='';
+        { local $/=undef;
+        $content = <FH>;
+        }
+        close FH;
+        my $lex = new WebDAO::Lex:: tmpl => $content;
+        $ini_pars{lex} = $lex;
+#=cut
     }
     else {
         $ini_pars{source} = '';
