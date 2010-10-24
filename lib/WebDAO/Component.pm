@@ -33,7 +33,8 @@ sub url_method {
     if ( $sess->set_absolute_url() ) {
         unshift @upath, $sess->Cgi_env->{base_url};
     }
-
+    #hack !!! clear / on begin
+    s{^/}{} for @upath;
     my $path = join '/' => @upath;
     my $str = '';
     if (@_) {

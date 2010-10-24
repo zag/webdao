@@ -14,7 +14,7 @@ use WebDAO::Sessionco;
 use WebDAO::Lib::RawHTML;
 our @ISA = qw();
 
-our $VERSION = '2.0_1';
+our $VERSION = '2.0_2';
 
 
 

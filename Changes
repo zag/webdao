@@ -1,5 +1,7 @@
 Revision history for Perl extension WebDAO.
 
+2.0_2
+    - fix // in path
 2.0_1
     - traverse method
     - rename core mothods to form _METHOD_
