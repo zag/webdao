@@ -35,7 +35,7 @@ my $eng        = new WebDAO::Engine::
 my $telement = $eng->_createObj( "t1", $test_alias );
 ok( $telement, "Create test1 object" );
 ok( $telement->_obj_name eq 't1', " test obj name" );
-$eng->_add_childs($telement);
+$eng->_add_childs_($telement);
 is $telement->_sess1, 1, 'check defaults mk_sess_attr ';
 is $telement->_sess3, undef, 'undef default for _sess3 ';
 is $telement->_sess4, 'undef', 'undef default for _sess4 ';
@@ -59,12 +59,12 @@ my $tcontainer = $eng->_createObj( 'c1', 'contaner' );
 ok( $tcontainer, "test create container" );
 my $t2 = $eng->_createObj( "t2", $test_alias );
 ok( $t2, "Create test2 object" );
-$tcontainer->_add_childs($t2);
-$eng->_add_childs($tcontainer);
-ok( @{ $eng->_get_childs } == 2, 'Test count of inserted' );
+$tcontainer->_add_childs_($t2);
+$eng->_add_childs_($tcontainer);
+ok( @{ $eng->_get_childs_ } == 2, 'Test count of inserted' );
 my $t3 = $eng->_createObj( "t3", $test_alias );
 ok( $t3, "Create test3 object" );
-$tcontainer->_add_childs($t3);
+$tcontainer->_add_childs_($t3);
 $eng->_destroy;
 $session->flush_session;
 
@@ -77,7 +77,7 @@ my $eng1 = new WebDAO::Engine::
 my $telement_ = $eng1->_createObj( "t1", $test_alias );
 ok( $telement_, "Create test1 object" );
 ok( $telement_->_obj_name eq 't1', " test obj name" );
-$eng1->_add_childs($telement_);
+$eng1->_add_childs_($telement_);
 ok( $telement_->_sess2 == 6, "test restore attr" );
 
 #print Dumper($eng->__obj);

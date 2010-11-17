@@ -31,13 +31,13 @@ $eng->register_class( 'WebDAO::Container', 'poll' );
 
 ok my $test_obj = $eng->_createObj( 'test', 'testtr' ), 'create element';
 ok my $container = $eng->_createObj( 'container', 'poll' ), 'create container';
-$container->_add_childs($test_obj);
-$eng->_add_childs($container);
+$container->_add_childs_($test_obj);
+$eng->_add_childs_($container);
 
 #check auto load
 ok my $container_autoload = $eng->_createObj( 'auto', 'test_autoload' ),
   'create autoload container';
-$eng->_add_childs($container_autoload);
+$eng->_add_childs_($container_autoload);
 
 my $u1 = '/container/test/test_method';
 my @p1 = grep { $_ } @{ $session->call_path($u1) };
