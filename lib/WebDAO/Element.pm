@@ -132,7 +132,11 @@ sub __any_path {
         }
 
         #call method (only one param may be return)
-        my ($res) = $self->$method(%args);
+        my ($res, @path1) = $self->$method(%args);
+        if ( scalar(@path1) ) {
+            #method may return extra path
+            return $res, \@path1;
+        }
         return $res, \@path;
     }
     undef;
