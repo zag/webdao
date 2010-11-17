@@ -31,10 +31,11 @@ sub url_method {
     push @upath, $method if defined $method;
     my $sess = $self->getEngine->_session;
     if ( $sess->set_absolute_url() ) {
+        my $root = $sess->Cgi_env->{base_url};
         unshift @upath, $sess->Cgi_env->{base_url};
     }
     #hack !!! clear / on begin
-    s{^/}{} for @upath;
+    #s{^/}{} for @upath;
     my $path = join '/' => @upath;
     my $str = '';
     if (@_) {
