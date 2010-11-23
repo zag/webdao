@@ -220,7 +220,7 @@ sub print_header() {
 
 =head2 request_method
 
-return Req Method
+return Req Method [GET, POST, DELETE, PUT ]
 
 =cut
 sub request_method {
