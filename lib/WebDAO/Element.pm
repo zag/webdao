@@ -271,7 +271,7 @@ sub post_format {
     return [];
 }
 
-sub fetch { my $self = shift; return [] }
+sub fetch { undef } #return undef
 
 sub _destroy {
     my $self = shift;
