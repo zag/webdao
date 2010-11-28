@@ -1,5 +1,9 @@
 Revision history for Perl extension WebDAO.
 
+2.0_3
+    - add wantformat() method for deremine desired output context
+    - adopt <method> tag to new traverse scheme
+    
 2.0_2
     - fix // in path
 2.0_1

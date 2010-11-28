@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More ( tests => 32 );
+use Test::More ( tests => 39 );
 use Data::Dumper;
 use strict;
 
@@ -38,8 +38,7 @@ is_deeply {
   },
   $response->_headers, 'check _headers after set set_header';
 ok !$response->_is_headers_printed, 'check flg _is_headers_printed before';
-isa_ok $response->print_header, 'WebDAO::Response',
-  'check type print_header';
+isa_ok $response->print_header, 'WebDAO::Response', 'check type print_header';
 ok $response->_is_headers_printed, 'check flg _is_headers_printed before';
 
 isa_ok my $response1 =
@@ -92,6 +91,21 @@ isa_ok my $response4 =
 isa_ok $response4->flush, 'WebDAO::Response', '$response3->flush';
 is $test_call_back1, 2, '$test_call_back1';
 is $test_call_back2, 3, '$test_call_back2';
+
+isa_ok my $response5 =
+  ( new WebDAO::Response:: session => $session, cv => $session->Cgi_obj ),
+  'WebDAO::Response', 'get format';
+
+is $response5->wantformat(), 'html', 'check default wantformat';
+ok $response5->wantformat('html'), 'check wantformat("html") eq html';
+ok !$response5->wantformat('csv'), 'check wantformat("csv") ne csv';
+
+isa_ok my $response6 =
+  ( new WebDAO::Response:: session => $session, cv => $session->Cgi_obj )->wantformat(json=>1),
+  'WebDAO::Response', 'set force wantformat(json=>1)';
+is $response6->wantformat(), 'json', 'check default wantformat for forced json';
+ok !$response6->wantformat('html'), 'check wantformat("html") eq html for forced json';
+
 
 #########################
 

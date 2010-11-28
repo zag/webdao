@@ -19,7 +19,8 @@ use DateTime;
 use DateTime::Format::HTTP;
 use base qw( WebDAO::Base );
 __PACKAGE__->attributes
-  qw/  __session _headers _is_headers_printed _cv_obj _is_file_send _is_need_close_fh __fh _is_flushed _call_backs _is_modal/;
+  qw/  __session _headers _is_headers_printed _cv_obj _is_file_send _is_need_close_fh __fh _is_flushed _call_backs _is_modal /;
+__PACKAGE__->mk_attr( _forced_want_format => undef );
 
 use strict;
 
@@ -149,7 +150,7 @@ Set headers for redirect to url.return $self reference
 
 sub redirect2url {
     my ( $self, $redirect_url ) = @_;
-    $self->set_modal->set_header( "-status",   '302 Found' );
+    $self->set_modal->set_header( "-status", '302 Found' );
     $self->set_header( '-Location', $redirect_url );
 }
 
@@ -227,6 +228,7 @@ sub send_file {
                 -type => $self->get_mime_for_filename($file_name) );
         }
     }
+
     #set modal mode and flag for send file
     $self->set_modal->_is_file_send(1);
     $self;
@@ -285,7 +287,7 @@ Set modal mode for answer
 sub set_modal {
     my $self = shift;
     $self->_is_modal(1);
-    $self
+    $self;
 }
 
 =head2 error404
@@ -334,9 +336,60 @@ sub _destroy {
     #    $self->_call_backs( [] );
     #    $self->_cv_obj( undef );
     $self->__session(undef);
-
-    #    $self->auto( [] );
 }
+
+=head2 wantformat ['format',['forse_set_format']]
+
+Return expected output format: defauilt html
+    
+       # return string for format
+       $r->wantformat()
+
+Check if desired format is expected
+
+  #$r->wantformat('html') return boolean
+  if ($r->wantformat('html')) { 
+      # 
+  }
+
+Force set desired format:
+
+  $r->wantformat('html'=>1); #return $response object ref
+
+=cut
+
+sub wantformat {
+    my $self = shift;
+    if ( @_ > 1 ) {
+        $self->_forced_want_format(shift);
+        return $self;
+    }
+    my $desired = $self->_forced_want_format();
+    my $default =
+         $desired
+      || $self->detect_wantformat( $self->__session )
+      || 'html';
+    if ( scalar(@_) == 1 ) {
+        return $default eq shift;
+    }
+    return $default;
+}
+
+=head2 detect_wantformat ($session)
+
+Method for detect output format when C<wantformat()> called
+
+Must return :
+    
+        string  - output format, i.e. 'html', 'xml'
+        undef - unknown ( use defaults )
+
+=cut
+
+sub detect_wantformat {
+    return undef    #unknown by default
+}
+
 1;
 __DATA__
 

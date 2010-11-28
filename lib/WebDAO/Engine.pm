@@ -259,7 +259,6 @@ sub __events__ {
     my $inject_fetch = shift;
     my $path         = $root->__path2me;
     my @childs       = ();
-
     #make inject event for objects
     if ( my $res = $inject_fetch->{$path} ) {
         @childs = (
@@ -323,7 +322,6 @@ sub execute2 {
 #    my $tlib = new WebDAO::Test:: eng=>$self->getEngine;
 #    warn Dumper $tlib->tree;    
 #    exit;
-
     #now analyze answers
     # undef -> not Found
     unless ( defined($res) ) {
@@ -388,7 +386,7 @@ sub execute2 {
     my @ev_flow = $self->__events__( $root, \%injects );
     foreach my $ev (@ev_flow) {
         my $obj = $ev->{obj};
-    #    _log1 $self "DO " . $ev->{event}. " for $obj";
+        #_log1 $self "DO " . $ev->{event}. " for $obj";
         if ( $ev->{event} eq 'start' ) {
 
             $self->__handle_out__( $sess, $obj->pre_fetch($sess) )

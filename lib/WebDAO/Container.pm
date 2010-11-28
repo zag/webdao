@@ -228,7 +228,6 @@ sub _traverse_ {
 =cut
 
     my ( $next_name, @path ) = @_;
-
     #check if exist object with some name
     if ( my $obj = $self->_get_obj_by_name($next_name) ) {
 
