@@ -51,7 +51,7 @@ is( $method_call->fetch($session), 111, "Check call" );
 __DATA__
 <wd>
 <regclass class="TestWDAO" alias="testmod"/>
-<method path="/testmod1/echo">111</method>
+<method path="/testmod1/Echo">111</method>
 <object id="testmod1" class="testmod"/>
 </wd>
 
