@@ -10,9 +10,9 @@ sub init {
     my $self = shift;
     _sess2 $self (3)
 }
-sub echo {
+sub Echo {
     my $self = shift;
-    return shift
+    return shift||111
 }
 
 1;
