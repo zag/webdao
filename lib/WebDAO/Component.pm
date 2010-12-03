@@ -23,11 +23,6 @@ sub url_method {
     my $method = shift;
     my @upath  = ();
     push @upath, $self->__path2me if $self->__path2me;
-    if ( defined $self->__extra_path ) {
-        my $extr = $self->__extra_path;
-        $extr = [$extr] unless ( ref($extr) eq 'ARRAY' );
-        push @upath, @$extr;
-    }
     push @upath, $method if defined $method;
     my $sess = $self->getEngine->_session;
     if ( $sess->set_absolute_url() ) {
