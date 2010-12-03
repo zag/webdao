@@ -1,5 +1,11 @@
 Revision history for Perl extension WebDAO.
 
+
+2.0_4
+    - handle pre/post_fetch methods when Element come in answer
+    - use __extra_path only for childs pathes
+    - fix cpan distr [#63562]
+
 2.0_3
     - add wantformat() method for deremine desired output context
     - adopt <method> tag to new traverse scheme
