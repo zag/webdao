@@ -11,3 +11,4 @@
 ^Build$
 ^_build
 ^MANIFEST.SKIP$
+^MYMETA.yml$
