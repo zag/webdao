@@ -68,12 +68,13 @@ sub init {
         map { $_->value($self) } @{ $lex->auto };
         my @objs = map { $_->value($self) } @{ $lex->tree };
         $self->_add_childs_(@objs);
-    } elsif  ( my $lex = $opt{lex} ) {
+    }
+    elsif ( my $lex = $opt{lex} ) {
         map { $_->value($self) } @{ $lex->auto };
-        my ($pre, $fetch, $post) = @{ $lex->__tmpl__};
-        $self->__add_childs__(0,map { $_->value($self) } @$pre );
-        $self->_add_childs_(map { $_->value($self) } @$fetch);
-        $self->__add_childs__(2,map { $_->value($self) } @$post);
+        my ( $pre, $fetch, $post ) = @{ $lex->__tmpl__ };
+        $self->__add_childs__( 0, map { $_->value($self) } @$pre );
+        $self->_add_childs_( map { $_->value($self) } @$fetch );
+        $self->__add_childs__( 2, map { $_->value($self) } @$post );
 
     }
     else {
@@ -243,18 +244,27 @@ sub __handle_out__ {
     my $self = shift;
     my $sess = shift;
     for (@_) {
-        if ( UNIVERSAL::isa($_, 'WebDAO::Element' ) ) {
-         $self->__handle_out__( $sess, $_->pre_fetch($sess) )
+        if ( UNIVERSAL::isa( $_, 'WebDAO::Element' ) ) {
+            $self->__handle_out__( $sess, $_->pre_fetch($sess) )
               if UNIVERSAL::can( $_, 'pre_fetch' );
 
-         $self->__handle_out__( $sess, $_->fetch($sess) );
+            $self->__handle_out__( $sess, $_->fetch($sess) );
             $self->__handle_out__( $sess, $_->post_fetch($sess) )
               if UNIVERSAL::can( $_, 'post_fetch' );
-        
-        } elsif ( ref($_) eq 'CODE') {
+
+        }
+        elsif ( ref($_) eq 'CODE' ) {
             return $self->__handle_out__( $sess, $_->($sess) );
-        } else {
-        $sess->print($_);
+        }
+        elsif ( UNIVERSAL::isa( $_, 'WebDAO::Response' ) ) {
+            $_->_is_headers_printed(1);
+            $_->_print_dep_on_context($sess) unless $_->_is_file_send;
+            $_->flush;
+            $_->_destroy;
+
+        }
+        else {
+            $sess->print($_);
         }
     }
 }
@@ -265,6 +275,7 @@ sub __events__ {
     my $inject_fetch = shift;
     my $path         = $root->__path2me;
     my @childs       = ();
+
     #make inject event for objects
     if ( my $res = $inject_fetch->{$path} ) {
         @childs = (
@@ -324,10 +335,11 @@ sub execute2 {
     my $url  = shift;
     my @path = @{ $sess->call_path($url) };
     my ( $src, $res ) = $self->_traverse_( $sess, @path );
-#    use WebDAO::Test;
-#    my $tlib = new WebDAO::Test:: eng=>$self->getEngine;
-#    warn Dumper $tlib->tree;    
-#    exit;
+
+    #    use WebDAO::Test;
+    #    my $tlib = new WebDAO::Test:: eng=>$self->getEngine;
+    #    warn Dumper $tlib->tree;
+    #    exit;
     #now analyze answers
     # undef -> not Found
     unless ( defined($res) ) {
@@ -338,8 +350,15 @@ sub execute2 {
         return;    #end
     }
 
+    #convert string and ref(scalar) to resonse with html
+    #special handle strings
+    if ( !ref($res) or ( ref($res) eq 'SCALAR' ) ) {
+        $res = $self->response->set_html( ref($res) ? $$res : $res );
+    }
+
     #check if  response modal
     if ( UNIVERSAL::isa( $res, 'WebDAO::Response' ) and $res->_is_modal() ) {
+
         #handle response
         $res->_print_dep_on_context($sess) unless $res->_is_file_send;
         $res->flush;
@@ -387,11 +406,13 @@ sub execute2 {
     }
     my $response = $sess->response_obj;
     $response->print_header;
-#     $response->print($_) for @{ $self->fetch($sess) };
+
+    #     $response->print($_) for @{ $self->fetch($sess) };
 
     my @ev_flow = $self->__events__( $root, \%injects );
     foreach my $ev (@ev_flow) {
         my $obj = $ev->{obj};
+
         #_log1 $self "DO " . $ev->{event}. " for $obj";
         if ( $ev->{event} eq 'start' ) {
 
@@ -418,8 +439,8 @@ sub execute2 {
         }
 
     }
-        $response->flush;
-        $response->_destroy;
+    $response->flush;
+    $response->_destroy;
 }
 
 sub execute {
@@ -518,6 +539,7 @@ sub SendEvent {
 create object by <class or alias>.
 
 =cut
+
 sub _create_ {
     my ( $self, $name_obj, $name_func, @par ) = @_;
     my $pack = $self->_pack4name($name_func) || $name_func;
@@ -534,9 +556,10 @@ sub _create_ {
 }
 
 sub _createObj {
-    my $self =shift;
-#    _deprecated $self "_create_";
-    return $self->_create_( @_ );
+    my $self = shift;
+
+    #    _deprecated $self "_create_";
+    return $self->_create_(@_);
 }
 
 #sub _parse_html(\@html)

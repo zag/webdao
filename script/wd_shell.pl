@@ -74,7 +74,7 @@ my $sess = $session_class->new(
         %{ &_parse_str_to_hash( $ENV{wdSessionPar} ) || {} },
         store => $store_obj,
 );
-#$sess->U_id($sess_id);
+$sess->U_id($sess_id);
 my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile} || $opt{f};
 die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
   unless $filename;
