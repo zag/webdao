@@ -1,6 +1,7 @@
 Revision history for Perl extension WebDAO.
 
-
+2.0_6
+    - code clean
 2.0_5
     - wrap raw text answers to response object
     - handle response object as return value

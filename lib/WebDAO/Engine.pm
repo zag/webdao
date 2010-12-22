@@ -340,10 +340,11 @@ sub execute2 {
     #    my $tlib = new WebDAO::Test:: eng=>$self->getEngine;
     #    warn Dumper $tlib->tree;
     #    exit;
+    my $response = $self->response; #$sess->response_obj;
+
     #now analyze answers
     # undef -> not Found
     unless ( defined($res) ) {
-        my $response = $sess->response_obj;
         $response->error404( "Url not found:" . join "/", @path );
         $response->flush;
         $response->_destroy;
@@ -353,9 +354,12 @@ sub execute2 {
     #convert string and ref(scalar) to resonse with html
     #special handle strings
     if ( !ref($res) or ( ref($res) eq 'SCALAR' ) ) {
-        $res = $self->response->set_html( ref($res) ? $$res : $res );
+        $res = $response->set_html( ref($res) ? $$res : $res );
     }
-
+    #special handle HASH refs ( interpret as json)
+    if ( ( ref($res) eq 'HASH' )  and $response->wantformat('json') ) {
+        $res = $response->set_json( $res );
+    }
     #check if  response modal
     if ( UNIVERSAL::isa( $res, 'WebDAO::Response' ) and $res->_is_modal() ) {
 
@@ -404,10 +408,8 @@ sub execute2 {
     if ($need_inject_result) {
         $injects{ $src->__path2me } = $res;
     }
-    my $response = $sess->response_obj;
+    #start out
     $response->print_header;
-
-    #     $response->print($_) for @{ $self->fetch($sess) };
 
     my @ev_flow = $self->__events__( $root, \%injects );
     foreach my $ev (@ev_flow) {
