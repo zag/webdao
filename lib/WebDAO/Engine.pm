@@ -71,7 +71,7 @@ sub init {
     }
     elsif ( my $lex = $opt{lex} ) {
         map { $_->value($self) } @{ $lex->auto };
-        my ( $pre, $fetch, $post ) = @{ $lex->__tmpl__ };
+        my ( $pre, $fetch, $post ) = @{ $lex->__tmpl__ || [] };
         $self->__add_childs__( 0, map { $_->value($self) } @$pre );
         $self->_add_childs_( map { $_->value($self) } @$fetch );
         $self->__add_childs__( 2, map { $_->value($self) } @$post );

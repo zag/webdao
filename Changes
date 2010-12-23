@@ -1,5 +1,9 @@
 Revision history for Perl extension WebDAO.
 
+
+2.0_7
+    - fix empty index page
+
 2.0_6
     - code clean
 2.0_5
