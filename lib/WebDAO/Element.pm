@@ -221,7 +221,7 @@ sub _obj_name {
     return $_[0]->__my_name;
 }
 
-#deprecated  -> self->_engine
+#deprecated  -> self->__engine
 
 sub getEngine {
     my $self = shift;
