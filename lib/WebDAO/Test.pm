@@ -250,6 +250,12 @@ sub _init {
 
 }
 
+sub response {
+    my $self = shift;
+    my $res = shift || return;
+    $self->print( $res->{data} );
+}
+
 sub print {
     my $self = shift;
     my $out_ref = $self->{ctr};
