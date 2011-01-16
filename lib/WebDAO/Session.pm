@@ -74,6 +74,9 @@ sub Init {
       [ grep { defined $_ } split( /\//, $self->Cgi_env->{path_info} ) ];
     #save request method
     $self->request_method($ENV{REQUEST_METHOD});
+    #set default header
+    $cv->set_header( -type => 'text/html; charset=utf-8' );
+
 }
 
 #Can be overlap if you choose another
@@ -223,6 +226,7 @@ sub print_header() {
 return Req Method [GET, POST, DELETE, PUT ]
 
 =cut
+
 sub request_method {
     my $self = shift;
     if (@_) {
