@@ -56,8 +56,6 @@ return $self reference
 
 sub set_header {
     my ( $self, $name, $par ) = @_;
-
-    #    $self->_headers->{ $name =~ /^-/ ? uc $name : $name } = $par;
     $self->_headers->{ uc $name } = $par;
     $self;
 }

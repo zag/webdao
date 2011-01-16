@@ -1,5 +1,7 @@
 Revision history for Perl extension WebDAO.
 
+2.0_8
+    - enhance work with cookie headers
 
 2.0_7
     - fix empty index page
