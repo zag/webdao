@@ -97,6 +97,13 @@ sub ModalAnswer {
     $r;
 }
 
+sub GetArrayRef {
+    my $self = shift;
+    my $eng = $self->getEngine;
+    [ $eng->_createObj("el1", "TElemO"),
+    $eng->_createObj("el2", "TElemO"),
+    ]
+}
 1;
 
 package TExtra;
@@ -191,12 +198,12 @@ sub t01_test_resolve : Test(8) {
     my $t   = shift;
     my $eng = $t->{tlib}->eng;
     ok my $obj = $eng->_createObj( 'comp', 'TComp' ), 'make TestComp';
-    $eng->_add_childs($obj);
+    $eng->_add_childs_($obj);
 
     isa_ok $eng->resolve_path3("/"),     "TEng",  "/";
     isa_ok $eng->resolve_path3("/comp"), "TComp", "/comp";
     ok my $obj1 = $eng->_createObj( 'extra', 'TExtra' ), 'make TestComp extra';
-    $eng->_add_childs($obj1);
+    $eng->_add_childs_($obj1);
     ok !$eng->resolve_path3("/extra/2010/12/1233"),
       "/extra/2010/12/1233 - not exists";
 
@@ -215,10 +222,10 @@ sub t02_output : Test(7) {
     my $eng  = $t->{tlib}->eng;
     my $sess = $eng->_session;
     ok my $obj = $eng->_createObj( 'extra', 'TExtra' ), 'make TestComp';
-    $eng->_add_childs($obj);
+    $eng->_add_childs_($obj);
     ok my $obj1 = $eng->_createObj( 'extra2', 'TExtra' ), 'make TestComp';
-    $eng->_add_childs($obj1);
-    $obj1->_add_childs( $eng->_createObj( 'elem',  'TElem' ) );
+    $eng->_add_childs_($obj1);
+    $obj1->_add_childs_( $eng->_createObj( 'elem',  'TElem' ) );
     $obj1->_add_childs( $eng->_createObj( 'Melem', 'TElemModal' ) );
 
     #    diag Dumper $t->{tlib}->tree;
@@ -244,16 +251,16 @@ sub t02_output : Test(7) {
 
 }
 
-sub t03_modal_comp : Test(8) {
+sub t03_modal_comp : Test(10) {
     my $t   = shift;
     my $eng = $t->{tlib}->eng;
 
     ok my $obj = $eng->_createObj( 'elem', 'TElem' ), 'make TestComp';
-    $eng->_add_childs($obj);
+    $eng->_add_childs_($obj);
 
     ok my $obj1 = $eng->_createObj( 'Mcomp', 'TCompModal' ), 'make TestComp';
-    $eng->_add_childs($obj1);
-    $obj1->_add_childs( $eng->_createObj( 'elem', 'TElem' ) );
+    $eng->_add_childs_($obj1);
+    $obj1->_add_childs_( $eng->_createObj( 'elem', 'TElem' ) );
 
     # $VAR1 = {
     #           ':TEng' => [
@@ -299,10 +306,12 @@ sub t03_modal_comp : Test(8) {
     is $$out, '<M>O<M>',
       "/Mcomp/getElement - modal container method ( retutn WebDAO::Element - ignored)";
 
+    $$out = '';
+    $eng->execute2( $sess, "/Mcomp/GetArrayRef" );
+    is $$out, '<M>OO<M>', "/Mcomp/GetArrayRef - Method return array of elements";
 
-#    diag $$out;#
-    #    is $$out, '<STRI/>', "/extra2/elem/String - call method";
-
+    isa_ok $eng->resolve_path3("/Mcomp/GetArrayRef"),'WebDAO::Container',
+      "Check container when method return Array ref";
 }
 
 sub  t04_buld_scene :Test {

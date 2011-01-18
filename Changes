@@ -1,5 +1,9 @@
 Revision history for Perl extension WebDAO.
 
+
+2.0_9
+    - fix traverse for containers methods
+
 2.0_8
     - enhance work with cookie headers
 

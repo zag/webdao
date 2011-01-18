@@ -77,7 +77,7 @@ Insert set of objects into container
 
 sub _add_childs_ {
     my $self = shift;
-    $self->__add_childs__(1, @_);
+    $self->__add_childs__( 1, @_ );
 }
 
 #deprecated
@@ -110,25 +110,24 @@ Clear all childs (except "pre" and "post" objects), and set  to C<@childs_set>
 sub __set_childs__ {
     my $self = shift;
     my $type = shift;
-    my $dst =
-        $type == 0 ? $self->__pre_childs #0
-      : $type == 1 ? $self->__childs()   #1 
-      :              $self->__post_childs; #2
-    for ( @{ $dst} ) {
+    my $dst  = $type == 0
+      ? $self->__pre_childs    #0
+      : $type == 1 ? $self->__childs()        #1
+      :              $self->__post_childs;    #2
+    for ( @{$dst} ) {
         $_->_destroy;
     }
-    $self->__add_childs__($type, @_)    
+    $self->__add_childs__( $type, @_ );
 }
-
 
 # 0 - pre, 1 - fetch , 2 - post
 sub __add_childs__ {
     my $self = shift;
     my $type = shift;
-    my $dst =
-        $type == 0 ? $self->__pre_childs #0
-      : $type == 1 ? $self->__childs()   #1 
-      :              $self->__post_childs; #2
+    my $dst  = $type == 0
+      ? $self->__pre_childs                   #0
+      : $type == 1 ? $self->__childs()        #1
+      :              $self->__post_childs;    #2
     my @childs =
       grep { ref $_ }
       map { ref($_) eq 'ARRAY' ? @$_ : $_ }
@@ -140,7 +139,7 @@ sub __add_childs__ {
         $_->_set_parent($self) for @childs;
         $self->getEngine->__restore_session_attributes(@childs);
     }
-    push( @{ $dst }, @childs );
+    push( @{$dst}, @childs );
 }
 
 sub _set_childs_ {
@@ -164,7 +163,7 @@ Output data precede to fetch method. By default output "pre" objects;
 
 sub pre_fetch {
     my $self = shift;
-    @{$self->__pre_childs};
+    @{ $self->__pre_childs };
 }
 
 =head2 post_fetch ($session)
@@ -175,7 +174,7 @@ Output data follow to fetch method. By default output "post" objects;
 
 sub post_fetch {
     my $self = shift;
-    @{$self->__post_childs};
+    @{ $self->__post_childs };
 }
 
 =head1 OTHER
@@ -188,6 +187,23 @@ sub _set_parent {
     foreach my $ref ( @{ $self->_get_childs_ } ) {
         $ref->_set_parent($self);
     }
+}
+
+sub __any_path {
+    my $self = shift;
+    my $sess = shift;
+    my ( $method, @path ) = @_;
+    my ( $res, @path ) = $self->SUPER::__any_path( $sess, @_ );
+    return undef unless defined($res);
+    if ( ref($res) eq 'ARRAY' ) {
+
+        #make container
+        my $cont = $self->__engine->_create_( $method, __PACKAGE__ );
+        $cont->_set_childs_(@$res);
+        $res = [$cont];
+        unshift( @path, $method );
+    }
+    return ( $res, @path );
 }
 
 #Return (  object witch handle req and result )
@@ -228,6 +244,7 @@ sub _traverse_ {
 =cut
 
     my ( $next_name, @path ) = @_;
+
     #check if exist object with some name
     if ( my $obj = $self->_get_obj_by_name($next_name) ) {
 
