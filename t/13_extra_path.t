@@ -35,7 +35,7 @@ use warnings;
 
 use Data::Dumper;
 
-use Test::More tests => 15;
+use Test::More tests => 16;
 
 #use Test::More qw(no_plan);
 
@@ -44,6 +44,7 @@ BEGIN {
     use_ok('WebDAO::SessionSH');
     use_ok('WebDAO::Engine');
     use_ok('WebDAO::Container');
+    use_ok('WebDAO::Test');
 }
 
 my $ID = "extra";
@@ -53,15 +54,10 @@ ok my $session = ( new WebDAO::SessionSH:: store => $store_ab ),
 $session->U_id($ID);
 
 my $eng = new WebDAO::Engine:: session => $session;
+our $tlib = new WebDAO::Test eng => $eng;
 
 our $sess = $eng->_session;
 our $eng1 = $eng;
-
-sub path2obj {
-    my $path = shift;
-    my @path = grep { $_ } @{ $sess->call_path($path) };
-    return $eng1->_get_object_by_path( \@path );
-}
 
 $eng->register_class(
     'WebDAO::Container' => 'testmain',
@@ -72,33 +68,32 @@ $eng->register_class(
 #test traverse
 
 my $main = $eng->_createObj( 'main2', 'testmain' );
-$eng->_add_childs($main);
+$eng->_add_childs_($main);
 isa_ok my $trav_obj = $eng->_createObj( 'traverse', 'traverse' ),
   'TestTraverse', 'create traverse object';
-$main->_add_childs($trav_obj);
+$main->_add_childs_($trav_obj);
 $trav_obj->__extra_path( [ 1, 2, 3 ] );
 my $traverse_url = $trav_obj->url_method('Test');
-isa_ok $eng->resolve_path( $sess, $traverse_url ), 'TestTraverse',
+isa_ok $tlib->resolve_path( $traverse_url ), 'TestTraverse',
   "resolve_path1 $traverse_url";
 my $traverse_url1 = $trav_obj->url_method();
-isa_ok $eng->resolve_path( $sess, $traverse_url1 ), 'TestTraverse',
+isa_ok $tlib->resolve_path(  $traverse_url1 ), 'TestTraverse',
   "resolve_path2 $traverse_url1";
 isa_ok my $t_cont1 = $eng->_createObj( 'test_cont', 'testcont' ),
   'TestContainer', 'test containter';
-$t_cont1->__extra_path( [ 1, 2, 3 ] );
 isa_ok my $comp = $eng->_createObj( 'el1', 'traverse' ), 'TestTraverse',
   'create elem';
-$t_cont1->_add_childs($comp);
-$eng->_add_childs($t_cont1);
+$t_cont1->_add_childs_($comp);
+$eng->_add_childs_($t_cont1);
 my $t_url = $comp->url_method('Return1');
-is $eng->resolve_path( $sess, $t_url )->html, 1, "test resolve $t_url";
+is $tlib->resolve_path( $t_url ), 1, "test resolve $t_url";
 isa_ok my $comp1 = $eng->_createObj( 'el_extra', 'traverse' ), 'TestTraverse',
   'create elem with extra1';
 $comp1->__extra_path( [ 'extra1', 'extra2' ] );
-$t_cont1->_add_childs($comp1);
+$t_cont1->_add_childs_($comp1);
 my $t_url2 = $comp1->url_method('Return1');
-is $eng->resolve_path( $sess, $t_url2 )->html, 1, "test resolve $t_url2";
+is $tlib->resolve_path( $t_url2 ), 1, "test resolve $t_url2";
 my $t_url3 = $comp1->url_method();
-isa_ok $eng->resolve_path( $sess, $t_url3 ), 'TestTraverse',
+isa_ok $tlib->resolve_path( $t_url3 ), 'TestTraverse',
   "test resolve $t_url3";
 

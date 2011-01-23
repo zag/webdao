@@ -146,25 +146,6 @@ use Test::More;
 use Data::Dumper;
 use WebDAO;
 use base ( 'WebDAO::Engine', 'TComp' );
-
-sub resolve_path3 {
-    my $self = shift;
-    my $path = shift;
-    my $sess = $self->_session();
-
-    #    return $self if $path eq '/';
-
-    #skip root objects
-    my ( undef, @path ) = split( /\//, $path );
-    my ( $src, $res ) = $self->_traverse_( $sess, @path );
-    $res;
-}
-
-sub execute2 {
-    my $self = shift;
-    return $self->SUPER::execute2(@_);
-}
-
 1;
 
 package T::Engine;
@@ -197,23 +178,24 @@ sub t01 : Test(1) {
 sub t01_test_resolve : Test(8) {
     my $t   = shift;
     my $eng = $t->{tlib}->eng;
+    my $tlib = $t->{tlib};
     ok my $obj = $eng->_createObj( 'comp', 'TComp' ), 'make TestComp';
     $eng->_add_childs_($obj);
 
-    isa_ok $eng->resolve_path3("/"),     "TEng",  "/";
-    isa_ok $eng->resolve_path3("/comp"), "TComp", "/comp";
+    isa_ok $tlib->resolve_path("/"),     "TEng",  "/";
+    isa_ok $tlib->resolve_path("/comp"), "TComp", "/comp";
     ok my $obj1 = $eng->_createObj( 'extra', 'TExtra' ), 'make TestComp extra';
     $eng->_add_childs_($obj1);
-    ok !$eng->resolve_path3("/extra/2010/12/1233"),
+    ok !$tlib->resolve_path("/extra/2010/12/1233"),
       "/extra/2010/12/1233 - not exists";
 
-    my $r1 = $eng->resolve_path3("/extra/2010/12/123");
+    my $r1 = $tlib->resolve_path("/extra/2010/12/123");
     ok $r1 && ( $r1->_obj_name eq "extra" ),
       "/extra/2010/12/123 fetch obj with extra path";
 
-    my $r1_1 = $eng->resolve_path3("/extra/2010/12/123/test.pod");
+    my $r1_1 = $tlib->resolve_path("/extra/2010/12/123/test.pod");
     ok ref($r1_1) eq 'HASH', '/extra/2010/12/123/test.pod return hash';
-    my $r2 = $eng->resolve_path3("/extra");
+    my $r2 = $tlib->resolve_path("/extra");
     ok $r2 && ( $r2->_obj_name eq "extra" ), "/extra";
 }
 
@@ -226,7 +208,7 @@ sub t02_output : Test(7) {
     ok my $obj1 = $eng->_createObj( 'extra2', 'TExtra' ), 'make TestComp';
     $eng->_add_childs_($obj1);
     $obj1->_add_childs_( $eng->_createObj( 'elem',  'TElem' ) );
-    $obj1->_add_childs( $eng->_createObj( 'Melem', 'TElemModal' ) );
+    $obj1->_add_childs_( $eng->_createObj( 'Melem', 'TElemModal' ) );
 
     #    diag Dumper $t->{tlib}->tree;
     my $out = $t->{OUT};
@@ -254,6 +236,7 @@ sub t02_output : Test(7) {
 sub t03_modal_comp : Test(10) {
     my $t   = shift;
     my $eng = $t->{tlib}->eng;
+    my $tlib = $t->{tlib};
 
     ok my $obj = $eng->_createObj( 'elem', 'TElem' ), 'make TestComp';
     $eng->_add_childs_($obj);
@@ -310,13 +293,13 @@ sub t03_modal_comp : Test(10) {
     $eng->execute2( $sess, "/Mcomp/GetArrayRef" );
     is $$out, '<M>OO<M>', "/Mcomp/GetArrayRef - Method return array of elements";
 
-    isa_ok $eng->resolve_path3("/Mcomp/GetArrayRef"),'WebDAO::Container',
+    isa_ok $tlib->resolve_path("/Mcomp/GetArrayRef"),'WebDAO::Container',
       "Check container when method return Array ref";
 }
 
 sub  t04_buld_scene :Test {
     my $t =shift;
-    my $eng2 = new WebDAO::Engine:: session=> $t->{tlib}->get_session, ;
+    ok my $eng2 = new WebDAO::Engine:: session=> $t->{tlib}->get_session, ;
 #    diag $eng2;
 }
 

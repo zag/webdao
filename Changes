@@ -1,6 +1,10 @@
 Revision history for Perl extension WebDAO.
 
-
+2.0_10
+    - fix warnings
+    - delete deprecated __get_objects_by_path, __get_object_by_path
+    - del  Engine:: : resolve_path, execute, _get_obj_by_path (deprecated)
+    - fix tests for api changes
 2.0_9
     - fix traverse for containers methods
 

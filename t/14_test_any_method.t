@@ -51,13 +51,14 @@ sub t02_make_test_component : Test(no_plan) {
     my $eng  = $t->{tlib}->eng;
     my $tlib = $t->{tlib};
     ok my $obj = $eng->_createObj( 't', 'TestElement' ), 'make TestElement';
-    $eng->_add_childs($obj);
+    $eng->_add_childs_($obj);
     is_deeply { ':WebDAO::Engine' => [ { 't:TestElement' => [] } ] },
       $t->{tlib}->tree($eng), 'add test element';
     ok my $path1 = $obj->url_method("non_exists/test.ext"), 'make path1';
     ok my $path2 = $obj->url_method("Exist"), 'make path2';
     ok !$tlib->xget($path1), "resolve $path1";
     ok $tlib->xget($path2), "resolve $path2";
+
 }
 
 sub t03_make_test_component : Test(no_plan) {
@@ -66,16 +67,16 @@ sub t03_make_test_component : Test(no_plan) {
     my $tlib = $t->{tlib};
     ok my $obj = $eng->_createObj( 't2', 'TestElement_any' ),
       'make TestElement_any';
-    $eng->_add_childs($obj);
+    $eng->_add_childs_($obj);
     is_deeply { ':WebDAO::Engine' => [ { 't2:TestElement_any' => [] } ] },
       $t->{tlib}->tree($eng), 'add test element';
     ok my $path1 = $obj->url_method("non_exists/test.ext"), 'make path1';
-    is_deeply $tlib->xget($path1), [ [ 'non_exists', 'test.ext' ] ],
+    is_deeply $tlib->xget($path1), undef,
       "resolve empty $path1";
     ok my $path11 = $obj->url_method( "non_exists/test.ext", var => 1 ),
       'make path11';
     is_deeply $tlib->xget($path11),
-      [ [ 'non_exists', 'test.ext' ], 'var', '1' ],
+      undef,
       "resolve with params $path11";
     ok my $path2 = $obj->url_method("Exist"), 'make path2';
     #    diag $tlib->xget($path2);#, "resolve $path2";

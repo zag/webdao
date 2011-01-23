@@ -181,7 +181,7 @@ get object by path (query)
 sub xget {
     my $self = shift;
     my $path = shift;
-    $path =~ s/^\///;
+#    $path =~ s/^\///;
     my $eng = $self->{eng};
 
     #check if exists args
@@ -193,7 +193,29 @@ sub xget {
             $eng->_session->Params( \%args );
         }
     }
-    return $eng->resolve_path( $eng->_session, $path );
+    return $self->resolve_path( $path );
+#    return $eng->resolve_path( $eng->_session, $path );
+}
+
+=head2 resolve_path '/path/Path'
+
+#[, arg1=>1, arg2=>2]
+
+Query path
+
+=cut
+
+sub resolve_path {
+    my $self = shift;
+    my $path = shift;
+    my $sess = $self->eng->_session();
+
+    #    return $self if $path eq '/';
+
+    #skip root objects
+    my ( undef, @path ) = split( /\//, $path );
+    my ( $src, $res ) = $self->eng->_traverse_( $sess, @path );
+    $res;
 }
 
 =head2 get_by_path
@@ -207,12 +229,11 @@ get object by resolve_path query
 sub get_by_path {
     my $self = shift;
     my $path = shift;
+    die "DEPRECATEED";
     $path =~ s/^\///;
     my $eng  = $self->{eng};
     my $root_obj  = shift || $eng;
     my $sess = $eng->_session;
-    return $root_obj->_get_object_by_path( $sess->call_path($path), $sess );
-    return $eng->_get_object_by_path( $sess->call_path($path), $sess );
 }
 
 =head2 eng 
