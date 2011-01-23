@@ -256,6 +256,7 @@ sub _deprecated {
     my $new_method = shift;
     my ( $old_method, $called_from_str, $called_from_method ) =
       ( ( caller(1) )[3], ( caller(1) )[2], ( caller(2) )[3] );
+      $called_from_method ||= $0;
     $self->_log3(
 "called deprecated method $old_method from $called_from_method at line $called_from_str. Use method $new_method instead."
     );
