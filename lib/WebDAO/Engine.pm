@@ -64,9 +64,9 @@ sub init {
         $self->register_class(%$classes);
     }
     my $raw_html = $opt{source};
-    if ( my $lex = $opt{lexer} ) {
-        map { $_->value($self) } @{ $lex->auto };
-        my @objs = map { $_->value($self) } @{ $lex->tree };
+    if ( my $lexer = $opt{lexer} ) {
+        map { $_->value($self) } @{ $lexer->auto };
+        my @objs = map { $_->value($self) } @{ $lexer->tree };
         $self->_add_childs_(@objs);
     }
     elsif ( my $lex = $opt{lex} ) {
@@ -83,17 +83,6 @@ sub init {
         $self->_add_childs_( @{ $self->_parse_html($raw_html) } );
     }
 
-}
-
-sub _get_obj_by_path {
-    my $self = shift;
-    my ( $obj_p, @path ) = @_;
-    my $id = shift @path;
-    my $res;
-    if ( my $obj = $obj_p->_get_obj_by_name($id) ) {
-        $res = scalar(@path) ? $self->_get_obj_by_path( $obj, @path ) : $obj;
-    }
-    return $res;
 }
 
 sub __restore_session_attributes {
@@ -135,104 +124,6 @@ sub response {
     return $self->_session->response_obj;
 }
 
-=head2 resolve_path $session , ( $url or \@path )
-
-Resolve path, find object and call method
-Can return:
-
-    undef - not found path or object not have method
-    $object_ref - if object return $self (????)
-    WebDAO::Response - objects
-
-    
-
-=cut
-
-sub resolve_path {
-    my $self = shift;
-    my $sess = shift;
-    my $url  = shift;
-    my @path = ();
-    if ( ref($url) eq 'ARRAY' ) {
-        @path = @$url;
-    }
-    else {
-        @path = @{ $sess->call_path($url) };
-    }
-    my $result;
-
-    #return $self for / pathes
-    return $self unless @path;
-
-    #try to get object by path
-
-    if ( my $object = $self->_get_object_by_path( \@path, $sess ) ) {
-
-        #if object have index_x then stop traverse and call them
-        my $method = shift @path;
-
-        #call __any_method unless exists defined method
-        if (    defined($method)
-            and !UNIVERSAL::can( $object, $method )
-            and UNIVERSAL::can( $object, '__any_method' ) )
-        {
-            unshift @path, $method;
-            return $object->__any_method( \@path, %{ $sess->Params } );
-
-        }
-
-        $method = 'Index_x' unless defined $method;
-
-        #Check upper case First letter for method
-        if ( ucfirst($method) ne $method ) {
-            _log2 $self "Deny method : $method";
-            return;
-        }
-
-        #check if $object have method
-        if ( UNIVERSAL::can( $object, $method ) ) {
-
-            #Ok have method
-            #check if path have more elements
-            my %args = %{ $sess->Params };
-            if (@path) {
-
-                #add  special variable
-                $args{__extra_path__} = \@path;
-            }
-
-            #call method
-            $result = $object->$method(%args);
-            return unless defined $result;    #return undef if empty result
-
-            #if object return $self ?
-            return $result if $object eq $result;    #return then
-                  #if method return non response object
-                  #then create them
-            unless ( UNIVERSAL::isa( $result, 'WebDAO::Response' ) ) {
-                my $response = $self->response;
-                for ($response) {
-
-                    #set default format : html
-                    html $_= $result;
-                }
-                $result = $response;
-            }
-        }
-        else {
-
-           #don't have method
-           #error404 - not found
-           #            $result = $self->response->error404("Not Found : $url");
-        }
-    }
-    else {
-
-        #not found objects by path !
-        #        $result = $self->response->error404("Not Found : $url");
-    }
-    return $result;
-}
 
 =head2  __handle_out__ ($sess, @output)
 
@@ -445,70 +336,6 @@ sub execute2 {
     $response->_destroy;
 }
 
-sub execute {
-    my $self = shift;
-    my $sess = shift;
-    my $url  = shift;
-    my @path = grep { $_ ne '' } @{ $sess->call_path($url) };
-    my $ans  = $self->resolve_path( $sess, \@path );
-
-    #got reference
-    #unless defined then return not found
-    unless ($ans) {
-        my $response = $sess->response_obj;
-        $response->error404( "Url not found:" . join "/", @path );
-        $response->flush;
-        $response->_destroy;
-        return;    #end
-    }
-    unless ( ref $ans ) {
-        _log1 $self "got non referense answer $ans";
-        my $response = $sess->response_obj;
-        $response->error404(
-            "Unknown response path: " . join( "/", @path ) . " ans: $ans" );
-        $response->flush;
-        $response->_destroy;
-        return;    #end
-    }
-
-    #check referense or not
-    if ( UNIVERSAL::isa( $ans, 'WebDAO::Response' ) ) {
-
-        $ans->_print_dep_on_context($sess) unless $ans->_is_file_send;
-        $ans->flush;
-        $ans->_destroy;
-        return;
-        my $res = $ans->html;
-        $ans->print( ref($res) eq 'CODE' ? $res->() : $res );
-        $ans->flush;
-        $ans->_destroy;
-        return;    #end
-    }
-    elsif ( UNIVERSAL::isa( $ans, 'WebDAO::Element' ) ) {
-
-        #got Element object
-        #do walk over objects
-        my $response = $sess->response_obj;
-        $response->print($_) for @{ $self->fetch($sess) };
-        $response->flush;
-        $response->_destroy;
-        return;    #end
-    }
-    else {
-
-        #not reference or not definde
-        _log1 $self "Not supported response object. path: "
-          . join( "/", @path )
-          . " ans: $ans";
-        my $response = $sess->response_obj;
-        $response->error404(
-            "Unknown response path: " . join( "/", @path ) . " ans: $ans" );
-        $response->flush;
-        $response->_destroy;
-        return;    #end
-
-    }
-}
 
 #fill $self->__events hash event - method
 sub RegEvent {
@@ -650,7 +477,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2010 by Zahatski Aliaksandr
+Copyright 2002-2011 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
