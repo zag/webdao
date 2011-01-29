@@ -193,7 +193,7 @@ sub __any_path {
     my $self = shift;
     my $sess = shift;
     my ( $method ) = @_;
-    my ( $res, @path ) = $self->SUPER::__any_path( $sess, @_ );
+    my ( $res, $path ) = $self->SUPER::__any_path( $sess, @_ );
     return undef unless defined($res);
     if ( ref($res) eq 'ARRAY' ) {
 
@@ -201,9 +201,9 @@ sub __any_path {
         my $cont = $self->__engine->_create_( $method, __PACKAGE__ );
         $cont->_set_childs_(@$res);
         $res = [$cont];
-        unshift( @path, $method );
+        unshift( @$path, $method );
     }
-    return ( $res, @path );
+    return ( $res, $path );
 }
 
 #Return (  object witch handle req and result )
@@ -213,48 +213,22 @@ sub _traverse_ {
     #if empty path return $self
     unless ( scalar(@_) ) { return ( $self, $self ) }
 
-    #extra path need only then seek object
-    #no __extra_path if resolve
-
-=pod
-    #first check if exists
-    #strip extra path from urls
-    if ( my $epath = $self->__extra_path ) {
-
-        # not found if extra path greater when @path
-        #hint: /elem (extra_path 2010/123) and path only "2010"
-        return undef if ( scalar(@$epath) > scalar(@_) );
-
-        #check if extra eq
-        my $not_eq = 0;
-        my $pos    = 0;
-        for (@$epath) {
-            next if $_[ $pos++ ] eq $_;
-            $not_eq++;
-            last;
-        }
-        #check if ok with extra path
-        return undef if $not_eq;    # not found
-        #cut extra path from path
-        splice @_, 0, scalar(@$epath);
-        #if empty path return $self
-        unless ( scalar(@_) ) { return $self }
-    }
-=cut
-
     my ( $next_name, @path ) = @_;
-
+    
+    #$src - object wich handle answer, $res - answer
+    my ($src, $res ) = ($self, undef);
     #check if exist object with some name
     if ( my $obj = $self->_get_obj_by_name($next_name) ) {
 
         #if last in path return him
-        return $obj->_traverse_( $sess, @path );
+        ($src, $res ) =  $obj->_traverse_( $sess, @path );
 
     }
     else {    #try get other ways
 
         #try get objects by special methods
-        my ( $res, $last_path ) = $self->__any_path( $sess, $next_name, @path );
+        my $last_path;
+        ( $res, $last_path ) = $self->__any_path( $sess, $next_name, @path );
         return ( $self, undef ) unless defined $res;    #break search
         if ( UNIVERSAL::isa( $res, 'WebDAO::Response' ) ) {
             return ( $self, $res );
@@ -276,14 +250,15 @@ sub _traverse_ {
             }
         }
         if (@rest_path) {
-            return $self->_traverse_( $sess, @rest_path );
+            ($src, $res ) =  $self->_traverse_( $sess, @rest_path );
         }
-
-        #unknown $res
-        # <WebDAO::Element>, may be HASH ref, STRING
-        return ( $self, $res );
     }
-
+    #
+    if ($src == $res && ! UNIVERSAL::isa( $src, 'WebDAO::Modal' ) ) {
+        #force set root object for Modal
+        $src = $res = $self if UNIVERSAL::isa( $self, 'WebDAO::Modal' )
+    }
+    return ( $src, $res )
 }
 
 #deprecated

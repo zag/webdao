@@ -151,6 +151,7 @@ use base ( 'WebDAO::Engine', 'TComp' );
 package T::Engine;
 use strict;
 use warnings;
+use Data::Dumper;
 use Test::More;
 use base 'Test';
 
@@ -259,7 +260,6 @@ sub t03_modal_comp : Test(10) {
     #                        }
     #                      ]
     #         };
-    #    diag Dumper $t->{tlib}->tree;
     my $out  = $t->{OUT};
     my $sess = $eng->_session;
     $eng->execute2( $sess, "/Mcomp/" );
@@ -280,9 +280,9 @@ sub t03_modal_comp : Test(10) {
 
     $$out = '';
     $eng->execute2( $sess, "/Mcomp/SubElem" );
+#        diag Dumper $t->{tlib}->tree;
     is $$out, '<M>FFFF<M>',
       "/Mcomp/SubElem - modal container method ( return array of elems)";
-
     $$out = '';
     $eng->execute2( $sess, "/Mcomp/GetElement" );
     

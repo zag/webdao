@@ -226,7 +226,6 @@ sub execute2 {
     my $url  = shift;
     my @path = @{ $sess->call_path($url) };
     my ( $src, $res ) = $self->_traverse_( $sess, @path );
-
     #    use WebDAO::Test;
     #    my $tlib = new WebDAO::Test:: eng=>$self->getEngine;
     #    warn Dumper $tlib->tree;
@@ -285,7 +284,6 @@ sub execute2 {
 
       #if result ref to object and it eq $src run flow
       ( $res == $src ) {
-
         $need_inject_result = 0;
     }
     if ( UNIVERSAL::isa( $res, 'WebDAO::Element' ) ) {

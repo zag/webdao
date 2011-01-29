@@ -229,11 +229,13 @@ get object by resolve_path query
 sub get_by_path {
     my $self = shift;
     my $path = shift;
-    die "DEPRECATEED";
-    $path =~ s/^\///;
     my $eng  = $self->{eng};
     my $root_obj  = shift || $eng;
-    my $sess = $eng->_session;
+    #skip root objects
+    my ( undef, @path ) = split( /\//, $path );
+    my ( $src, $res ) = $root_obj->_traverse_($self->eng->_session()
+, @path );
+    $res;
 }
 
 =head2 eng 

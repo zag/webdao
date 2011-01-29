@@ -1,5 +1,8 @@
 Revision history for Perl extension WebDAO.
 
+2.0_11
+    - fix WebDAO::Container __any_path
+    - fix traverse for Modal elements
 2.0_10
     - fix warnings
     - delete deprecated __get_objects_by_path, __get_object_by_path
