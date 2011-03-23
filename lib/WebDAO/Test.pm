@@ -281,7 +281,7 @@ sub response {
 
 sub print {
     my $self = shift;
-    my $out_ref = $self->{ctr};
+     my $out_ref = $self->{ctr};
     if ( grep { ! defined $_} @_ ) {
         warn "NOT DEFINED IN PUT";
 

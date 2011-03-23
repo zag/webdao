@@ -251,14 +251,17 @@ sub execute2 {
         $res = $response->set_json( $res );
     }
     #check if  response modal
-    if ( UNIVERSAL::isa( $res, 'WebDAO::Response' ) and $res->_is_modal() ) {
+    if ( UNIVERSAL::isa( $res, 'WebDAO::Response' ) ) {
+        #check empty response( $r->set_empty)
+        return if $res->is_empty;
+        if ( $res->_is_modal() ) {
 
         #handle response
         $res->_print_dep_on_context($sess) unless $res->_is_file_send;
         $res->flush;
         $res->_destroy;
         return;
-
+     }
     }
 
     #extract all objects to evenets

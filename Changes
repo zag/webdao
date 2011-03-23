@@ -1,5 +1,7 @@
 Revision history for Perl extension WebDAO.
 
+2.0_12
+    - add "empty" state for Response objects
 2.0_11
     - fix WebDAO::Container __any_path
     - fix traverse for Modal elements

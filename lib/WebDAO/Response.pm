@@ -20,7 +20,7 @@ use DateTime::Format::HTTP;
 use base qw( WebDAO::Base );
 __PACKAGE__->attributes
   qw/  __session _headers _is_headers_printed _cv_obj _is_file_send _is_need_close_fh __fh _is_flushed _call_backs _is_modal /;
-__PACKAGE__->mk_attr( _forced_want_format => undef );
+__PACKAGE__->mk_attr( _forced_want_format => undef, _is_empty=>0 );
 
 use strict;
 
@@ -28,7 +28,7 @@ use strict;
 
 =cut
 
-sub _init() {
+sub _init {
     my $self = shift;
     return $self->init(@_);
 }
@@ -387,6 +387,24 @@ Must return :
 sub detect_wantformat {
     return undef    #unknown by default
 }
+
+
+=head2 set_empty
+
+Set flag for empty response. Headers are not printed.
+return $self
+=cut
+
+sub set_empty { $_[0]->_is_empty(1); $_[0]}
+
+=head2 is_empty
+
+Check is response cleared.
+Return 1|0
+
+=cut
+
+sub is_empty { return $_[0]->_is_empty() }
 
 1;
 __DATA__
