@@ -29,20 +29,11 @@ sub _parse_str_to_hash {
     \%hash;
 }
 
-my ( $store_class, $session_class, $eng_class ) = map {
-    eval "require $_"
-      or die $@;
-    $_
-  } (
-    $ENV{wdStore}   || 'WebDAO::Store::Abstract',
-    $ENV{wdSession} || 'WebDAO::SessionSH',
-    $ENV{wdEngine}  || 'WebDAO::Engine'
-  );
 
 my ( $help, $man, $sess_id );
 my %opt = ( help => \$help, man => \$man, sid => \$sess_id );   #meta=>\$meta,);
 my @urls=();
-GetOptions( \%opt, 'help|?', 'man', 'f=s', 'sid|s=s','<>'=>sub { push @urls,shift} )
+GetOptions( \%opt, 'help|?', 'man', 'f=s','wdEngine|M=s','wdEnginePar=s', 'sid|s=s','<>'=>sub { push @urls,shift} )
   or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
@@ -66,6 +57,16 @@ foreach my $sname ('__DIE__') {
         print STDERR "PID: $$ $sname: @_";
       }
 }
+
+my ( $store_class, $session_class, $eng_class ) = map {
+    eval "require $_"
+      or die $@;
+    $_
+  } (
+    $ENV{wdStore}   || 'WebDAO::Store::Abstract',
+    $ENV{wdSession} || 'WebDAO::SessionSH',
+    $opt{wdEngine}|| $ENV{wdEngine}  || 'WebDAO::Engine',
+  );
 
 #Make Session object
 my $store_obj =
@@ -97,7 +98,7 @@ $content = <FH>;
 close FH;
 my $lex = new WebDAO::Lex:: tmpl => $content;
 my $eng = $eng_class->new(
-    %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },
+    %{ &_parse_str_to_hash( $opt{wdEnginePar} || $ENV{wdEnginePar} ) || {} },
     lex    => $lex,
     session  => $sess,
 );
