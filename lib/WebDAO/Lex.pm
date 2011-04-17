@@ -53,7 +53,8 @@ Return [ $pre_part, $main_html, $post_part ]
 sub split_template {
     my $self = shift;
     my @txt = split( m%<!--\s*<(\/?wd:(?:pre_|post_)?fetch)>\s*-->%x, shift );
-    my ( $pre, $fetch, $post ) = \( '', '', '' );
+    my ($s1, $s2,$s3) = ('','','');
+    my ( $pre, $fetch, $post ) = \( $s1, $s2,$s3);
     my $default = $fetch;
     foreach my $l (@txt) {
 

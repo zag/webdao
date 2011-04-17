@@ -1,5 +1,9 @@
 Revision history for Perl extension WebDAO.
 
+
+2.0_13 *
+    - rename events methods to __XXX___
+    
 2.0_12
     - add "empty" state for Response objects
 2.0_11

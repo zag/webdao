@@ -37,10 +37,24 @@ sub _init {
     return 1;
 }
 
-sub RegEvent {
+
+######## EVENTS ######
+
+sub __register_event__ {
     my $self    = shift;
     my $ref_eng = $self->getEngine;
-    $ref_eng->RegEvent( $self, @_ );
+    $ref_eng->__register_event__( $self, @_ );
+}
+
+sub __send_event__ {
+    my $self   = shift;
+    my $parent = $self->__parent || $self->getEngine;
+    $self->_log1( "Not def parent $self name:"
+          . ( $self->__my_name )
+          . Dumper( \@_ )
+          . Dumper( [ map { [ caller($_) ] } ( 1 .. 10 ) ] ) )
+      unless $parent;
+    $parent->__send_event__(@_);
 }
 
 #
@@ -228,16 +242,6 @@ sub getEngine {
     return $self->__engine;
 }
 
-sub SendEvent {
-    my $self   = shift;
-    my $parent = __parent $self;
-    $self->_log1( "Not def parent $self name:"
-          . ( $self->__my_name )
-          . Dumper( \@_ )
-          . Dumper( [ map { [ caller($_) ] } ( 1 .. 10 ) ] ) )
-      unless $parent;
-    $parent->SendEvent(@_);
-}
 
 #deprecated
 sub pre_format {

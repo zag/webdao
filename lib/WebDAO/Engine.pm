@@ -226,10 +226,10 @@ sub execute2 {
     my $url  = shift;
     my @path = @{ $sess->call_path($url) };
     my ( $src, $res ) = $self->_traverse_( $sess, @path );
-    #    use WebDAO::Test;
-    #    my $tlib = new WebDAO::Test:: eng=>$self->getEngine;
-    #    warn Dumper $tlib->tree;
-    #    exit;
+   #     use WebDAO::Test;
+   #     my $tlib = new WebDAO::Test:: eng=>$self->getEngine;
+   #     warn Dumper $tlib->tree;
+   #     exit;
     my $response = $self->response; #$sess->response_obj;
 
     #now analyze answers
@@ -339,7 +339,7 @@ sub execute2 {
 
 
 #fill $self->__events hash event - method
-sub RegEvent {
+sub __register_event__ {
     my ( $self, $ref_obj, $event_name, $ref_sub ) = @_;
     my $ev_hash = $self->__events;
     $ev_hash->{$event_name}->{ scalar($ref_obj) } = {
@@ -350,7 +350,7 @@ sub RegEvent {
     return 1;
 }
 
-sub SendEvent {
+sub __send_event__ {
     my ( $self, $event_name, @Par ) = @_;
     my $ev_hash = $self->__events;
     unless ( exists( $ev_hash->{$event_name} ) ) {

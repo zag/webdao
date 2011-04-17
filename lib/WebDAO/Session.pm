@@ -23,7 +23,7 @@ use strict;
 __PACKAGE__->attributes
   qw( Cgi_obj Cgi_env U_id Header Params  _store_obj _response_obj _is_absolute_url _request_method);
 
-sub _init() {
+sub _init {
     my $self = shift;
     $self->Init(@_);
     return 1;
@@ -138,12 +138,13 @@ sub response_obj {
 }
 
 #Session interface to device(HTTP protocol) specific function
-#$self->SendEvent("_sess_servise",{
+#$self->__send_event__("_sess_servise",{
 #		funct 	=> geturl,
 #		par	=> $ref,
 #		result	=> \$res
 #});
 
+#deprecated
 sub sess_servise {
     my ( $self, $event_name, $par ) = @_;
     my %service = (
@@ -180,11 +181,12 @@ sub print {
     $self->Cgi_obj->print(@_);
 }
 
-sub ExecEngine() {
+sub ExecEngine {
     my ( $self, $eng_ref,$path ) = @_;
-    $eng_ref->RegEvent( $self, "_sess_servise", \&sess_servise );
+    #deprecated
+    $eng_ref->__register_event__( $self, "_sess_servise", \&sess_servise );
     $eng_ref->execute($self, $path);
-    $eng_ref->SendEvent("_sess_ended");
+    $eng_ref->__send_event__("_sess_ended");
     $eng_ref->_destroy;
     $self->flush_session();
 }
