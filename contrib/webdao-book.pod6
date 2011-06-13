@@ -1,7 +1,6 @@
 =begin pod
 =begin BOOKINFO
 *TITLE Develop web application in WebDAO
-
 *SUBTITLE The WebDAO Developers Guide
 *AUTHOR
 firstname: Aliaksandr
@@ -22,5 +21,8 @@ Feb 24th 2009(v0.1)[zag]   Initial document
 =config code :allow<E>
 
 =Include Preface.pod6
+=Include About.pod
+=Include Install.pod
+=Include Setup.pod
 
 =end pod

@@ -1,6 +1,5 @@
-=head1 NAME
-
-Установка B<Webdao>.
+=begin pod
+=CHAPTER Установка Webdao
 
 
 Если есть уже установленный модуль B<CPAN>, то достаточно выполнить следующую каманду:
@@ -9,7 +8,6 @@
     
 Иначе, потребуется выполнить следующие шаги:
 
-=over
 
 =item * скачать последнюю версию CPAN по адресу:
 
@@ -24,7 +22,4 @@
         perl Makefile.PL
         make test && sudo make install
 
-=over
-
-=cut
-
+=end pod

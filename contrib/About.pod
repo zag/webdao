@@ -1,13 +1,10 @@
-=head1 NAME
-
-B<WebDAO> - platform for web applications.
+=begin pod
+=CHAPTER  WebDAO - platform for web applications.
 
 
 B<WebDAO> - object-oriented system  for easy creation of high-performance and scalable web applications writen in I<perl>.
 
 =head2 Key Features
-
-=over
 
 =item *  Abstraction application code from the environment
 
@@ -16,8 +13,6 @@ B<WebDAO> - object-oriented system  for easy creation of high-performance and sc
 =item *  Addressing objects by URL
 
 =item *  Built-in support session parameters
-
-=back
 
 =head3  Abstraction application code from the environment
 
@@ -59,7 +54,7 @@ Tags I<wd> frame area in which there are definitions of objects and other interp
     
 In the package I<WebDAO> include lexical analyzer, which processes the file and builds a structure of objects.
 
-Create a file F<MyTest.pm> with the following content:
+Create a file C<MyTest.pm> with the following content:
 
     package MyTest;
     use WebDAO;
@@ -154,5 +149,4 @@ The text of the module also need to create attributes:
         $self->attr1('test_value');
     }
 
-=cut
-
+=end pod

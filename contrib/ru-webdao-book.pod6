@@ -21,5 +21,8 @@ Feb 24th 2009(v0.1)[zag]   Начальная версия
 =config code :allow<E>
 
 =Include Preface.ru.pod6
+=Include About.ru.pod
+=Include Install.ru.pod
+=Include Setup.ru.pod
 
 =end pod
