@@ -1,35 +1,22 @@
-=head1 NAME
-
-Configuring  B<Webdao>.
-
+=begin pod
+=CHAPTER Configuring  Webdao
 
 Configuration is done via environment variables.
 The following variables is using:
 
-=begin table
-
-Configuration parameters
-center, center, center
-name, description, sample
-
-wdIndexFile |" index.html - name of the file to be processed upon request. Possible values : absolute path or relative to C<DOCUMENT_ROOT>. Default: F<$ENV{DOCUMENT_ROOT}/index.xhtml> "|  index.html
-
+=begin table :caption('Configuration parameters')
+name                   description                      sample
+------------|-------------------------------------------|-----------
+wdIndexFile |" index.html - name of the file to be processed upon request. Possible values : absolute path or relative to C<DOCUMENT_ROOT>. Default: C<$ENV{DOCUMENT_ROOT}/index.xhtml> "|  index.html
 wdEngine |" name of the package core module. This module serves all requests coming to I</>. Default: I<WebDAO::Engine> "| ShowPrice
-
-wdEnginePar |" initialization parameters when creating the main module. Value - a string containing the pairs  I<key=value>. Pairs are  semicolon separated (I<;>). Default: I<undef> "| config=/home/zag/showprice.ini
-
-wdSession |" Name the package module, which serves a sessional. This module is used to identify a web session. Default: I<WebDAO::Session> "| WebDAO::Sessionco 
-
+wdEnginePar |" initialization parameters when creating the main module. Value a string containing the pairs I<key=value>. Pairs are semicolon separated (I<;>). Default: I<undef> "| config=/home/zag/showprice.ini
+wdSession | Name the package module, which serves a sessional. This module is used to identify a web session. Default: I<WebDAO::Session> | WebDAO::Sessionco
 wdStore |" the name of the module, providing storage of a user session parameters. Defalut: I<WebDAO::Store::Abstract>"| WebDAO::Store::Storable 
-
-wdStorePar| initialization parameters for session storage module. default: I<undef>| path=/home/zag/tmp
-
+wdStorePar | initialization parameters for session storage module. default: I<undef> | path=/home/zag/tmp
 wdFCGIreq  | number of requests for each  I<FastCGI> process. The parameter is used to work in I<FastCGI> mode. Default: -1 - unlimited | 1000
-
 wdDebug  |" Debug level. 1 - critical errors, 2 .. n - warns, info.  Default: 0 - off "| 2
 
 =end table
-
 
 For server lighttpd uses names respectively: WD_INDEXFILE, WD_ENGINE, WD_ENGINE_PAR, WD_SESSION, WD_STORE, WD_STORE_PAR, WD_DEBUG.
 
@@ -41,11 +28,9 @@ The I<WebDAO> suuports: I<cgi>, I<FastCGi>, I<mod_perl>. The most productive is 
 
 In the examples used the following initial conditions.
 
-=begin table
-
-Baseline data
-left, center
-Parameter, Value
+=begin table :caption('Baseline data')
+Parameter                         |  Value
+----------------------------------|-----------
 Web root                          | /usr/zag/www
 Temporary directory               | /tmp        
 Directory for logs                | /var/log/   
@@ -57,7 +42,7 @@ Path for file socket for FastCGI  | /tmp/myapp.socket
 =head3 Setup standalone  FastCGI
 
 	
-In the package I<WebDAO> includes a script F<wd_fcgi.fpl> ( F</usr/local/bin/wd_fcgi.fpl> for example).
+In the package I<WebDAO> includes a script C<wd_fcgi.fpl> ( C</usr/local/bin/wd_fcgi.fpl> for example).
 	
 To run an independent server using the following command:
 
@@ -82,8 +67,6 @@ Output:
 
 
 =head4 nginx ( standalone FastCGI)
-
-=over 
 
 =item * Simple example
 
@@ -134,19 +117,16 @@ For example, even if used as the name of the module: I<MySite>. The constructor 
 
     }
 
-=back
 
 =head4 apache (static + standalone  FastCGI)
 
-There are two modes. When use own manager I<FCGI> (I <FastCgiServer>) and connection is made through FCGI socket.
+There are two modes. When use own manager I<FCGI> (I<FastCgiServer>) and connection is made through FCGI socket.
 
 Requires installation of the module I<mod_fastcgi>:
 
         mod_fastcgi-2.4.2
 
-As part of the global F<httpd.conf> want to add one of the required sections:
-
-=over
+As part of the global C<httpd.conf> want to add one of the required sections:
 
 =item 1 Static (FastCgiServer)
 
@@ -167,7 +147,6 @@ As part of the global F<httpd.conf> want to add one of the required sections:
        FastCgiExternalServer /usr/local/bin/wd_fcgi.fpl -socket /tmp/myapp.socket
       </IfModule>
 
-=back
 
 At B<VirtualHost> section:
 
@@ -276,4 +255,5 @@ To run from the command line using the script I<wd_shell.pl>. In the process of 
             Set filename set root [x]html file for load domain
 
 See also: L<WebDAO::Test>.
+=end pod
 

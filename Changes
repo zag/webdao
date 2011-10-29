@@ -1,6 +1,6 @@
 Revision history for Perl extension WebDAO.
 
-
+   - convert pod to pod6
 2.0_13 *
     - rename events methods to __XXX___
     

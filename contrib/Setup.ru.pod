@@ -1,32 +1,20 @@
-=head1 NAME
-
-Конфигурирование  B<Webdao>.
+=begin pod
+=CHAPTER Конфигурирование  Webdao
 
 
 Конфигурирование производится с помощью переменных окружения.
 Предопределены следующие переменные:
 
-=begin table
-
-Конфигурационные параметры
-center, center, center
-Имя, описание, пример 
-
-wdIndexFile |" index.html - наименование файла, который будет обрабатываться при поступлении запросов. В качестве значения возможны: полный путь, или путь относительно C<DOCUMENT_ROOT>. По умолчанию: F<$ENV{DOCUMENT_ROOT}/index.xhtml> "|  index.html
-
-
+=begin table :caption('Конфигурационные параметры')
+Имя                  описание            пример 
+------------|--------------------------|-------------------
+wdIndexFile |" index.html - наименование файла, который будет обрабатываться при поступлении запросов. В качестве значения возможны: полный путь, или путь относительно C<DOCUMENT_ROOT>. По умолчанию: C<$ENV{DOCUMENT_ROOT}/index.xhtml> "|  index.html
 wdEngine | наименование пакета основного модуля. Этот модуль обслуживает все запросы поступающие к I</>. По умолчанию: I<WebDAO::Engine> | ShowPrice
-
 wdEnginePar |" параметры инициализации при создании основного модуля. Значение - строка, содержащая пары I<ключ=значние>. Пары отделяются друг от друга I<;>. По умолчанию: I<undef> "| config=/home/zag/showprice.ini
-
 wdSession |" имя пакета модуля, обслуживающего сессионность. Этот модуль используется для идентификации web сессии. По умолчанию: I<WebDAO::Session> "| WebDAO::Sessionco 
-
 wdStore |" имя модуля, обеспечивающего хранение сессионных параметров пользователя. По умолчанию: I<WebDAO::Store::Abstract>"| WebDAO::Store::MLDBM 
-
 wdStorePar| параметры инициализации для модуля хранения сессионных параметров. По умолчанию: I<undef>| path=/home/zag/Work/Recomendator/bin/tmp 
-
 wdFCGIreq  | количество запросов на I<FastCGI> процесс. Параметр используется при работе в режиме I<FastCGi>. По умолчанию: -1 - unlimited | 1000
-
 wdDebug  |" уровень отладки. 1 - критические ошибки, 2 .. n - warns, info.  По умолчанию: 0 - отключен "| 2
 
 =end table
@@ -42,11 +30,9 @@ I<WebDAO> поддерживает режимы I<cgi>, I<FastCGi>, I<mod_perl>.
 
 В описании используются следующие исходные условия.
 
-=begin table
-
-Исходные данные
-left, center
-Наименование параметра, Значение
+=begin table :caption('Исходные данные')
+Наименование параметра                            | Значение
+--------------------------------------------------|----------------
 Web root                                          | /usr/zag/www
 Временный каталог                                 | /tmp        
 Каталог для записи логов                          | /var/log/   
@@ -57,7 +43,7 @@ Web root                                          | /usr/zag/www
 
 =head3 Настройка Standalone сервера FastCGI
 
-В состав пакета I<WebDAO> входит скрипт F<wd_fcgi.fpl> ( F</usr/local/bin/wd_fcgi.fpl> for example).
+В состав пакета I<WebDAO> входит скрипт C<wd_fcgi.fpl> ( C</usr/local/bin/wd_fcgi.fpl> for example).
 Для запуска самостоятельного сервера используется следующая строка :
 
     #!/bin/sh
@@ -82,9 +68,7 @@ Web root                                          | /usr/zag/www
 
 =head4 nginx ( standalone FastCGI)
 
-=over 
-
-=item * Простой пример
+=item  Простой пример
 
 
     server {
@@ -105,7 +89,7 @@ Web root                                          | /usr/zag/www
 
     }
 
-=item * Пример с использованием собственного пакета основного модуля
+=item  Пример с использованием собственного пакета основного модуля
 
 Для примера пусть используется в качестве имени модуля: I<MySite>. Конструктор этого класса в качестве параметра принимает I<config> - путь к конфигурационному файлу.
 
@@ -133,8 +117,6 @@ Web root                                          | /usr/zag/www
 
     }
 
-=back
-
 =head4 apache (static + standalone  FastCGI)
 
 Возможны два режима. Когда используется собственный менеджер I<FCGI>( I<FastCgiServer> ) и
@@ -144,9 +126,7 @@ Web root                                          | /usr/zag/www
 
         mod_fastcgi-2.4.2
 
-В глобальной части F<httpd.conf> требуется добавить одну из необходимых секций:
-
-=over
+В глобальной части C<httpd.conf> требуется добавить одну из необходимых секций:
 
 =item 1 Static (FastCgiServer)
 
@@ -166,8 +146,6 @@ Web root                                          | /usr/zag/www
       # FastCgiExternalServer /usr/local/bin/wd_fcgi.fpl -host localhost:60000
        FastCgiExternalServer /usr/local/bin/wd_fcgi.fpl -socket /tmp/myapp.socket
       </IfModule>
-
-=back
 
 Настройки секции B<VirtualHost>:
 
@@ -275,5 +253,7 @@ Web root                                          | /usr/zag/www
     -f filename
             Set filename set root [x]html file for load domain
 
-Для написания тестов используется L<WebDAO::Test>.
+Для написания тестов используется C<WebDAO::Test>.
+
+=end pod
 

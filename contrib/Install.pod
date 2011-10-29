@@ -1,6 +1,5 @@
-=head1 NAME
-
-Install B<Webdao>.
+=begin pod
+=CHAPTER Install Webdao
 
 You should be able to install this module using the CPAN shell interface:
 
@@ -18,5 +17,4 @@ After downloading the distribution, follow the normal procedure to unpack and in
   make test && sudo make install
 
 
-=cut
-
+=end pod
