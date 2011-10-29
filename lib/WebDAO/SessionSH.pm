@@ -22,7 +22,6 @@ use base qw( WebDAO::Session );
 sub Init {
     my $self = shift;
     my %args = @_;
-    #warn Dumper \%args;
     $self->SUPER::Init(@_);
     delete $args{store};
     delete $args{cv};

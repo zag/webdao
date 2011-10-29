@@ -266,6 +266,8 @@ use warnings;
 use WebDAO::CVcgi;
 use base 'WebDAO::CVcgi';
 
+# for skip headers
+# $cv{SKIP_HEADERS} = 1
 sub _init { 
     my $self = shift;
     $self->{ctr} = shift;
@@ -276,7 +278,11 @@ sub _init {
 sub response {
     my $self = shift;
     my $res = shift || return;
-    $self->print( $res->{data} );
+    unless ( exists( $self->{SKIP_HEADERS} ) ) {
+      $self->SUPER::response($res)
+    } else {
+      $self->print( $res->{data} );
+    }
 }
 
 sub print {
