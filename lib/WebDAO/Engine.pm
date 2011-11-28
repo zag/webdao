@@ -220,6 +220,10 @@ sub __events__ {
     );
 }
 
+sub execute {
+    my $self =shift;
+    return $self->execute2(@_)
+}
 sub execute2 {
     my $self = shift;
     my $sess = shift;
