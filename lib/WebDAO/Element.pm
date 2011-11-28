@@ -129,7 +129,7 @@ sub __any_path {
     if ( ucfirst($method) ne $method ) {
 
         #warn  "Deny method : $method";
-        return;    #not found
+        return undef;    #not found
     }
 
     #check if $self have method
@@ -312,7 +312,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2010 by Zahatski Aliaksandr
+Copyright 2002-2011 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
