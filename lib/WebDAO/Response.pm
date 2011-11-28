@@ -81,6 +81,7 @@ return str
 sub get_mime_for_filename {
     my $self          = shift;
     my $filename      = shift;
+    my $no_default_flag = shift;
     my %types_for_ext = (
         avi  => 'video/x-msvideo',
         bmp  => 'image/bmp',
@@ -113,7 +114,7 @@ sub get_mime_for_filename {
     if ( my $type = $types_for_ext{ lc $ext } ) {
         return $type;
     }
-    return 'application/octet-stream';
+    return $no_default_flag ? undef : 'application/octet-stream';
 }
 
 =head2 print_header
