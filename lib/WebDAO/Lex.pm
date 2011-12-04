@@ -1,6 +1,10 @@
+#===============================================================================
+#
+#  DESCRIPTION:  New Ng Lexer
+#
+#       AUTHOR:  Aliaksandr P. Zahatski, <zahatski@gmail.com>
+#===============================================================================
 package WebDAO::Lex;
-
-#$Id$
 
 =head1 NAME
 
@@ -10,38 +14,41 @@ WebDAO::Lex - Lexer class
 
 WebDAO::Lex - Lexer class
 
+
+=head1 METHODS
+
 =cut
 
-use XML::LibXML;
-use Data::Dumper;
-use WebDAO::Lexer::Lobject;
-use WebDAO::Lexer::Lbase;
-use WebDAO::Lexer::Lregclass;
-use WebDAO::Lexer::Lobjectref;
-use WebDAO::Lexer::Ltext;
-use WebDAO::Lexer::Linclude;
-use WebDAO::Lexer::Lmethod;
+use strict;
+use warnings;
 use WebDAO::Base;
-use base qw( WebDAO::Base );
-__PACKAGE__->attributes qw/ tree auto /;
+use XML::Flow;
+use base 'WebDAO::Base';
+use WebDAO::Lexer::base;
+use WebDAO::Lexer::method;
+use WebDAO::Lexer::object;
+use WebDAO::Lexer::regclass;
+use WebDAO::Lexer::text;
+
+
 __PACKAGE__->mk_attr( __tmpl__ => '' );
 
-use strict;
+sub new {
+    my $class = shift;
+    my $self = bless( $#_ == 0 ? {shift} : {@_}, ref($class) || $class );
+    $self
 
-sub _init() {
-    my $self = shift;
-    return $self->Init(@_);
 }
 
-sub Init {
+sub _parsed_template_ {
     my $self = shift;
-    my %par  = @_;
-    $self->auto( [] );
-    $self->tree( $self->buld_tree( $par{content} ) ) if $par{content};
-
-    #    $self->__tmpl__($par{tmpl}) if $par{tmpl};
-    $self->__tmpl__( $self->_parsed_template_( $par{tmpl} ) ) if $par{tmpl};
-    return 1;
+    my $eng  = shift;
+    my @res;
+    foreach ( @{ $self->split_template( shift || $self->__tmpl__ ) } ) {
+        my $res = ref($_) ? $self->buld_tree($$_) : [];
+        push @res, $res;
+    }
+    return \@res;
 }
 
 =head2 split_template
@@ -51,132 +58,94 @@ Return [ $pre_part, $main_html, $post_part ]
 =cut
 
 sub split_template {
-    my $self = shift;
-    my @txt = split( m%<!--\s*<(\/?wd:(?:pre_|post_)?fetch)>\s*-->%x, shift );
-    my ($s1, $s2,$s3) = ('','','');
-    my ( $pre, $fetch, $post ) = \( $s1, $s2,$s3);
-    my $default = $fetch;
-    foreach my $l (@txt) {
-
-        if ( $l eq 'wd:pre_fetch' ) {
-            $default = $pre;
-            $$fetch  = '';
-        }
-        elsif ( $l eq '/wd:pre_fetch' ) {
-            $default = $fetch;
-        }
-        elsif ( $l eq 'wd:fetch' ) {
-
-            #store previaus aggreagated text as
-            # pre
-            $$pre    = $$default;
-            $default = $fetch;
-            $$fetch  = '';
-        }
-        elsif ( $l eq '/wd:fetch' ) {
-            $default = $post;
-        }
-        elsif ( $l eq 'wd:post_fetch' ) {
-            $default = $post;
-        }
-        elsif ( $l eq '/wd:post_fetch' ) {
-            last;
-        }
-        else {
-
-            $$default .= $l;
-        }
-    }
-
-    #clean
-    for ( $pre, $fetch, $post ) {
-        $_ = '' if $$_ =~ m/^[\r\n\s]*$/i;
-    }
-    return [ $pre, $fetch, $post ];
-    return \@txt;
+    my $self  = shift;
+    my $txt   = shift || return [ undef, undef, undef ];
+    my @parts = split( m%<!--\s*\<\/?wd:fetch>\s*-->%, $txt );
+    return [ undef, $parts[0], undef ] if scalar(@parts) == 1;
+    return [ @parts, undef ] if scalar(@parts) == 2;
+    \@parts;
 }
 
-sub _parsed_template_ {
-    my $self = shift;
+sub value {
+    my $self    = shift;
+    my $eng     = shift;
+    my $content = $self->{tmpl};
     my @res;
-    foreach ( @{ $self->split_template( shift || $self->__tmpl__ ) } ) {
-        my $res = ref($_) ? $self->buld_tree($$_) : [];
+    foreach ( @{ $self->split_template($content) } ) {
+        my $res = $_ ? $self->buld_tree( $eng, $_ ) : [];
         push @res, $res;
     }
     return \@res;
 }
 
+sub parse {
+    my $self     = shift;
+    my $txt      = shift || return [];
+    my %classmap = (
+        object    => 'WebDAO::Lexer::object',
+        regclass  => 'WebDAO::Lexer::regclass',
+        objectref => 'WebDAO::Lexer::objectref',
+        text      => 'WebDAO::Lexer::text',
+        include   => 'WebDAO::Lexer::include',
+        default   => 'WebDAO::Lexer::base',
+        method    => 'WebDAO::Lexer::method'
+    );
+    our $result = [];
+    my %tags = (
+        wd => sub { shift; $result = \@_ },
+        '*' => sub {
+            my $name   = shift;
+            my $a      = shift;
+            my $childs = \@_;
+            my $class  = $classmap{$name} || $classmap{'default'};
+            my $o = $class->new(
+                name   => $name,
+                attr   => $a,
+                childs => $childs
+            );
+            return $o;
+        }
+    );
+    my $rd = new XML::Flow:: \$txt;
+    $rd->read( \%tags );
+    $result;
+}
+
 sub buld_tree {
     my $self     = shift;
-    my $raw_html = shift;
+    my $eng      = shift;
+    my $raw_html = shift || return [];
 
     #Mac and DOS line endings
     $raw_html =~ s/\r\n?/\n/g;
     my $mass;
-    $mass = [ split( /(<WD>.*?<\/WD>)/is, $raw_html ) ];
+    $mass = [ split( /(\<WD>.*?<\/WD>)/is, $raw_html ) ];
     my @res;
     foreach my $text (@$mass) {
         my @ref;
         unless ( $text =~ /^<wd/i ) {
             push @ref,
-              WebDAO::Lexer::Lobject->new(
-                class   => "_rawhtml_element",
-                id      => "none",
-                childs  => [ WebDAO::Lexer::Ltext->new( value => \$text ) ],
-                context => $self
-              ) unless $text =~ /^\s*$/;
+              WebDAO::Lexer::object->new(
+                attr=>{
+                    class=>'_rawhtml_element',
+                    'id'=>'none'
+                },
+               'childs' =>
+                      [ WebDAO::Lexer::text->new( value => \$text ) ],
+              )->value($eng)
+              unless $text =~ /^\s*$/;
         }
         else {
-            my $parser = new XML::LibXML;
-            my $dom    = $parser->parse_string($text);
-            push @ref, $self->get_obj_tree( $dom->documentElement->childNodes );
-
+            my $tree = $self->parse($text);
+            foreach my $o (@$tree) {
+                my $res = $o->value($eng);
+                push @ref, $res if defined $res;
+            }
         }
         next unless @ref;
         push @res, @ref;
     }
     return \@res;
-}
-
-sub get_obj_tree {
-    my $self = shift;
-    my %map  = (
-        object    => 'WebDAO::Lexer::Lobject',
-        regclass  => 'WebDAO::Lexer::Lregclass',
-        objectref => 'WebDAO::Lexer::Lobjectref',
-        text      => 'WebDAO::Lexer::Ltext',
-        include   => 'WebDAO::Lexer::Linclude',
-        default   => 'WebDAO::Lexer::Lbase',
-        method    => 'WebDAO::Lexer::Lmethod'
-    );
-    my @result;
-    foreach my $node (@_) {
-        my $node_name = $node->nodeName;
-        my %attr =
-          map { $_->nodeName => $_->value }
-          grep { defined $_ } $node->attributes;
-        my $map_key = $node->nodeName || 'text';
-        $map_key = $map_key =~ /text$/ ? "text" : $map_key;
-        $attr{name} = $map_key unless exists $attr{name};
-        if ( $map_key eq 'text' ) { $attr{value} = $node->nodeValue }
-        my $lclass = $map{$map_key} || $map{default};
-        my @vals = ();
-
-        if ( my @childs = $node->childNodes ) {
-            @vals = grep { defined $_ } $self->get_obj_tree(@childs);
-        }
-        my $lobject = $lclass->new( %attr, childs => \@vals, context => $self )
-          || next;
-        if ( my @res = grep { ref($_) } ( $lobject->get_self ) ) {
-            push @result, @res;
-        }
-    }
-    return @result;
-}
-
-sub _destroy {
-    my $self = shift;
-    $self->auto( [] );
 }
 1;
 __DATA__
@@ -191,7 +160,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2009 by Zahatski Aliaksandr
+Copyright 2002-2011 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
