@@ -12,7 +12,6 @@ WebDAO::Engine - Class for root object of application model
 
 use Data::Dumper;
 use WebDAO::Container;
-use WebDAO::Lex;
 use WebDAO::Lib::MethodByPath;
 use WebDAO::Lib::RawHTML;
 use base qw(WebDAO::Container);
@@ -63,24 +62,16 @@ sub init {
     if ( ref( my $classes = $opt{register} ) ) {
         $self->register_class(%$classes);
     }
-    my $raw_html = $opt{source};
     if ( my $lexer = $opt{lexer} ) {
         map { $_->value($self) } @{ $lexer->auto };
         my @objs = map { $_->value($self) } @{ $lexer->tree };
         $self->_add_childs_(@objs);
     }
     elsif ( my $lex = $opt{lex} ) {
-        map { $_->value($self) } @{ $lex->auto };
-        my ( $pre, $fetch, $post ) = @{ $lex->__tmpl__ || [] };
-        $self->__add_childs__( 0, map { $_->value($self) } @$pre );
-        $self->_add_childs_( map { $_->value($self) } @$fetch );
-        $self->__add_childs__( 2, map { $_->value($self) } @$post );
-
-    }
-    else {
-
-        #Create childs from source
-        $self->_add_childs_( @{ $self->_parse_html($raw_html) } );
+        my ( $pre, $fetch, $post ) = @{ $lex->value($self) || [] };
+        $self->__add_childs__( 0,  @$pre );
+        $self->_add_childs_(  @$fetch );
+        $self->__add_childs__( 2, @$post );
     }
 
 }
@@ -230,10 +221,6 @@ sub execute2 {
     my $url  = shift;
     my @path = @{ $sess->call_path($url) };
     my ( $src, $res ) = $self->_traverse_( $sess, @path );
-   #     use WebDAO::Test;
-   #     my $tlib = new WebDAO::Test:: eng=>$self->getEngine;
-   #     warn Dumper $tlib->tree;
-   #     exit;
     my $response = $self->response; #$sess->response_obj;
 
     #now analyze answers
@@ -274,7 +261,6 @@ sub execute2 {
     #if object modal ?
     if ( UNIVERSAL::isa( $src, 'WebDAO::Modal' ) ) {
 
-        #warn "GO MODSAD". $src;
         #set him as root of putput
         $root = $src;
     }
@@ -282,8 +268,6 @@ sub execute2 {
 
     #special handle strings
     if ( !ref($res) or ( ref($res) eq 'SCALAR' ) ) {
-
-        #    warn "GOT STRING";
 
         #now walk
     }
@@ -295,7 +279,6 @@ sub execute2 {
     }
     if ( UNIVERSAL::isa( $res, 'WebDAO::Element' ) ) {
 
-        # warn " Got $src, $res  \$need_inject_result $need_inject_result" ;
         #nothing  to do
     }
     my %injects = ();
@@ -313,10 +296,8 @@ sub execute2 {
 
         #_log1 $self "DO " . $ev->{event}. " for $obj";
         if ( $ev->{event} eq 'start' ) {
-
             $self->__handle_out__( $sess, $obj->pre_fetch($sess) )
               if UNIVERSAL::can( $obj, 'pre_fetch' );
-
         }
         elsif ( $ev->{event} eq 'inject' ) {
             $self->__handle_out__( $sess, $ev->{res} )
@@ -394,37 +375,6 @@ sub _createObj {
 
     #    _deprecated $self "_create_";
     return $self->_create_(@_);
-}
-
-#sub _parse_html(\@html)
-#return \@Objects
-sub _parse_html {
-    my ( $self, $raw_html ) = @_;
-    return [] unless $raw_html;
-
-    #Mac and DOS line endings
-    $raw_html =~ s/\r\n?/\n/g;
-    my $mass;
-    $mass = [ split( /(<WD>.*?<\/WD>)/is, $raw_html ) ];
-    my @res;
-    foreach my $text (@$mass) {
-        my @ref;
-        unless ( $text =~ /^<wd/i ) {
-            push @ref,
-              $self->_createObj( "none", "_rawhtml_element", \$text )
-              ;    #if $text =~ /\s+/;
-        }
-        else {
-            my $lex = new WebDAO::Lex:: engine => $self;
-            @ref = $lex->lex_data($text);    #clean 'empty'
-
-          #        _log3 $self "LEXED:".Dumper([ map {"$_"} @ref])."from $text";
-
-        }
-        next unless @ref;
-        push @res, @ref;
-    }
-    return \@res;
 }
 
 #Get package for functions name
