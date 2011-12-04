@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 13;
+use Test::More tests => 12;
 
 #use Test::More (no_plan);
 use Data::Dumper;
@@ -26,22 +26,18 @@ ok( ( my $session = new WebDAO::SessionSH:: store => $store_ab ),
     "Create session" );
 $session->U_id($ID);
 
-ok( my $lex = ( new WebDAO::Lex:: content => join "", <DATA> ),
+my $str = join "", <DATA>;
+ok( my $lex = ( new WebDAO::Lex:: tmpl => $str ),
     "Create Lexer" );
 isa_ok( $lex, "WebDAO::Lex" );
 my $eng = new WebDAO::Engine::
   session => $session,
-  lexer   => $lex,
+  lex   => $lex,
   ;
-map { $_->value($eng) } @{ $lex->auto };
 my ($lmethod) =
-  grep { $_->isa('WebDAO::Lexer::Lmethod') } @{ $lex->tree };
-isa_ok( $lmethod, "WebDAO::Lexer::Lmethod" );
-isa_ok(
-    my $method_call = $lmethod->value($eng),
-    "WebDAO::Lib::MethodByPath"
-);
-is( $method_call->fetch($session), 111, "Check call" );
+  grep { $_->isa('WebDAO::Lib::MethodByPath') } @{ $lex->buld_tree($eng,$str ) };
+isa_ok( $lmethod, "WebDAO::Lib::MethodByPath" );
+is( $lmethod->fetch($session), 111, "Check call" );
 
 #########################
 
