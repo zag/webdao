@@ -80,16 +80,6 @@ my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile} || $opt{f};
 die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
   unless $filename;
 
-=pod
-my $content = qq!<wD><include file="$filename"/></wD>!;
-my $lex = new WebDAO::Lex:: content => $content;
-my $eng = $eng_class->new(
-    %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },
-    lexer    => $lex,
-    session  => $sess,
-);
-=cut
-
 open FH, "<$filename" or die $!;
 my $content ='';
 { local $/=undef;
@@ -107,8 +97,6 @@ $sess->ExecEngine($eng, $evl_file);
 $sess->destroy;
 croak STDERR $@ if $@;
 print "\n";
-
-#$sess->ExecEngine($eng);
 
 =head1 NAME
 
@@ -156,7 +144,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2000-2006 by Zahatski Aliaksandr
+Copyright 2000-2011 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

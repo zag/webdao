@@ -200,12 +200,6 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
         die "$0 ERR:: file not found or can't access (WD_INDEXFILE): $env_var"
           unless $filename;
 
-=pod
-        my $content = qq!<wD><include file="$filename"/></wD>!;
-        my $lex = new WebDAO::Lex:: content => $content;
-        $ini_pars{lexer} = $lex;
-=cut
-#=pod
         open FH, "<$filename" or die $!;
         my $content ='';
         { local $/=undef;
@@ -214,7 +208,6 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
         close FH;
         my $lex = new WebDAO::Lex:: tmpl => $content;
         $ini_pars{lex} = $lex;
-#=cut
     }
     else {
         $ini_pars{source} = '';
@@ -266,7 +259,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003-2008 by Zahatski Aliaksandr
+Copyright 2003-2011 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

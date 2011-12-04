@@ -6,7 +6,6 @@
 #  DESCRIPTION:  CGI script for WebDAO project
 #       AUTHOR:  Aliaksandr P. Zahatski (Mn), <zag@cpan.org>
 #===============================================================================
-#$Id: wd_cgi.pl,v 1.1 2006/10/13 12:39:09 zag Exp $
 
 use WebDAO;
 use WebDAO::CVcgi;
@@ -50,12 +49,19 @@ my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile},
   "$ENV{DOCUMENT_ROOT}/$ENV{wdIndexFile}", "$ENV{DOCUMENT_ROOT}/index.xhtml";
 die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
   unless $filename;
-my $content = qq!<wD><include file="$filename"/></wD>!;
-my $lex     = new WebDAO::Lex:: content => $content;
+
+        open FH, "<$filename" or die $!;
+        my $content ='';
+        { local $/=undef;
+        $content = <FH>;
+        }
+        close FH;
+
+my $lex     = new WebDAO::Lex:: tmpl => $content;
 
 my $eng = $eng_class->new(
     %{ &_parse_str_to_hash( $ENV{wdEnginePar} ) || {} },
-    lexer    => $lex,
+    lex    => $lex,
     session  => $sess,
 );
 $sess->ExecEngine($eng);
@@ -82,7 +88,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003-2007 by Zahatski Aliaksandr
+Copyright 2003-2011 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
