@@ -161,6 +161,8 @@ sub setup : Test(setup=>2) {
     my $buffer;
     $t->{OUT} = \$buffer;
     my $cv = new TestCV:: \$buffer;
+    #don't print headers
+    $cv->{SKIP_HEADERS} =1;
     ok(
         ( my $session = new WebDAO::SessionSH:: store => $store_ab, cv => $cv ),
         "Create session"
