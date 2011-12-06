@@ -1,7 +1,10 @@
 Revision history for Perl extension WebDAO.
 
    - convert pod to pod6
-2.0_13 *
+   - rewrite lexer (use XML::Flow instead XML::LibXML)
+   - add mod  WebDAO::Config ( from MetaStore::Config )
+   
+2.0_13 
     - rename events methods to __XXX___
     
 2.0_12
