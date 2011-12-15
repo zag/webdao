@@ -9,8 +9,15 @@ WebDAO::Test - Class for tests
 =head1 SYNOPSIS
 
     use WebDAO::Test;
-    my $eng = t_get_engine( 'contrib/www/index.xhtm');
-    my $tlib = t_get_tlib($eng);
+
+    my $eng = WebDAO::Test::make_engine(
+            class      => 'MyClass',
+            config     => 't/tests.ini',
+           index_file => 'contrib/www/index.xhtml'
+          )
+    
+    my $tlib = new WebDAO::Test::(eng =>$eng);
+
 
 =head1 DESCRIPTION
 
@@ -89,6 +96,7 @@ Return engine object. Used params:
   index_file - path to index file
 
 
+
 =cut
 
 sub make_engine {
@@ -97,12 +105,14 @@ sub make_engine {
     if ( my $index_file = delete $eng_pars{index_file} ) {
         warn "$index_file not found!!!" unless -e $index_file;
         if ( $index_file && -e $index_file ) {
-            my $content = qq!<wD><include file="$index_file"/></wD>!;
-            my $lex = new WebDAO::Lex:: content => $content;
-            $eng_pars{lexer} = $lex;
+        open FH, "<$index_file" or die $!;
+        my $content ='';
+        { local $/=undef;
+            $content = <FH>;
         }
-        else {
-            $eng_pars{source} = '';
+        close FH;
+            my $lex = new WebDAO::Lex:: tmpl => $content;
+            $eng_pars{lex} = $lex;
         }
     }
     my $session =  new WebDAO::SessionSH::;
