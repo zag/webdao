@@ -15,6 +15,7 @@ use WebDAO;
 use WebDAO::SessionSH;
 use WebDAO::Store::Abstract;
 use Data::Dumper;
+use WebDAO::Lex;
 use Getopt::Long;
 use Pod::Usage;
 
