@@ -1,5 +1,6 @@
 Revision history for Perl extension WebDAO.
 
+   - fix mod deps for wd_shell.pl
 2.0_14
    - convert pod to pod6
    - rewrite lexer (use XML::Flow instead XML::LibXML)

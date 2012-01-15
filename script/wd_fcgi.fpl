@@ -21,7 +21,6 @@ use strict;
 use warnings;
 use POSIX;
 
-#use Test::More;
 use Carp;
 
 my ( $listen, $nproc, $pidfile, $manager, $detach, $man, $help, $maxreq );

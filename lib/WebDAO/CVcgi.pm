@@ -107,6 +107,7 @@ sub AUTOLOAD {
     my $self = shift;
     return if $WebDAO::CVcgi::AUTOLOAD =~ /::DESTROY$/;
     ( my $auto_sub ) = $WebDAO::CVcgi::AUTOLOAD =~ /.*::(.*)/;
+#    warn Dumper([caller()]);
     return $self->Cgi_obj->$auto_sub(@_);
 }
 1;
