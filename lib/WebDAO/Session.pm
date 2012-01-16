@@ -60,7 +60,7 @@ sub Init {
             path_info_elments => [],
             file              => "",
             base_url     => $cv->url( -base => 1 ),    #http://base.com
-            query_string => $cv->query_string,
+            query_string => $cv->query_string, #???
             referer      => $cv->referer(),
             accept       => \%accept
         }
