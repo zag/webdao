@@ -33,9 +33,13 @@ is $fcgi->url( -path_info => 1 ), '/Envs/partsh.sd',       '-path-info';
 is $fcgi->url( -base      => 1 ), 'http://example.com:82', '-base';
 is $fcgi->url(), 'http://example.com:82/Envs/partsh.sd?23=23', 'url()';
 is $fcgi->method(), 'GET', 'method()';
-is_deeply $fcgi->accept, {
-           'application/xhtml+xml' => undef,
-           'application/xml' => undef,
-           'text/html' => undef
- }, 'accept';
+is_deeply $fcgi->accept,
+  {
+    'application/xhtml+xml' => undef,
+    'application/xml'       => undef,
+    'text/html'             => undef
+  },
+  'accept';
+
+is_deeply $fcgi->param(), { '23' => '23' }, 'GET params';
 

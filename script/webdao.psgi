@@ -83,20 +83,22 @@ use strict;
 use warnings;
 use WebDAO::Util;
 use WebDAO;
-
+use WebDAO::CV;
 
 my $handler = sub {
     my $env = shift;
     my $coderef = shift;
     $env->{wdEngine} = $env->{HTTP_WDENGINE};
     $env->{wdSession} = $env->{HTTP_WDSESSION};
+    warn "use $env->{wdSession}";
     my $ini = WebDAO::Util::get_classes(__env => $env, __preload=>1);
 #    use Data::Dumper;
 #    warn Dumper $ini;
     my $store_obj = "$ini->{wdStore}"->new(
             %{ $ini->{wdStorePar} }
     );
-    my $cv = WebDAO::CVpsgi->new($env, $coderef);
+
+    my $cv = WebDAO::CV->new(env=>$env, writer=>$coderef);
     my $sess = "$ini->{wdSession}"->new(
         %{ $ini->{wdSessionPar} },
         store => $store_obj,
