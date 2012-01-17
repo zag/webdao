@@ -7,7 +7,7 @@
 #$Id$
 package WebDAO::CV;
 use URI;
-
+use Data::Dumper;
 use strict;
 use warnings;
 
@@ -41,8 +41,6 @@ sub url {
     if ( exists $env->{FCGI_ROLE} ) {
         ( $env->{PATH_INFO}, $env->{QUERY_STRING} ) =
           $env->{REQUEST_URI} =~ /([^?]*)(?:\?(.*)$)?/s;
-
-        #warn Dumper( [ $env->{PATH_INFO}, $env->{QUERY_STRING} ] );
     }
     my $path  = $env->{PATH_INFO};       # 'PATH_INFO' => '/Env'
     my $host  = $env->{HTTP_HOST};       # 'HTTP_HOST' => '127.0.0.1:5000'
@@ -54,7 +52,6 @@ sub url {
     $full_path =~ s!/$!! if $path =~ m!^/!;
     my $uri = URI->new($full_path);
 
-    #    return "$full_path";
     if ( exists $args{-path_info} ) {
         return $uri->path();
     }
@@ -94,6 +91,17 @@ sub accept {
     my %res;
     @res{ split( ',', $types ) } = ();
     \%res;
+}
+
+=head2 param 
+
+return params (currently only from GET)
+
+=cut
+
+sub param {
+    my $self = shift;
+    return { $self->url()->query_form };
 }
 
 1;
