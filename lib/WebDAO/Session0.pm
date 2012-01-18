@@ -59,7 +59,8 @@ sub Init {
     #save request method
     $self->request_method($cv->method);
     #set default header
-    $cv->set_header( -type => 'text/html; charset=utf-8' );
+    $cv->set_header("Content_Type" => 'text/html; charset=utf-8');
+    #$cv->set_header( -type => 'text/html; charset=utf-8' );
 
 }
 

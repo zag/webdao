@@ -42,4 +42,4 @@ is_deeply $fcgi->accept,
   'accept';
 
 is_deeply $fcgi->param(), { '23' => '23' }, 'GET params';
-
+print Dumper $fcgi->set_header("Content_Type" => 'text/html; charset=utf-8')

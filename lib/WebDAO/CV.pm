@@ -10,15 +10,14 @@ use URI;
 use Data::Dumper;
 use strict;
 use warnings;
-
-#deprecated 
-sub query_string {};
-sub referer {}
-
+#use WebDAO::Base;
+#use base qw( WebDAO::Base );
 
 sub new {
     my $class = shift;
-    bless( ( $#_ == 0 ) ? shift : {@_}, ref($class) || $class );
+    my $self = bless( ( $#_ == 0 ) ? shift : {@_}, ref($class) || $class );
+    $self->{headers} = {};
+    $self
 }
 
 =head2 url (-options1=>1)
@@ -82,7 +81,6 @@ return hashref
            'text/html' => undef
       };
 
-
 =cut
 sub accept {
     my $self = shift;
@@ -104,6 +102,24 @@ sub param {
     return { $self->url()->query_form };
 }
 
+=head2 set_header
+
+   $cv->set_header("Content_Type" => 'text/html; charset=utf-8')
+
+=cut
+
+sub set_header {
+    my ( $self, $name, $par ) = @_;
+    $name = uc $name;
+
+    #collect -cookies
+    if ( $name eq '-COOKIE' ) {
+        push @{ $self->{headers}->{$name} }, $par;
+    }
+    else {
+        $self->{headers}->{$name} = $par;
+    }
+}
 1;
 
 
