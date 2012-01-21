@@ -10,8 +10,10 @@ use URI;
 use Data::Dumper;
 use strict;
 use warnings;
-#use WebDAO::Base;
-#use base qw( WebDAO::Base );
+use WebDAO::Base;
+use base qw( WebDAO::Base );
+
+__PACKAGE__->mk_attr(status=>200);
 
 sub new {
     my $class = shift;
@@ -99,18 +101,19 @@ return params (currently only from GET)
 
 sub param {
     my $self = shift;
-    return { $self->url()->query_form };
+    my $params = { $self->url()->query_form };
+    return keys %$params unless @_;
+    return $params->{$_[0]};
 }
 
 =head2 set_header
 
-   $cv->set_header("Content_Type" => 'text/html; charset=utf-8')
+   $cv->set_header("Content-Type" => 'text/html; charset=utf-8')
 
 =cut
 
 sub set_header {
     my ( $self, $name, $par ) = @_;
-    $name = uc $name;
 
     #collect -cookies
     if ( $name eq '-COOKIE' ) {
@@ -120,6 +123,35 @@ sub set_header {
         $self->{headers}->{$name} = $par;
     }
 }
+
+=head3 print_headers [ header1=>value, ...]
+
+Method for output headers
+
+=cut
+
+sub print_headers {
+    my $self = shift;
+    #merge in and exists headers
+    my %headers = ( %{ $self->{headers} } , @_ );
+    my $status = $self->status;
+    my $fd = $self->{writer}->([$status||"200", [%headers], undef]);
+    $self->{fd} = $fd;
+}
+
+sub print {
+    my $self = shift;
+    if (exists $self->{fd}) {
+        foreach my $line (@_) {
+        utf8::encode( $line) if utf8::is_utf8($line);
+        $self->{fd}->write($line);
+        }
+    } else {
+    print @_;
+    }
+}
+
+
 1;
 
 

@@ -71,6 +71,38 @@ sub get_header {
     return $self->_headers->{ uc $name };
 }
 
+=head2 aliases for headers
+
+=head3 content_type
+
+  $r->content_type('text/html; charset=utf-8');
+
+=cut
+
+sub content_type {
+    my $self = shift;
+    unless ($#_ > 0 ) {
+        $self->set_header('Content-Type', @_)
+    }
+    $self->get_header('Content-Type');
+}
+
+=head3 content_length
+
+A decimal number indicating the size in bytes of the message content.
+
+=cut
+
+sub content_length {
+    my $self = shift;
+    unless ($#_ > 0 ) {
+      $self->set_header('Content-Length' , @_)
+    } 
+    $self->get_header('Content-Length');
+}
+
+=head3  
+
 =head2 get_mime_for_filename <filename>
 
 Determine mime type for filename (Simple by ext);

@@ -12,6 +12,7 @@ use Encode qw(encode decode is_utf8);
 use WebDAO::Session;
 use base qw( WebDAO::Session );
 use WebDAO::CV;
+use WebDAO::Response0;
 
 #sub new {
 #    my $class = shift;
@@ -31,7 +32,7 @@ sub Init {
     my $cv = $self->Cgi_obj;           # Store Cgi_obj in local var
                                       #create response object
     $self->_response_obj(
-        new WebDAO::Response::
+        new WebDAO::Response0::
           session => $self,
         cv => $cv
     );
@@ -59,9 +60,7 @@ sub Init {
     #save request method
     $self->request_method($cv->method);
     #set default header
-    $cv->set_header("Content_Type" => 'text/html; charset=utf-8');
-    #$cv->set_header( -type => 'text/html; charset=utf-8' );
-
+    $cv->set_header("Content-Type" => 'text/html; charset=utf-8');
 }
 
 #Get cgi params;
@@ -69,7 +68,7 @@ sub _get_params {
     my $self = shift;
     my $_cgi = $self->Cgi_obj();
     my %params;
-    foreach my $i ( $_cgi->param() ) {
+    foreach my $i ( $_cgi->param()  ) {
         my @all = $_cgi->param($i);
         foreach my $value (@all) {
             next if ref $value;
