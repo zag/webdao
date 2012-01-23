@@ -47,6 +47,8 @@ my $fcgi = WebDAO::CV->new(
         'REQUEST_METHOD' => 'GET',
         'HTTP_ACCEPT' =>
           'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'HTTP_COOKIE' => 'tesrt=val; Yert=Terst',
+      
     },
     writer => sub {
         new Test::Writer::
@@ -84,6 +86,8 @@ my $r = new WebDAO::Response0:: cv=>$cv1;
 $r->content_type('text/html; charset=utf-8');
 $r->content_length(2345);
 $r->print_header();
+
+
 
 use CGI;
 my $c = new CGI;
