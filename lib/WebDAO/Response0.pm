@@ -39,6 +39,9 @@ sub set_header {
             my $h = CGI->new->header( $UKey, $par );
             $h =~ s/\015\012//g;
             ( $name, $par ) = split( /\s*:\s*/, $h );
+    } elsif ( $name eq 'Set-Cookie') {
+        push @{ $self->_headers->{ $name } }, $par;
+        return $self
     }
         
     $self->_headers->{ $name } = $par;
@@ -61,5 +64,18 @@ sub print_header {
     $self->_is_headers_printed(1);
     $self;
 }
+
+=head2 set_cookie ( -name => <name>, ...)
+
+Set cookie. For params see manpage for  CGI::cookie.
+return $self reference
+
+=cut
+
+sub set_cookie {
+    my $self = shift;
+    $self->set_header("Set-Cookie", $_) for @_;
+}
+
 1;
 

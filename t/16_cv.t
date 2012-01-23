@@ -85,7 +85,16 @@ my $cv1 = &make_cv;
 my $r = new WebDAO::Response0:: cv=>$cv1;
 $r->content_type('text/html; charset=utf-8');
 $r->content_length(2345);
-$r->print_header();
+$r->set_cookie({name=>'test', value=>1});
+use Data::Dumper;
+
+diag Dumper ($r->print_header()->_headers);
+is_deeply $r->print_header()->_headers , {
+           'Content-Length' => 2345,
+           'Content-Type' => 'text/html; charset=utf-8'
+         };
+
+exit;
 
 
 

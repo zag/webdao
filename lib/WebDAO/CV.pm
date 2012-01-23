@@ -134,6 +134,12 @@ sub print_headers {
     my $self = shift;
     #merge in and exists headers
     my %headers = ( %{ $self->{headers} } , @_ );
+    #merge cookies
+    if ( my $cookies = $self->{headers}->{"Set-Cookie"} ) {
+        push @{ $headers{"Set-Cookie"} }, @$cookies;
+    }
+    #format cookies
+    if ( my $c = delete )
     my $status = $self->status;
     my $fd = $self->{writer}->([$status||"200", [%headers], undef]);
     $self->{fd} = $fd;
