@@ -12,15 +12,16 @@ use warnings;
 use WebDAO::Util;
 use WebDAO;
 use WebDAO::CV;
+use WebDAO::Lex;
 
 my $handler = sub {
     my $env = shift;
     die "Only psgi.streaming=1 servers supported !"
-      unless $env->{'psgi.streaming'};
+     unless $env->{'psgi.streaming'};
     my $coderef = shift;
     $env->{wdEnginePar} = $ENV{wdEnginePar} || $env->{HTTP_WDENGINEPAR} ;
     $env->{wdEngine} = $ENV{wdEngine} || $env->{HTTP_WDENGINE} ;
-    $env->{wdSession} = $ENV{wdSession} || $env->{HTTP_WDSESSION} || 'WebDAO::Session0' ;
+    $env->{wdSession} = $ENV{wdSession} || $env->{HTTP_WDSESSION} || 'WebDAO::Session' ;
     my $ini = WebDAO::Util::get_classes(__env => $env, __preload=>1);
     my $store_obj = "$ini->{wdStore}"->new(
             %{ $ini->{wdStorePar} }
@@ -33,16 +34,33 @@ my $handler = sub {
         store => $store_obj,
         cv    => $cv,
     );
-#    warn "use $env->{wdSession}, $ini->{wdEngine}";
+
+    #determine root document
+    my $env_var = $env->{HTTP_WDINDEXFILE} || $ENV{wdIndexFile} || $ENV{WD_INDEXFILE};
+    my %ini_pars = ();
+    if ( $env_var && !-z $env_var ) {
+        my ($filename) = grep { -r $_ && -f $_ } $env_var;
+        die "$0 ERR:: file not found or can't access (WD_INDEXFILE): $env_var"
+          unless $filename;
+
+        open FH, "<$filename" or die $!;
+        my $content ='';
+        { local $/=undef;
+        $content = <FH>;
+        }
+        close FH;
+        my $lex = new WebDAO::Lex:: tmpl => $content;
+        $ini_pars{lex} = $lex;
+    }
     my $eng = "$ini->{wdEngine}"->new(
         %{ $ini->{wdEnginePar} },
+        %ini_pars,
         session => $sess,
     );
     #set default header
-#    $sess->set_header("content-Type" => 'text/html; charset=utf-8');
     $sess->ExecEngine($eng);
-    use Data::Dumper;
-    $cv->{fd}->write('<pre>'.Dumper($env).'</pre>');
+#    use Data::Dumper;
+#    $cv->{fd}->write('<pre>'.Dumper($env).'</pre>');
     #close psgi
     $cv->{fd}->close() if exists $cv->{fd};
     $sess->destroy;

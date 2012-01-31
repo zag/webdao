@@ -13,15 +13,28 @@ Session interface to device(HTTP protocol) specific function
 
 
 use WebDAO::Base;
-use WebDAO::CVcgi;
+use WebDAO::CV;
 use WebDAO::Store::Abstract;
 use WebDAO::Response;
 use Data::Dumper;
 use base qw( WebDAO::Base );
 use Encode qw(encode decode is_utf8);
 use strict;
-__PACKAGE__->attributes
-  qw( Cgi_obj Cgi_env U_id Header Params  _store_obj _response_obj _is_absolute_url _request_method);
+
+__PACKAGE__->mk_attr(
+    Cgi_obj => undef, # request object
+    Cgi_env => undef, 
+    U_id=> undef,
+    Params => undef,
+    _store_obj =>undef,
+    _response_obj=> undef, #deprecated ? 
+    _is_absolute_url =>undef #deprecated ?
+);
+
+#sub new {
+#    my $class = shift;
+#    bless( ( $#_ == 0 ) ? shift : {@_}, ref($class) || $class );
+#}
 
 sub _init {
     my $self = shift;
@@ -35,24 +48,17 @@ sub Init {
     #Parametrs is realm
     my $self = shift;
     my %args = @_;
-    Header $self ( {} );
     U_id $self undef;
     Cgi_obj $self $args{cv}
-      || new WebDAO::CVcgi::;    #create default controller
+      || new WebDAO::CV::;    #create default controller
     my $cv = $self->Cgi_obj;           # Store Cgi_obj in local var
                                       #create response object
     $self->_response_obj(
         new WebDAO::Response::
-          session => $self,
         cv => $cv
     );
     _store_obj $self ( $args{store} || new WebDAO::Store::Abstract:: );
 
-    #workaround for CGI.pm: http://rt.cpan.org/Ticket/Display.html?id=36435
-    my %accept = ();
-    if ( $cv->http('accept') ) {
-        %accept = map { $_ => $cv->Accept($_) } $cv->Accept();
-    }
     Cgi_env $self (
         {
             url => $cv->url( -base => 1 ),    #http://eng.zag
@@ -60,24 +66,35 @@ sub Init {
             path_info_elments => [],
             file              => "",
             base_url     => $cv->url( -base => 1 ),    #http://base.com
-            query_string => $cv->query_string, #???
-            referer      => $cv->referer(),
-            accept       => \%accept
+            accept       => $cv->accept,
         }
     );
 
-    #fix CGI.pm bug http://rt.cpan.org/Ticket/Display.html?id=25908
-    $self->Cgi_env->{path_info} =~ s/\?.*//s;
     $self->get_id;
     Params $self ( $self->_get_params() );
     $self->Cgi_env->{path_info_elments} =
       [ grep { defined $_ } split( /\//, $self->Cgi_env->{path_info} ) ];
-    #save request method
-    $self->request_method($ENV{REQUEST_METHOD});
     #set default header
-    $cv->set_header( -type => 'text/html; charset=utf-8' );
-
+    $cv->set_header("Content-Type" => 'text/html; charset=utf-8');
 }
+
+
+#Get cgi params;
+sub _get_params {
+    my $self = shift;
+    my $_cgi = $self->Cgi_obj();
+    my %params;
+    foreach my $i ( $_cgi->param()  ) {
+        my @all = $_cgi->param($i);
+        foreach my $value (@all) {
+            next if ref $value;
+            $value = decode( 'utf8', $value ) unless is_utf8($value);
+        }
+        $params{$i} = scalar @all > 1 ? \@all : $all[0];
+    }
+    return \%params;
+}
+
 
 #Can be overlap if you choose another
 #alghoritm generate unique session ID (i.e cookie,http_auth)
@@ -132,48 +149,15 @@ sub flush_session {
     $self->_store_obj->flush( $self->get_id() );
 }
 
+sub get_request {
+    my $self = shift;
+    return $self->Cgi_obj;
+}
+
+#deprecated ??? use WebDAO::Engine::response
 sub response_obj {
     my $self = shift;
     return $self->_response_obj;
-}
-
-#Session interface to device(HTTP protocol) specific function
-#$self->__send_event__("_sess_servise",{
-#		funct 	=> geturl,
-#		par	=> $ref,
-#		result	=> \$res
-#});
-
-#deprecated
-sub sess_servise {
-    my ( $self, $event_name, $par ) = @_;
-    my %service = (
-        getsess => sub { return $self },
-    );
-    if ( exists( $service{ $par->{funct} } ) ) {
-        ${ $par->{result} } = $service{ $par->{funct} }->( $par->{par} );
-    }
-    else {
-        logmsgs $self "not exist request funct !" . $par->{funct};
-    }
-}
-
-sub response {
-    my $self = shift;
-    my $res  = shift;
-
-    #    unless $res->type
-    return if $res->{cleared};
-    my $headers = $self->Header();
-    $headers->{-TYPE} = $res->{type} if $res->{type};
-    while ( my ( $key, $val ) = each %$headers ) {
-        my $UKey = uc $key;
-        $res->{headers}->{$UKey} = $headers->{$UKey}
-          unless exists $res->{headers}->{$UKey};
-    }
-
-    #    $res->{headers} = $headers;
-    $self->Cgi_obj->response($res);
 }
 
 sub print {
@@ -189,52 +173,6 @@ sub ExecEngine {
     $eng_ref->__send_event__("_sess_ended");
     $eng_ref->_destroy;
     $self->flush_session();
-}
-
-#for setup Output headers
-sub set_header {
-    my $self     = shift;
-    my $response = $self->response_obj;
-    return $self->response_obj->set_header(@_)
-
-}
-
-#Get cgi params;
-sub _get_params {
-    my $self = shift;
-    my $_cgi = $self->Cgi_obj();
-    my %params;
-    foreach my $i ( $_cgi->param() ) {
-        my @all = $_cgi->param($i);
-        foreach my $value (@all) {
-            next if ref $value;
-            $value = decode( 'utf8', $value ) unless is_utf8($value);
-        }
-        $params{$i} = scalar @all > 1 ? \@all : $all[0];
-    }
-    return \%params;
-}
-
-sub print_header() {
-    my ($self) = @_;
-    my $_cgi   = $self->Cgi_obj();
-    my $ref    = $self->Header();
-    return $self->response( { data => '', } );
-    return $_cgi->header( map { $_ => $ref->{$_} } keys %{ $self->Header() } );
-}
-
-=head2 request_method
-
-return Req Method [GET, POST, DELETE, PUT ]
-
-=cut
-
-sub request_method {
-    my $self = shift;
-    if (@_) {
-        $self->_request_method( shift );
-    } 
-    $self->_request_method()
 }
 
 sub destroy {
@@ -254,7 +192,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2010 by Zahatski Aliaksandr
+Copyright 2002-2012 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

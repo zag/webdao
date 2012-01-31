@@ -39,7 +39,7 @@ sub SKIP_CLASS {
 sub setup : Test(setup=>2) {
     my $t = shift;
     ok( ( my $store_ab = new WebDAO::Store::Abstract:: ), "Create store" );
-    my $buffer;
+    my $buffer='';
     $t->{OUT}=\$buffer;
     my $cv = new  TestCV:: \$buffer;
     ok( ( my $session = new WebDAO::SessionSH:: store => $store_ab, cv=>$cv ),
@@ -54,21 +54,5 @@ sub teardown : Test(teardown) {
     my $t = shift;
     delete $t->{tlib};
 }
-
-=pod
-sub startup : Test(startup=>+2) {
-    my $t = shift;
-    ok( ( my $store_ab = new WebDAO::Store::Abstract:: ), "Create store" );
-    my $buffer;
-    $t->{OUT}=\$buffer;
-    my $cv = new  TestCV:: \$buffer;
-    ok( ( my $session = new WebDAO::SessionSH:: store => $store_ab, cv=>$cv ),
-        "Create session" );
-    $session->U_id("sdsd");
-    my $eng = new WebDAO::Engine:: session => $session;
-    $t->{tlib} = new WebDAO::Test eng => $eng;
-    undef
-}
-=cut
 1;
 

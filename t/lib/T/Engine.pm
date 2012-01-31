@@ -217,7 +217,6 @@ sub t02_output : Test(7) {
     my $out = $t->{OUT};
     $eng->execute2( $sess, "/extra2/elem/String" );
     is $$out, '<STRI/>', "/extra2/elem/String - call method";
-
     $$out = '';
     $eng->execute2( $sess, "/extra2/elem/" );
     is $$out, 'FF', "/extra2/elem/ - return self";
@@ -240,7 +239,6 @@ sub t03_modal_comp : Test(10) {
     my $t   = shift;
     my $eng = $t->{tlib}->eng;
     my $tlib = $t->{tlib};
-
     ok my $obj = $eng->_createObj( 'elem', 'TElem' ), 'make TestComp';
     $eng->_add_childs_($obj);
 
@@ -262,6 +260,7 @@ sub t03_modal_comp : Test(10) {
     #                        }
     #                      ]
     #         };
+    
     my $out  = $t->{OUT};
     my $sess = $eng->_session;
     $eng->execute2( $sess, "/Mcomp/" );

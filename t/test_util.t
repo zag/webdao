@@ -9,8 +9,8 @@
 use strict;
 use warnings;
 
-#use Test::More tests => 1;                      # last test to print
-use Test::More 'no_plan';
+use Test::More tests => 4;                      # last test to print
+#use Test::More 'no_plan';
 use Data::Dumper;
 use_ok('WebDAO::Util');
 
@@ -27,4 +27,5 @@ is_deeply $h1->{wdEnginePar},
   },
   'parse params';
 
-diag "$h1->{wdSession}"->new;
+isa_ok "$h1->{wdSession}"->new, 'WebDAO::Session', 'defaults';
+

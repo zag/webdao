@@ -1,6 +1,6 @@
 #===============================================================================
 #
-#  DESCRIPTION:  CGI controller
+#  DESCRIPTION:  controller
 #
 #       AUTHOR:  Aliaksandr P. Zahatski, <zahatski@gmail.com>
 #===============================================================================
@@ -10,6 +10,7 @@ use URI;
 use Data::Dumper;
 use strict;
 use warnings;
+use HTTP::Body;
 use WebDAO::Base;
 use base qw( WebDAO::Base );
 
@@ -43,9 +44,9 @@ sub url {
         ( $env->{PATH_INFO}, $env->{QUERY_STRING} ) =
           $env->{REQUEST_URI} =~ /([^?]*)(?:\?(.*)$)?/s;
     }
-    my $path  = $env->{PATH_INFO};       # 'PATH_INFO' => '/Env'
-    my $host  = $env->{HTTP_HOST};       # 'HTTP_HOST' => '127.0.0.1:5000'
-    my $query = $env->{QUERY_STRING};    # 'QUERY_STRING' => '434=34&erer=2'
+    my $path  = $env->{PATH_INFO} || '';       # 'PATH_INFO' => '/Env'
+    my $host  = $env->{HTTP_HOST} || 'example.org';       # 'HTTP_HOST' => '127.0.0.1:5000'
+    my $query = $env->{QUERY_STRING}|| '';    # 'QUERY_STRING' => '434=34&erer=2'
     my $proto     = $env->{'psgi.url_scheme'} || 'http';
     my $full_path = "$proto://${host}${path}?$query";
 
@@ -95,15 +96,93 @@ sub accept {
 
 =head2 param 
 
-return params (currently only from GET)
+return params 
 
 =cut
 
 sub param {
     my $self = shift;
-    my $params = { $self->url()->query_form };
+    my $params = $self->{parsed_params};
+    unless ($params) {
+    #init by POST params
+    $params = $self->_parse_body;
+    my @get_params = $self->url()->query_form;
+    while (my ($k, $v) = splice(@get_params,0,2 )) {
+        unless ( exists  $params->{ $k } ) {
+            $params->{ $k } = $v
+        } else {
+            my $val = $params->{ $k };
+            #if array ?
+            if ( ref $val ) {
+                push @$val, $v
+            } else {
+                $params->{ $k } = [$val, ref($v) ? @$v : $v]
+            }
+        }
+    }
+    $self->{parsed_params} = $params;
+    }
     return keys %$params unless @_;
-    return $params->{$_[0]};
+    return undef unless exists  $params->{$_[0]};
+    my $res = $params->{$_[0]};
+    if ( ref($res) ) {
+       return  wantarray ?  @$res : $res->[0]
+    }
+    return $res;
+}
+
+#parse body
+sub _parse_body {
+    my $self = shift;
+
+    my $content_type  = $self->{env}->{CONTENT_TYPE};
+    my $content_length  = $self->{env}->{CONTENT_LENGTH};
+    if (!$content_type && !$content_length) {
+        return {};
+    }
+
+    my $body = HTTP::Body->new($content_type, $content_length);
+    $body->cleanup(1);
+
+    my $input = $self->{env}->{'psgi.input'};
+    #reset IO
+    $input->seek(0,0);
+    my $spin = 0;
+
+    while ($content_length) {
+        $input->read(my $chunk, $content_length < 8192 ? $content_length : 8192);
+        my $read = length $chunk;
+        $content_length -= $read;
+        $body->add($chunk);
+        if ($read == 0 && $spin++ > 2000) {
+            Carp::croak "Bad Content-Length: maybe client disconnect? ($content_length bytes remaining)";
+        }
+    }
+    $self->{'http.body'} = $body;
+    return $body->param
+}
+
+=head2 get-body
+
+Return HTTP body <FH>
+
+    my $body;
+    {
+        local $/;
+        my $fd = $r->get_request->get_body;
+        $body = <$fd>;
+     }
+
+=cut
+
+sub get_body {
+    my $self = shift;
+    unless ( exists $self->{'http.body'} ) {
+        $self->_parse_body();
+    }
+
+    my $http_body = $self->{'http.body'} || return undef;
+    return $http_body->body;
 }
 
 =head2 set_header
@@ -138,10 +217,30 @@ sub print_headers {
     if ( my $cookies = $self->{headers}->{"Set-Cookie"} ) {
         push @{ $headers{"Set-Cookie"} }, @$cookies;
     }
+    my @cookies_headers = ();
     #format cookies
-    if ( my $c = delete )
+    if ( my $cookies = delete $headers{"Set-Cookie"} ) {
+       foreach my $c ( @$cookies ) {
+          my $hvalue;
+          if (ref($c) eq 'HASH') {
+            my $path = $c->{path} || '/';
+#            Set-Cookie: srote=ewe&1&1&2; path=$path
+            $hvalue = "$c->{name}=$c->{value}; path=$path";
+            if (my $expires = $c->{expires}) {
+            my @MON  = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
+            my @WDAY = qw( Sun Mon Tue Wed Thu Fri Sat );
+            my($sec, $min, $hour, $mday, $mon, $year, $wday) = gmtime($expires);
+            $year += 1900;
+            $expires = sprintf("%s, %02d-%s-%04d %02d:%02d:%02d GMT",
+                       $WDAY[$wday], $mday, $MON[$mon], $year, $hour, $min, $sec);
+            $hvalue .=" ;expires=$expires";
+            }
+          } else { $hvalue = $c }
+          push @cookies_headers, "Set-Cookie", $hvalue;
+       }
+    }
     my $status = $self->status;
-    my $fd = $self->{writer}->([$status||"200", [%headers], undef]);
+    my $fd = $self->{writer}->([$status||"200", [%headers, @cookies_headers], undef]);
     $self->{fd} = $fd;
 }
 
@@ -155,6 +254,22 @@ sub print {
     } else {
     print @_;
     }
+}
+
+=head2 get_cookie 
+
+return hashref to {key=>value}
+
+=cut
+
+sub get_cookie {
+    my $self = shift;
+    my $str = $self->{env}->{HTTP_COOKIE} || return {};
+    my %res;
+    %res =
+      map { URI::Escape::uri_unescape($_) } map { split /=/ } split /\s*[;]\s*/,
+      $str;
+    \%res;
 }
 
 

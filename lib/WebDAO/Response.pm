@@ -6,9 +6,13 @@ package WebDAO::Response;
 
 WebDAO::Response - Response class
 
+=head1 SYNOPSYS
+
+        new WebDAO::Response:: cv => $cv
+
 =head1 DESCRIPTION
 
-Class for set response headers
+Class for make HTTP response
 
 =cut
 
@@ -18,9 +22,21 @@ use IO::File;
 use DateTime;
 use DateTime::Format::HTTP;
 use base qw( WebDAO::Base );
-__PACKAGE__->attributes
-  qw/  __session _headers _is_headers_printed _cv_obj _is_file_send _is_need_close_fh __fh _is_flushed _call_backs _is_modal /;
-__PACKAGE__->mk_attr( _forced_want_format => undef, _is_empty=>0 );
+
+__PACKAGE__->mk_attr( 
+    _headers => undef,
+    _is_headers_printed =>0,
+    _cv_obj => undef,
+    _is_file_send => 0,
+    _is_need_close_fh => 0,
+    __fh => undef,
+    _is_flushed => 0,
+    _call_backs => undef,
+    _is_modal => 0,
+    _forced_want_format => undef,
+    _is_empty=>0,
+    status => 200 #default HTTP status
+    );
 
 use strict;
 
@@ -39,16 +55,43 @@ sub init {
     $self->_headers( {} );
     $self->_call_backs( [] );
     $self->_cv_obj( $par{cv} );
-    $self->__session( $par{session} );
     return 1;
 }
+
+=head2 get_request
+
+Return ref to request object (WebDAO::CV)
+
+=cut
+
+sub get_request {
+    my $self = shift;
+    return $self->_cv_obj;
+}
+
+=head2 set_status INT
+
+set response HTTP status
+
+    $r->set_status(200)
+
+return C<$self>
+
+=cut
+
+sub set_status {
+    my $self = shift;
+    $self->status(@_);
+    $self 
+}
+
 
 =head2 set_header NAME, VALUE
 
 Set out header:
 
         $response->set_header('Location', $redirect_url);
-        $response->set_header( -type => 'text/html; charset=utf-8' );
+        $response->set_header( 'Content-Type' => 'text/html; charset=utf-8' );
 
 return $self reference
 
@@ -56,9 +99,30 @@ return $self reference
 
 sub set_header {
     my ( $self, $name, $par ) = @_;
-    $self->_headers->{ uc $name } = $par;
+    #translate CGI headers
+    if ( $name =~ /^-/) {
+            my $UKey = uc $name;
+            
+            if ( $UKey eq '-STATUS' ) {
+                my ($status) = $par =~ m/(\d+)/;
+                $self->status($status);
+                return; #don't save status
+            }
+            warn "Deprecated header name $name !";
+#            use CGI;
+#            my $h = CGI->new->header( $UKey, $par );
+#            $h =~ s/\015\012//g;
+#            ( $name, $par ) = split( /\s*:\s*/, $h );
+    } elsif ( $name eq 'Set-Cookie') {
+        push @{ $self->_headers->{ $name } }, $par;
+        return $self
+    }
+        
+    $self->_headers->{ $name } = $par;
     $self;
 }
+
+
 
 =head2 get_header NAME
 
@@ -68,7 +132,7 @@ return value for  header NAME:
 
 sub get_header {
     my ( $self, $name ) = @_;
-    return $self->_headers->{ uc $name };
+    return $self->_headers->{ $name };
 }
 
 =head2 aliases for headers
@@ -159,46 +223,38 @@ sub print_header {
     my $self  = shift;
     my $pnted = $self->_is_headers_printed;
     return $self if $pnted;
-    my $res     = { data => '' };    #need for cv->response
-    my $cv      = $self->_cv_obj;
-    my $headers = $self->_headers;
-    $headers->{-TYPE} = $res->{type} if $res->{type};    #deprecated
-    while ( my ( $key, $val ) = each %$headers ) {
-        my $UKey = uc $key;
-        $res->{headers}->{$UKey} = $headers->{$UKey}
-          unless exists $res->{headers}->{$UKey};
-    }
-    $cv->response($res);
+    my $cv      = $self->get_request;
+    $cv->status($self->status);
+    $cv->print_headers(%{ $self->_headers });
     $self->_is_headers_printed(1);
     $self;
 }
 
-=head2  redirect2url <url for redirect to>
+=head2  redirect2url <url for redirect to> [, $code]
 
 Set headers for redirect to url.return $self reference
 
 =cut
 
 sub redirect2url {
-    my ( $self, $redirect_url ) = @_;
-    $self->set_modal->set_header( "-status", '302 Found' );
-    $self->set_header( '-Location', $redirect_url );
+    my ( $self, $redirect_url, $code ) = @_;
+    $self->set_modal->set_status( $code || 302 );
+    $self->set_header( 'Location', $redirect_url );
 }
 
-=head2 set_cookie ( -name => <name>, ...)
+=head2 set_cookie ( name => <cookie_name>, value=><cookie_value> ...)
 
-Set cookie. For params see manpage for  CGI::cookie.
+Set cookie.
 return $self reference
 
 =cut
 
 sub set_cookie {
     my $self = shift;
-    my $res  = $self->get_header( -cookie ) || [];
-    my $cv   = $self->_cv_obj;
-    push @$res, $cv->cookie(@_);
-    return $self->set_header( -cookie => $res );
+    $self->set_header("Set-Cookie", { @_ });
+    $self;
 }
+
 
 =head2 set_callback(sub1{}[, sub2{} ..])
 
@@ -242,21 +298,21 @@ sub send_file {
 
     #set file headers
     my ( $size, $mtime ) = ( stat $file_handle )[ 7, 9 ];
-    $self->set_header( '-Content_length', $size );
+    $self->content_length( $size );
     my $formated =
       DateTime::Format::HTTP->format_datetime(
         DateTime->from_epoch( epoch => $mtime ) );
-    $self->set_header( '-Last-Modified', $formated );
+    $self->set_header( 'Last-Modified', $formated );
 
     #Determine mime tape of file
     if ( my $predefined = $args{-type} ) {
-        $self->set_header( -type => $predefined );
+        $self->content_type( $predefined );
     }
     else {
         ##
         if ($file_name) {
-            $self->set_header(
-                -type => $self->get_mime_for_filename($file_name) );
+            $self->content_type(
+                $self->get_mime_for_filename($file_name) );
         }
     }
 
@@ -267,7 +323,7 @@ sub send_file {
 
 sub print {
     my $self = shift;
-    my $cv   = $self->_cv_obj;
+    my $cv   = $self->get_request;
     $self->print_header;
     $cv->print(@_);
     return $self;
@@ -293,7 +349,7 @@ sub flush {
     #do self print file
     if ( $self->_is_file_send ) {
         my $fd = $self->__fh;
-        $self->_cv_obj->print(<$fd>);
+        $self->get_request->print(<$fd>);
         close($fd) if $self->_is_need_close_fh;
     }
     $self->_is_flushed(1);
@@ -329,7 +385,7 @@ Set HTTP 404 headers
 
 sub error404 {
     my $self = shift;
-    $self->set_modal->set_header( "-status", '404 Not Found' );
+    $self->set_modal->set_status(404);
     $self->print(@_) if @_;
     return $self;
 }
@@ -362,11 +418,11 @@ sub set_json {
 sub _destroy {
     my $self = shift;
     $self->{__html} = undef;
-
-    #    $self->_headers( {} );
-    #    $self->_call_backs( [] );
-    #    $self->_cv_obj( undef );
-    $self->__session(undef);
+    #destroy called from Engine::execute2
+    # destroy tests by cleared _cv_obj
+#    $self->_cv_obj( undef );
+    $self->_headers( {} );
+    $self->_call_backs( [] );
 }
 
 =head2 wantformat ['format',['forse_set_format']]
@@ -398,7 +454,7 @@ sub wantformat {
     my $desired = $self->_forced_want_format();
     my $default =
          $desired
-      || $self->detect_wantformat( $self->__session )
+      || $self->detect_wantformat( $self->get_request ) #call with CV object 
       || 'html';
     if ( scalar(@_) == 1 ) {
         return $default eq shift;
@@ -406,7 +462,7 @@ sub wantformat {
     return $default;
 }
 
-=head2 detect_wantformat ($session)
+=head2 detect_wantformat ($cv)
 
 Method for detect output format when C<wantformat()> called
 
@@ -452,7 +508,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2010 by Zahatski Aliaksandr
+Copyright 2002-2012 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

@@ -270,22 +270,63 @@ sub get_session {
 
 1;
 
+sub make_cv {
+    my %args = @_;
+    my $out;
+    my $cv = WebDAO::CV->new(
+        env    => $args{env},
+        writer => sub {
+            new Test::Writer::
+              out     => \$out,
+              status  => $_[0]->[0],
+              headers => $_[0]->[1];
+        }
+    );
+
+}
+
+package Test::Writer;
+use warnings;
+use strict;
+sub new {
+    my $class = shift;
+    my $self = bless( ( $#_ == 0 ) ? shift : {@_}, ref($class) || $class );
+}
+sub write   {
+    ${ $_[0]->{out} } .= $_[1] ;
+    }
+sub close   { }
+sub headers { return $_[0]->{headers} }
+
+1;
+
 package TestCV;
 use strict;
 use warnings;
-use WebDAO::CVcgi;
-use base 'WebDAO::CVcgi';
+use WebDAO::CV;
+use base 'WebDAO::CV';
 
+sub new {
+    my $self  = shift;
+    my $buf_ref = shift;
+    my $writer =  sub {
+            new Test::Writer::
+              out     => $buf_ref,
+              status  => $_[0]->[0],
+              headers => $_[0]->[1];
+        };
+    $self->SUPER::new(writer=>$writer, @_ )
+}
 # for skip headers
 # $cv{SKIP_HEADERS} = 1
-sub _init { 
+sub _init__ { 
     my $self = shift;
-    $self->{ctr} = shift;
+    my $buf_ref  = shift;
     return $self->SUPER::_init(@_);
 
 }
 
-sub response {
+sub response__ {
     my $self = shift;
     my $res = shift || return;
     unless ( exists( $self->{SKIP_HEADERS} ) ) {
@@ -295,7 +336,7 @@ sub response {
     }
 }
 
-sub print {
+sub print__ {
     my $self = shift;
      my $out_ref = $self->{ctr};
     if ( grep { ! defined $_} @_ ) {
