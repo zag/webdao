@@ -185,10 +185,9 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
               || {}
           },
         store => $store_obj,
-        cv    => $fcgi_controller->new($fcgi_obj),
+        cv    => $fcgi_controller->new(cgi=>$fcgi_obj, env=>\%ENV),
 
     );
-    $sess->set_header( -type => 'text/html; charset=utf-8' );
 
     #determine root document
     my $env_var = $ENV{wdIndexFile} || $ENV{WD_INDEXFILE};
@@ -258,7 +257,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003-2011 by Zahatski Aliaksandr
+Copyright 2003-2012 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
