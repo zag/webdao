@@ -9,11 +9,11 @@
 #$Id: wd_fcgi.fpl,v 1.1 2006/10/13 12:39:09 zag Exp $
 use WebDAO;
 use FCGI;
-use WebDAO::CVcgi;
-use WebDAO::CVfcgiutf8;
+use WebDAO::CVfcgi;
 use WebDAO::Session;
 use WebDAO::Lex;
 use WebDAO::FCGI::ProcManager;
+use WebDAO::Util;
 use Data::Dumper;
 use Getopt::Long;
 use Pod::Usage;
@@ -44,23 +44,21 @@ pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
 my $sock = 0;
 if ($listen) {
     my $saved_umask = umask(0);
-    $ENV{FCGI_SOCKET_PATH}  = $listen;
-    $ENV{FCGI_LISTEN_QUEUE} = 100;
-    eval "use CGI::Fast qw(:standard); 1" or die $@;
+    $sock = FCGI::OpenSocket( $listen, 100 )
+     or die "failed to open FastCGI socket: $!";
     umask($saved_umask);
 }
 elsif ( $^O ne 'MSWin32' ) {
     -S STDIN
       or die "STDIN is not a socket; specify a listen location";
-    eval "use CGI::Fast qw(:standard); 1" or die $@;
-
 }
 
 #fix FCGI output update after FCGI::VERSION 0.68
 # https://rt.cpan.org/Public/Bug/Display.html?id=52400
-my $fcgi_controller = 'WebDAO::CVcgi';
-if ( $FCGI::VERSION > 0.68 ) {
-    $fcgi_controller = 'WebDAO::CVfcgiutf8';
+my $fcgi_controller = 'WebDAO::CVfcgi';
+if ( $FCGI::VERSION <= 0.68 ) {
+    #die "Update FCGI to > 0.68 !";
+    $fcgi_controller = 'WebDAO::CVfcgiold'
 }
 my $proc_manager;
 if ($listen) {
@@ -108,85 +106,35 @@ sub daemon_detach {
     open STDERR, ">&STDIN"     or die $!;
     POSIX::setsid();
 }
+    #preload defaults
+    WebDAO::Util::get_classes(__env => \%ENV, __preload=>1);
 
-sub load_module {
-    my $class = shift || return;
 
-    #check non loaded mods
-    my ( $main, $module ) = $class =~ m/(.*\:\:)?(\S+)$/;
-    $main ||= 'main::';
-    $module .= '::';
-    no strict 'refs';
-    unless ( exists $$main{$module} ) {
-        eval "use $class";
-        if ($@) {
-            croak "Error register class :$class with $@ ";
-            return -1;
-        }
-    }
-    use strict 'refs';
-}
-
-sub _parse_str_to_hash {
-    my $str = shift;
-    return unless $str;
-    my %hash = map { split( /=/, $_ ) } split( /;/, $str );
-    foreach ( values %hash ) {
-        s/^\s+//;
-        s/\s+^//;
-    }
-    \%hash;
-}
-
-my ( $def_store_class, $def_session_class, $def_eng_class );
-my ( $store_class, $session_class, $eng_class ) = map {
-    &load_module($_);
-    $_
-  } (
-    $def_store_class = $ENV{WD_STORE}
-      || $ENV{wdStore}
-      || 'WebDAO::Store::Abstract',
-    $def_session_class =
-      $ENV{WD_SESSION} || $ENV{wdSession} || 'WebDAO::Session',
-    $def_eng_class = $ENV{WD_ENGINE} || $ENV{wdEngine} || 'WebDAO::Engine'
-  );
 my $count_req = $maxreq || $ENV{wdFCGIreq} || -1;
+my $request = FCGI::Request(
+  \*STDIN, \*STDOUT, \*STDERR, \%ENV, $sock, 1
+  );
 
-while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
+while ( $count_req != 0 and ($request->Accept() >= 0) ) {
 
     $proc_manager && $proc_manager->pm_pre_dispatch();
 
-    #    diag Dumper(\%ENV);
     if ( $ENV{SERVER_SOFTWARE} && $ENV{SERVER_SOFTWARE} =~ /lighttpd/ ) {
         $ENV{PATH_INFO} ||= delete $ENV{SCRIPT_NAME};
     }
 
-    #customize ENV
-    $store_class   = $ENV{WD_STORE}   || $ENV{wdStore}   || $def_store_class;
-    $session_class = $ENV{WD_SESSION} || $ENV{wdSession} || $def_session_class;
-    $eng_class     = $ENV{WD_ENGINE}  || $ENV{wdEngine}  || $def_eng_class;
-    foreach my $rec (
-        [ $store_class,   $store_class   eq $def_store_class ],
-        [ $session_class, $session_class eq $def_session_class ],
-        [ $eng_class,     $eng_class     eq $def_eng_class ]
-      )
-    {
-        next if $rec->[1];
-        &load_module( $rec->[0] );
-    }
-    my $store_obj = $store_class->new(
-        %{
-            &_parse_str_to_hash( $ENV{wdStorePar} || $ENV{WD_STORE_PAR} ) || {}
-          }
-    );
-    my $sess = $session_class->new(
-        %{
-            &_parse_str_to_hash( $ENV{wdSessionPar} || $ENV{WD_SESSION_PAR} )
-              || {}
-          },
-        store => $store_obj,
-        cv    => $fcgi_controller->new(cgi=>$fcgi_obj, env=>\%ENV),
+    my $ini = WebDAO::Util::get_classes(__env => \%ENV, __preload=>1);
 
+    my $store_obj = "$ini->{wdStore}"->new(
+            %{ $ini->{wdStorePar} }
+    );
+
+    my $cv = $fcgi_controller->new(env=>\%ENV);
+
+    my $sess = "$ini->{wdSession}"->new(
+        %{ $ini->{wdSessionPar} },
+        store => $store_obj,
+        cv    => $cv,
     );
 
     #determine root document
@@ -210,14 +158,12 @@ while ( $count_req != 0 and my $fcgi_obj = new CGI::Fast ) {
     else {
         $ini_pars{source} = '';
     }
-    my $eng = $eng_class->new(
-        %{
-            &_parse_str_to_hash( $ENV{WD_ENGINE_PAR} || $ENV{wdEnginePar} )
-              || {}
-          },
+        my $eng = "$ini->{wdEngine}"->new(
+        %{ $ini->{wdEnginePar} },
         %ini_pars,
         session => $sess,
     );
+
     $sess->ExecEngine($eng);
     $sess->destroy;
     --$count_req if $count_req > 0;

@@ -14,7 +14,7 @@ use WebDAO::Sessionco;
 use WebDAO::Lib::RawHTML;
 our @ISA = qw();
 
-our $VERSION = '2.0_14';
+our $VERSION = '2.0';
 
 
 
@@ -34,8 +34,8 @@ WebDAO - platform for easy creation of high-performance and scalable web applica
 There are many environments in which the web applications work: 
 
     ---------------------------------------------
-    |           mod_perl             Apache     |
-    | FastCGI                       CGI         |
+    |                         PSGI              |
+    | FastCGI                                   |
     |           ------------------------        |
     |     nginx |                      |        |
     |           |     Your code        | isapi  |
@@ -57,7 +57,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2010 by Zahatski Aliaksandr
+Copyright 2002-2012 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

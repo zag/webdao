@@ -11,18 +11,17 @@ sub headers { return $_[0]->{headers} }
 
 1;
 
-package WebDAO::CVfcgiutf8;
-#$Id$
+package WebDAO::CVfcgi;
 
 =head1 NAME
 
-WebDAO::CVfcgiutf8 - Fix output utf8 encoding (FCGI > 0.68)
+WebDAO::CVfcgi - FCGI adapter (FCGI > 0.68)
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-WebDAO::CVfcgiutf8 - Fix output utf8 encoding for FCGI version > 0.68
+WebDAO::CVfcgi - FCGI adapter for FCGI version > 0.68
 
 =cut
 
@@ -82,7 +81,6 @@ my %StatusCode = (
 );
 
 
-use WebDAO::CVcgi;
 use base qw( WebDAO::CV );
 use strict;
 sub new {
@@ -106,6 +104,13 @@ sub print {
         utf8::encode( $str) if utf8::is_utf8($str);
         print $str;
    }
+}
+1;
+package WebDAO::CVfcgiold;
+use base qw/WebDAO::CVfcgi/;
+sub print {
+    my $self = shift;
+    print for @_;
 }
 1;
 __DATA__
