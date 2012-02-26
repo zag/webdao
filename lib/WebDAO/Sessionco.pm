@@ -28,32 +28,34 @@ sub Init {
     #		db_file => [string] - path and filename
     #
     my ( $self, %param ) = @_;
+    $self->SUPER::Init(%param);
     my $id = $param{id} || "stored";
     Cookie_name $self (
         {
-            -NAME    => "$id",
-            -EXPIRES => "+3M",
-            -PATH    => "/",
-            -VALUE   => "0"
+            name    => "$id",
+            expires => "+3M",
+            path    => "/",
+            value   => "0"
         }
     );
-    $self->SUPER::Init(%param);
+    my $cv = $self->Cgi_obj();
+    my $coo = $cv->get_cookie->{ $id };
+    unless ($coo) {
+        $coo = md5_hex(time ^ $$, rand(999)) ;
+        U_id $self ( $coo );
+    }
+    $self->Cookie_name()->{value} = $coo;
+    $self->Cookie_name()->{expires} = time()+ 60*60*24*30*3; # 3 month
+    $cv->set_header('Set-Cookie', $self->Cookie_name());
+    1
 }
 
 sub get_id {
     my $self = shift;
     my $coo  = U_id $self;
-    return $coo if ($coo);
-    my $_cgi = $self->Cgi_obj();
-    $coo = $_cgi->get_cookie( ( $self->Cookie_name() )->{-NAME} );
-    unless ($coo) {
-        $coo = md5_hex(time ^ $$, rand(999)) ;
-        U_id $self ( $coo );
-    }
-    $self->Cookie_name()->{-VALUE} = $coo;
-    $_cgi->set_cookie($self->Cookie_name() );
     return $coo;
 }
+
 1;
 __DATA__
 

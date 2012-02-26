@@ -14,7 +14,7 @@ use HTTP::Body;
 use WebDAO::Base;
 use base qw( WebDAO::Base );
 
-__PACKAGE__->mk_attr(status=>200);
+__PACKAGE__->mk_attr(status=>200, _parsed_cookies=>undef);
 
 sub new {
     my $class = shift;
@@ -195,7 +195,7 @@ sub set_header {
     my ( $self, $name, $par ) = @_;
 
     #collect -cookies
-    if ( $name eq '-COOKIE' ) {
+    if ( $name eq 'Set-Cookie' ) {
         push @{ $self->{headers}->{$name} }, $par;
     }
     else {
@@ -211,11 +211,13 @@ Method for output headers
 
 sub print_headers {
     my $self = shift;
+    #save cookie
+    my $cookie = delete $self->{headers}->{"Set-Cookie"};
     #merge in and exists headers
     my %headers = ( %{ $self->{headers} } , @_ );
     #merge cookies
-    if ( my $cookies = $self->{headers}->{"Set-Cookie"} ) {
-        push @{ $headers{"Set-Cookie"} }, @$cookies;
+    if ( $cookie  ) {
+        push @{ $headers{"Set-Cookie"} }, @$cookie;
     }
     my @cookies_headers = ();
     #format cookies
@@ -237,7 +239,7 @@ sub print_headers {
             }
           } else { $hvalue = $c }
           push @cookies_headers, "Set-Cookie", $hvalue;
-       }
+       } 
     }
     my $status = $self->status;
     my $fd = $self->{writer}->([$status||"200", [%headers, @cookies_headers], undef]);
@@ -265,10 +267,12 @@ return hashref to {key=>value}
 sub get_cookie {
     my $self = shift;
     my $str = $self->{env}->{HTTP_COOKIE} || return {};
+    if ($self->_parsed_cookies) { return $self->_parsed_cookies };
     my %res;
     %res =
-      map { URI::Escape::uri_unescape($_) } map { split /=/ } split /\s*[;]\s*/,
-      $str;
+      map { URI::Escape::uri_unescape($_) } map { split '=',$_,2  } split(/\s*[;]\s*/,
+      $str);
+    $self->_parsed_cookies(\%res);
     \%res;
 }
 

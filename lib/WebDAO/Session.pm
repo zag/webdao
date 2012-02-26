@@ -70,7 +70,6 @@ sub Init {
         }
     );
 
-    $self->get_id;
     Params $self ( $self->_get_params() );
     $self->Cgi_env->{path_info_elments} =
       [ grep { defined $_ } split( /\//, $self->Cgi_env->{path_info} ) ];
