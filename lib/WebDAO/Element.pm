@@ -74,7 +74,6 @@ sub _sysinit {
     my $ref_names_hash = {};
     map { $ref_names_hash->{$_} = 1 } $self->get_attribute_names();
 
-    #        _attribute_names $self $ref_names_hash;
     $self->__attribute_names($ref_names_hash);
 
 }
@@ -312,7 +311,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2011 by Zahatski Aliaksandr
+Copyright 2002-2012 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
