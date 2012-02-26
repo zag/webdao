@@ -17,9 +17,15 @@ use Data::Dumper;
 use WebDAO::Base;
 use base qw/ WebDAO::Base/;
 use strict 'vars';
-__PACKAGE__->attributes
-  qw/ _format_subs __attribute_names __my_name __parent __path2me  __engine  __extra_path /; #deprecated  _format_subs
 
+__PACKAGE__->mk_attr(
+    __attribute_names => undef,
+    __my_name => undef,
+    __parent => undef,
+    __path2me => undef,
+    __engine => undef,
+    __extra_path => undef
+);
 
 =head1 NAME
 
@@ -104,11 +110,6 @@ sub _get_childs_ {
     return [];
 }
 
-sub _get_childs {
-     $_[0]->_deprecated( "_get_childs_");
-    return [];
-}
-
 =head2  __any_path ($session, @path)
 
 Call for unresolved path.
@@ -176,33 +177,6 @@ sub _traverse_ {
     return ( $self, $res );
 }
 
-
-#deprecated
-sub call_path {
-    my $self = shift;
-    my $path = shift;
-    $path = [ grep { $_ } split( /\//, $path ) ];
-    return $self->getEngine->_call_method( $path, @_ );
-}
-
-#deprecated
-sub _call_method {
-    my $self = shift;
-    my ( $method, @path ) = @{ shift @_ };
-    if ( scalar @path ) {
-
-        #_log4 $self "Extra path @path $self";
-        return;
-    }
-    unless ( $self->can($method) ) {
-        _log4 $self $self->_obj_name . ": don't have method $method";
-        return;
-    }
-    else {
-        $self->$method(@_);
-    }
-}
-
 sub __get_self_refs {
     return $_[0];
 }
@@ -229,7 +203,7 @@ sub _set_path2me {
     }
 }
 
-#deprecated -> $obj->__name
+#deprecated -> $obj->__my_name
 sub _obj_name {
     return $_[0]->__my_name;
 }
@@ -241,46 +215,12 @@ sub getEngine {
     return $self->__engine;
 }
 
-
-#deprecated
-sub pre_format {
-    my $self = shift;
-    return [];
-}
-
-
-#deprecated
-sub _format {
-    my $self = shift;
-    my @res;
-    push( @res, @{ $self->pre_format(@_) } );    #for compat
-    if ( my $result = $self->fetch(@_) ) {
-        push @res, ( ref($result) eq 'ARRAY' ? @{$result} : $result );
-    }
-    push( @res, @{ $self->post_format(@_) } );    #for compat
-
-    \@res;
-}
-
-#deprecated
-sub format {
-    my $self = shift;
-    return shift;
-}
-
-#deprecated
-sub post_format {
-    my $self = shift;
-    return [];
-}
-
 sub fetch { undef } #return undef
 
 sub _destroy {
     my $self = shift;
     $self->__parent(undef);
     $self->__engine(undef);
-    $self->_format_subs(undef); ##deprecated
 }
 
 sub _set_vars {

@@ -62,13 +62,6 @@ sub _get_childs_ {
     ];
 }
 
-#deprecated
-sub _get_childs {
-    my $self = shift;
-    _deprecated $self "_get_childs_";
-    return $self->_get_childs_;
-}
-
 =head3 _add_childs_($object1[, $object2])
 
 Insert set of objects into container
@@ -78,13 +71,6 @@ Insert set of objects into container
 sub _add_childs_ {
     my $self = shift;
     $self->__add_childs__( 1, @_ );
-}
-
-#deprecated
-sub _add_childs {
-    my $self = shift;
-    _deprecated $self "_add_childs_";
-    return $self->_add_childs_(@_);
 }
 
 =head2 _clear_childs_
@@ -261,28 +247,6 @@ sub _traverse_ {
     return ( $src, $res )
 }
 
-#deprecated
-sub _call_method {
-    my $self = shift;
-        _deprecated $self "_traverse_";
-
-    my ( $name, @path ) = @{ shift @_ };
-    return $self->SUPER::_call_method( [ $name, @path ], @_ ) || do {
-        if ( my $obj = $self->_get_obj_by_name($name) ) {
-            if ( ref($obj) eq 'HASH' ) {
-                LOG $self Dumper( [ map { [ caller($_) ] } ( 1 .. 6 ) ] );
-                $self->LOG( " got $obj for $name" . Dumper($obj) );
-            }
-            $obj->_call_method( \@path, @_ );
-        }
-        else {
-            _log4 $self "Cant find obj for name $name in "
-              . $self->__my_name() . ":"
-              . Dumper( [ map { $_->__my_name } @{ $self->_get_childs } ] );
-            return;
-        }
-      }
-}
 
 sub _get_obj_by_name {
     my $self = shift;
@@ -295,23 +259,6 @@ sub _get_obj_by_name {
         }
     }
     return;
-}
-
-=head2 fetch(@_), default call by webdao: fetch( $session )
-
-Interate call fetch(@_) on childs
-
-=cut
-
-#deprecated
-sub fetch {
-    my $self = shift;
-    my @res;
-    for my $a ( @{ $self->_get_childs } ) {
-        push( @res, @{ $a->_format(@_) } );
-    }
-    return \@res;
-
 }
 
 sub _destroy {
@@ -337,7 +284,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2010 by Zahatski Aliaksandr
+Copyright 2002-2012 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
