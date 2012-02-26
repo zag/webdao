@@ -158,7 +158,7 @@ while ( $count_req != 0 and ($request->Accept() >= 0) ) {
     else {
         $ini_pars{source} = '';
     }
-        my $eng = "$ini->{wdEngine}"->new(
+     my $eng = "$ini->{wdEngine}"->new(
         %{ $ini->{wdEnginePar} },
         %ini_pars,
         session => $sess,

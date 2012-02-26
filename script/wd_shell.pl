@@ -7,29 +7,29 @@
 #       AUTHOR:  Aliaksandr P. Zahatski (Mn), <zag@cpan.org>
 #===============================================================================
 #$Id: wd_shell.pl,v 1.2 2006/10/27 08:59:08 zag Exp $
+package WebDAO::Shell::Writer;
 
+sub new {
+    my $class = shift;
+    my $self = bless( ( $#_ == 0 ) ? shift : {@_}, ref($class) || $class );
+}
+sub write   { print  $_[1] }
+sub close   { }
+sub headers {  }
+
+package main;
 use strict;
 use warnings;
 use Carp;
 use WebDAO;
 use WebDAO::SessionSH;
 use WebDAO::Store::Abstract;
+use WebDAO::CV;
 use Data::Dumper;
 use WebDAO::Lex;
 use Getopt::Long;
 use Pod::Usage;
-
-sub _parse_str_to_hash {
-    my $str = shift;
-    return unless $str;
-    my %hash = map { split( /=/, $_ ) } split( /;/, $str );
-    foreach ( values %hash ) {
-        s/^\s+//;
-        s/\s+^//;
-    }
-    \%hash;
-}
-
+use WebDAO::Util;
 
 my ( $help, $man, $sess_id );
 my %opt = ( help => \$help, man => \$man, sid => \$sess_id );   #meta=>\$meta,);
@@ -59,23 +59,30 @@ foreach my $sname ('__DIE__') {
       }
 }
 
-my ( $store_class, $session_class, $eng_class ) = map {
-    eval "require $_"
-      or die $@;
-    $_
-  } (
-    $ENV{wdStore}   || 'WebDAO::Store::Abstract',
-    $ENV{wdSession} || 'WebDAO::SessionSH',
-    $opt{wdEngine}|| $ENV{wdEngine}  || 'WebDAO::Engine',
-  );
+ $ENV{wdEngine} ||= $opt{wdEngine}|| 'WebDAO::Engine';
+ $ENV{wdSession} ||= 'WebDAO::SessionSH';
+ my $ini = WebDAO::Util::get_classes(__env => \%ENV, __preload=>1);
 
 #Make Session object
-my $store_obj =
-  $store_class->new( %{ &_parse_str_to_hash( $ENV{wdStorePar} ) || {} } );
-my $sess = $session_class->new(
-        %{ &_parse_str_to_hash( $ENV{wdSessionPar} ) || {} },
+    my $store_obj = "$ini->{wdStore}"->new(
+            %{ $ini->{wdStorePar} }
+    );
+
+    my $cv = WebDAO::CV->new(
+        env    => \%ENV,
+        writer => sub {
+            new WebDAO::Shell::Writer::
+              status  => $_[0]->[0],
+              headers => $_[0]->[1];
+        }
+    );
+
+    my $sess = "$ini->{wdSession}"->new(
+        %{ $ini->{wdSessionPar} },
         store => $store_obj,
-);
+        cv    => $cv,
+    );
+
 $sess->U_id($sess_id);
 my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile} || $opt{f};
 die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
@@ -87,12 +94,12 @@ my $content ='';
 $content = <FH>;
 }
 close FH;
-my $lex = new WebDAO::Lex:: tmpl => $content;
-my $eng = $eng_class->new(
-    %{ &_parse_str_to_hash( $opt{wdEnginePar} || $ENV{wdEnginePar} ) || {} },
-    lex    => $lex,
-    session  => $sess,
-);
+    my $lex = new WebDAO::Lex:: tmpl => $content;
+     my $eng = "$ini->{wdEngine}"->new(
+        %{ $ini->{wdEnginePar} },
+        lex    => $lex,
+        session => $sess,
+    );
 
 $sess->ExecEngine($eng, $evl_file);
 $sess->destroy;

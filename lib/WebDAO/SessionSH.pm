@@ -35,12 +35,6 @@ sub print_header() {
     return ''
 }
 
-sub sess_servise {
-    my $self= shift;
-    return $self->SUPER::sess_servise(@_)
-
-}
-
 1;
 __DATA__
 
