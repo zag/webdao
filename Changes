@@ -1,9 +1,11 @@
 Revision history for Perl extension WebDAO.
 
+2.2.0 28 Feb 2012
+  - fix dep
 2.1 25 Feb 2012
   - remove mod_perl2 support
   - add httpcode table to Util
-  - create some depreacted code
+  - clean some depreacted code
 
 2.0 25 Feb 2012
   - remove mod_perl, CGI support
