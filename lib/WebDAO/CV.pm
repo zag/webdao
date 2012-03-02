@@ -162,20 +162,20 @@ sub _parse_body {
     return $body->param
 }
 
-=head2 get-body
+=head2 body 
 
-Return HTTP body <FH>
+Return HTTP body file descriptor 
 
     my $body;
     {
         local $/;
-        my $fd = $r->get_request->get_body;
+        my $fd = $r->get_request->body;
         $body = <$fd>;
      }
 
 =cut
 
-sub get_body {
+sub body {
     my $self = shift;
     unless ( exists $self->{'http.body'} ) {
         $self->_parse_body();
@@ -183,6 +183,25 @@ sub get_body {
 
     my $http_body = $self->{'http.body'} || return undef;
     return $http_body->body;
+}
+
+=head2 get-body
+
+Return HTTP body text
+
+    my $body= $r->get_request->get_body;
+
+=cut
+
+sub get_body {
+    my $self = shift;
+    my $body;
+    {
+       local $/;
+       my $fd = $self->body;
+       $body = <$fd>;
+     }
+    return $body
 }
 
 =head2 set_header

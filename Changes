@@ -1,5 +1,7 @@
 Revision history for Perl extension WebDAO.
 
+2.2.1 2 Mar 2012
+  - CV::get_body, CV::body
 2.2.0 28 Feb 2012
   - fix dep
 2.1 25 Feb 2012
