@@ -145,8 +145,14 @@ sub _parse_body {
     $body->cleanup(1);
 
     my $input = $self->{env}->{'psgi.input'};
-    #reset IO
-    $input->seek(0,0);
+    if ( $input ) {
+        #reset IO
+        $input->seek(0,0);
+    }
+    else {
+       # for FCGI, Shell
+       $input = \*STDIN 
+    }
     my $spin = 0;
 
     while ($content_length) {
