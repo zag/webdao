@@ -51,7 +51,7 @@ use IO::File;
 our $VERSION = '0.3';
 our $PERL_SINGLE_QUOTE;
 
-__PACKAGE__->attributes qw/ __conf _path/;
+__PACKAGE__->mk_attr ( __conf=>undef, _path=>undef );
 
 sub parse_line {
     my($delimiter, $keep, $line) = @_;

@@ -20,7 +20,7 @@ use WebDAO::Store::Abstract;
 use strict 'vars';
 use base 'WebDAO::Store::Abstract';
 
-__PACKAGE__->attributes qw/ _dir _cache _is_loaded/;
+__PACKAGE__->mk_attr ( _dir=>undef, _cache=>undef, _is_loaded=>undef);
 
 sub init {
     my $self = shift;

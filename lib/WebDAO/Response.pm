@@ -106,13 +106,9 @@ sub set_header {
             if ( $UKey eq '-STATUS' ) {
                 my ($status) = $par =~ m/(\d+)/;
                 $self->status($status);
-                return; #don't save status
+                return $self;
             }
             warn "Deprecated header name $name !";
-#            use CGI;
-#            my $h = CGI->new->header( $UKey, $par );
-#            $h =~ s/\015\012//g;
-#            ( $name, $par ) = split( /\s*:\s*/, $h );
     } elsif ( $name eq 'Set-Cookie') {
         push @{ $self->_headers->{ $name } }, $par;
         return $self

@@ -17,7 +17,7 @@ use WebDAO::Lib::RawHTML;
 use base qw(WebDAO::Container);
 use Carp;
 use strict;
-__PACKAGE__->attributes qw( _session __obj __events);
+__PACKAGE__->mk_attr( _session=>undef, __obj=>undef, __events=>undef);
 
 sub _sysinit {
     my ( $self, $ref ) = @_;

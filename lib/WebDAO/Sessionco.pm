@@ -15,11 +15,9 @@ use WebDAO::Base;
 use CGI;
 use MIME::Base64;
 use Digest::MD5 qw(md5_hex);
-
 use base qw( WebDAO::Session );
-
 use strict 'vars';
-__PACKAGE__->attributes qw( Cookie_name Db_file );
+__PACKAGE__->mk_attr ( Cookie_name=>undef, Db_file=>undef );
 
 sub Init {
 

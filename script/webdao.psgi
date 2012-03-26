@@ -59,8 +59,6 @@ my $handler = sub {
     );
     #set default header
     $sess->ExecEngine($eng);
-#    use Data::Dumper;
-#    $cv->{fd}->write('<pre>'.Dumper($env).'</pre>');
     #close psgi
     $cv->{fd}->close() if exists $cv->{fd};
     $sess->destroy;
