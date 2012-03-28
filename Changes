@@ -1,6 +1,6 @@
 Revision history for Perl extension WebDAO.
 
-2.3 26 Mar 2012
+2.3 27 Mar 2012
   - fix "Use of qw(...) as parentheses"
  
 2.2.2 2 Mar 2012
