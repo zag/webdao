@@ -1,5 +1,8 @@
 Revision history for Perl extension WebDAO.
 
+2.04 16 May 2012
+  -  support special value "-" ( minus ) for  wdIndexFile;
+
 2.03 27 Mar 2012
   - fix "Use of qw(...) as parentheses"
  

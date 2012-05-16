@@ -140,7 +140,7 @@ while ( $count_req != 0 and ($request->Accept() >= 0) ) {
     #determine root document
     my $env_var = $ENV{wdIndexFile} || $ENV{WD_INDEXFILE};
     my %ini_pars = ();
-    if ( $env_var && !-z $env_var ) {
+    if ( $env_var && $env_var ne '-' && !-z $env_var ) {
         my ($filename) = grep { -r $_ && -f $_ } $env_var,
           "$ENV{DOCUMENT_ROOT}/$env_var", "$ENV{DOCUMENT_ROOT}/index.xhtml";
         die "$0 ERR:: file not found or can't access (WD_INDEXFILE): $env_var"

@@ -38,7 +38,7 @@ my $handler = sub {
     #determine root document
     my $env_var = $env->{HTTP_WDINDEXFILE} || $ENV{wdIndexFile} || $ENV{WD_INDEXFILE};
     my %ini_pars = ();
-    if ( $env_var && !-z $env_var ) {
+    if ( $env_var && $env_var ne '-' && !-z $env_var ) {
         my ($filename) = grep { -r $_ && -f $_ } $env_var;
         die "$0 ERR:: file not found or can't access (WD_INDEXFILE): $env_var"
           unless $filename;

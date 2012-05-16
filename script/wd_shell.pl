@@ -39,16 +39,8 @@ GetOptions( \%opt, 'help|?', 'man', 'f=s','wdEngine|M=s','wdEnginePar=s', 'sid|s
 pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
 
-if ( my $file = $opt{f} ) {
-    pod2usage( -exitstatus => 2, -message => "Not exists file [-f] : $file" )
-      unless -e $file;
-}
-else {
-    pod2usage( -exitstatus => 2, -message => 'Need  file [-f] !' )
-      unless $ENV{wdIndexFile} && -e $ENV{wdIndexFile};
-}
 my $evl_file = shift @urls;
-pod2usage( -exitstatus => 2, -message => 'No file give or non exists ' )
+pod2usage( -exitstatus => 2, -message => 'No path give or non exists ' )
   unless $evl_file;
 
 foreach my $sname ('__DIE__') {
@@ -61,9 +53,10 @@ foreach my $sname ('__DIE__') {
 
  $ENV{wdEngine} ||= $opt{wdEngine}|| 'WebDAO::Engine';
  $ENV{wdSession} ||= 'WebDAO::SessionSH';
+ $ENV{wdShell} = 1;
  my $ini = WebDAO::Util::get_classes(__env => \%ENV, __preload=>1);
 
-#Make Session object
+    #Make Session object
     my $store_obj = "$ini->{wdStore}"->new(
             %{ $ini->{wdStorePar} }
     );
@@ -83,22 +76,33 @@ foreach my $sname ('__DIE__') {
         cv    => $cv,
     );
 
-$sess->U_id($sess_id);
-my ($filename) = grep { -r $_ && -f $_ } $ENV{wdIndexFile} || $opt{f};
-die "$0 ERR:: file not found or can't access (wdIndexFile): $ENV{wdIndexFile}"
-  unless $filename;
+    $sess->U_id($sess_id);
 
-open FH, "<$filename" or die $!;
-my $content ='';
-{ local $/=undef;
-$content = <FH>;
-}
-close FH;
+    my $filename  = exists $opt{f} ? $opt{f} : $ENV{wdIndexFile};
+
+    my %engine_args = ();
+    if  ( $filename && $filename ne '-' ) {
+    unless ( -r $filename && -f $filename ) {
+    warn <<TXT;
+ERR:: file not found or can't access (wdIndexFile): $filename
+check -f option or env variable wdIndexFile;
+TXT
+        exit 1;
+    }
+
+    open FH, "<$filename" or die $!;
+    my $content ='';
+    { local $/=undef;
+        $content = <FH>;
+    }
+    close FH;
     my $lex = new WebDAO::Lex:: tmpl => $content;
+    $engine_args{lex} = $lex;
+    }
      my $eng = "$ini->{wdEngine}"->new(
         %{ $ini->{wdEnginePar} },
-        lex    => $lex,
         session => $sess,
+        %engine_args
     );
 
 $sess->ExecEngine($eng, $evl_file);

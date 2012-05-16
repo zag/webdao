@@ -221,8 +221,7 @@ sub execute2 {
     my $url  = shift;
     my @path = @{ $sess->call_path($url) };
     my ( $src, $res ) = $self->_traverse_( $sess, @path );
-    my $response = $self->response; #$sess->response_obj;
-
+    my $response = $self->response;
     #now analyze answers
     # undef -> not Found
     unless ( defined($res) ) {
@@ -238,7 +237,7 @@ sub execute2 {
         $res = $response->set_html( ref($res) ? $$res : $res );
     }
     #special handle HASH refs ( interpret as json)
-    if ( ( ref($res) eq 'HASH' )  and $response->wantformat('json') ) {
+    if ( ( ref($res) eq 'HASH' ) and $response->wantformat('json') ) {
         $res = $response->set_json( $res );
     }
     #check if  response modal
@@ -248,7 +247,7 @@ sub execute2 {
         if ( $res->_is_modal() ) {
 
         #handle response
-        $res->_print_dep_on_context($sess) unless $res->_is_file_send;
+        $res->_print_dep_on_context($sess, $res) unless $res->_is_file_send;
         $res->flush;
         $res->_destroy;
         return;
