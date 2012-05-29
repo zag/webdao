@@ -13,9 +13,9 @@ sub new {
     my $class = shift;
     my $self = bless( ( $#_ == 0 ) ? shift : {@_}, ref($class) || $class );
 }
-sub write   { print  $_[1] }
+sub write   { print $_[1] }
 sub close   { }
-sub headers {  }
+sub headers { }
 
 package main;
 use strict;
@@ -33,8 +33,9 @@ use WebDAO::Util;
 
 my ( $help, $man, $sess_id );
 my %opt = ( help => \$help, man => \$man, sid => \$sess_id );   #meta=>\$meta,);
-my @urls=();
-GetOptions( \%opt, 'help|?', 'man', 'f=s','wdEngine|M=s','wdEnginePar=s', 'sid|s=s','<>'=>sub { push @urls,shift} )
+my @urls = ();
+GetOptions( \%opt, 'help|?', 'man', 'f=s', 'wdEngine|M=s', 'wdEnginePar=s',
+    'sid|s=s', '<>' => sub { push @urls, shift } )
   or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
@@ -43,47 +44,49 @@ my $evl_file = shift @urls;
 pod2usage( -exitstatus => 2, -message => 'No path give or non exists ' )
   unless $evl_file;
 
+#cut params from command line
+( $ENV{PATH_INFO}, $ENV{QUERY_STRING} ) = split( /\?/, $evl_file );
+$evl_file = $ENV{PATH_INFO};
+
 foreach my $sname ('__DIE__') {
     $SIG{$sname} = sub {
-        return if (caller(1))[3] =~ /eval/;
+        return if ( caller(1) )[3] =~ /eval/;
         push @_, "STACK:" . Dumper( [ map { [ caller($_) ] } ( 1 .. 3 ) ] );
         print STDERR "PID: $$ $sname: @_";
       }
 }
 
- $ENV{wdEngine} ||= $opt{wdEngine}|| 'WebDAO::Engine';
- $ENV{wdSession} ||= 'WebDAO::SessionSH';
- $ENV{wdShell} = 1;
- my $ini = WebDAO::Util::get_classes(__env => \%ENV, __preload=>1);
+$ENV{wdEngine} ||= $opt{wdEngine} || 'WebDAO::Engine';
+$ENV{wdSession} ||= 'WebDAO::SessionSH';
+$ENV{wdShell} = 1;
+my $ini = WebDAO::Util::get_classes( __env => \%ENV, __preload => 1 );
 
-    #Make Session object
-    my $store_obj = "$ini->{wdStore}"->new(
-            %{ $ini->{wdStorePar} }
-    );
+#Make Session object
+my $store_obj = "$ini->{wdStore}"->new( %{ $ini->{wdStorePar} } );
 
-    my $cv = WebDAO::CV->new(
-        env    => \%ENV,
-        writer => sub {
-            new WebDAO::Shell::Writer::
-              status  => $_[0]->[0],
-              headers => $_[0]->[1];
-        }
-    );
+my $cv = WebDAO::CV->new(
+    env    => \%ENV,
+    writer => sub {
+        new WebDAO::Shell::Writer::
+          status  => $_[0]->[0],
+          headers => $_[0]->[1];
+    }
+);
 
-    my $sess = "$ini->{wdSession}"->new(
-        %{ $ini->{wdSessionPar} },
-        store => $store_obj,
-        cv    => $cv,
-    );
+my $sess = "$ini->{wdSession}"->new(
+    %{ $ini->{wdSessionPar} },
+    store => $store_obj,
+    cv    => $cv,
+);
 
-    $sess->U_id($sess_id);
+$sess->U_id($sess_id);
 
-    my $filename  = exists $opt{f} ? $opt{f} : $ENV{wdIndexFile};
+my $filename = exists $opt{f} ? $opt{f} : $ENV{wdIndexFile};
 
-    my %engine_args = ();
-    if  ( $filename && $filename ne '-' ) {
+my %engine_args = ();
+if ( $filename && $filename ne '-' ) {
     unless ( -r $filename && -f $filename ) {
-    warn <<TXT;
+        warn <<TXT;
 ERR:: file not found or can't access (wdIndexFile): $filename
 check -f option or env variable wdIndexFile;
 TXT
@@ -91,21 +94,22 @@ TXT
     }
 
     open FH, "<$filename" or die $!;
-    my $content ='';
-    { local $/=undef;
+    my $content = '';
+    {
+        local $/ = undef;
         $content = <FH>;
     }
     close FH;
     my $lex = new WebDAO::Lex:: tmpl => $content;
     $engine_args{lex} = $lex;
-    }
-     my $eng = "$ini->{wdEngine}"->new(
-        %{ $ini->{wdEnginePar} },
-        session => $sess,
-        %engine_args
-    );
+}
+my $eng = "$ini->{wdEngine}"->new(
+    %{ $ini->{wdEnginePar} },
+    session => $sess,
+    %engine_args
+);
 
-$sess->ExecEngine($eng, $evl_file);
+$sess->ExecEngine( $eng, $evl_file );
 $sess->destroy;
 croak STDERR $@ if $@;
 print "\n";
@@ -117,6 +121,7 @@ print "\n";
 =head1 SYNOPSIS
 
   wd_shell.pl [options] /some/url/query
+  wd_shell.pl [options] '/some/url/query?param1=1'
 
    options:
 

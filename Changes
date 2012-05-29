@@ -1,5 +1,8 @@
 Revision history for Perl extension WebDAO.
 
+2.05 29 May 2012
+  -  use params from command line (wd_shell.pl)
+
 2.04 16 May 2012
   -  support special value "-" ( minus ) for  wdIndexFile;
 

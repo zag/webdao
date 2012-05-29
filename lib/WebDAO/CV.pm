@@ -49,7 +49,6 @@ sub url {
     my $query = $env->{QUERY_STRING}|| '';    # 'QUERY_STRING' => '434=34&erer=2'
     my $proto     = $env->{'psgi.url_scheme'} || 'http';
     my $full_path = "$proto://${host}${path}?$query";
-
     #clear / at end
     $full_path =~ s!/$!! if $path =~ m!^/!;
     my $uri = URI->new($full_path);

@@ -28,7 +28,7 @@ sub Init {
     $self->U_id( rand(100) );
     #setup default method 
     $ENV{REQUEST_METHOD} ||="GET";
-    Params $self ( \%args );
+    Params $self ( $self->_get_params() );
 }
 
 sub print_header() {
