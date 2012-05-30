@@ -57,6 +57,7 @@ foreach my $sname ('__DIE__') {
 }
 
 $ENV{wdEngine} ||= $opt{wdEngine} || 'WebDAO::Engine';
+$ENV{wdEnginePar} ||= $opt{wdEnginePar};
 $ENV{wdSession} ||= 'WebDAO::SessionSH';
 $ENV{wdShell} = 1;
 my $ini = WebDAO::Util::get_classes( __env => \%ENV, __preload => 1 );
