@@ -358,7 +358,7 @@ sub _create_ {
     my ( $self, $name_obj, $name_func, @par ) = @_;
     my $pack = $self->_pack4name($name_func) || $name_func;
     my $ref_init_hash = {
-        ref_engine => $self->getEngine(),  #! Setup _engine refernce for childs!
+        ref_engine => $self->_root_,  #! Setup _engine refernce for childs!
         name_obj   => $name_obj
     };    #! Setup _my_name
     my $obj_ref =
@@ -431,7 +431,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2011 by Zahatski Aliaksandr
+Copyright 2002-2012 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

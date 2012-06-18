@@ -24,7 +24,7 @@ sub url_method {
     my @upath  = ();
     push @upath, $self->__path2me if $self->__path2me;
     push @upath, $method if defined $method;
-    my $sess = $self->getEngine->_session;
+    my $sess = $self->_root_->_session;
     if ( $sess->set_absolute_url() ) {
         my $root = $sess->Cgi_env->{base_url};
         unshift @upath, $sess->Cgi_env->{base_url};
@@ -46,7 +46,7 @@ sub url_method {
 
 sub response {
     my $self = shift;
-    return $self->getEngine->response;
+    return $self->_root_->response;
 }
 1;
 __DATA__

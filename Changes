@@ -2,6 +2,7 @@ Revision history for Perl extension WebDAO.
 
 2.06 
   * add param wdEnginePar (wd_shell.pl)
+  * getEngine -> _root_ (rename method)
 
 2.05 29 May 2012
   -  use params from command line (wd_shell.pl)

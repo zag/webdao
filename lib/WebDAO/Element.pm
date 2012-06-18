@@ -48,13 +48,13 @@ sub _init {
 
 sub __register_event__ {
     my $self    = shift;
-    my $ref_eng = $self->getEngine;
+    my $ref_eng = $self->_root_;
     $ref_eng->__register_event__( $self, @_ );
 }
 
 sub __send_event__ {
     my $self   = shift;
-    my $parent = $self->__parent || $self->getEngine;
+    my $parent = $self->__parent || $self->_root_;
     $self->_log1( "Not def parent $self name:"
           . ( $self->__my_name )
           . Dumper( \@_ )
@@ -208,12 +208,14 @@ sub _obj_name {
     return $_[0]->__my_name;
 }
 
-#deprecated  -> self->__engine
 
+#deprecated  -> self->_root_
 sub getEngine {
     my $self = shift;
     return $self->__engine;
 }
+
+sub _root_ { return $_[0]->__engine }
 
 sub fetch { undef } #return undef
 

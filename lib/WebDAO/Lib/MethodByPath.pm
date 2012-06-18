@@ -30,7 +30,7 @@ sub fetch {
     my $self = shift;
     my $sess = shift;
     my @path   = @{ $sess->call_path( $self->_path ) };
-    my ( $src, $res ) = $self->getEngine->_traverse_( $sess, @path );
+    my ( $src, $res ) = $self->_root_->_traverse_( $sess, @path );
     return $res;
 }
 

@@ -76,7 +76,7 @@ sub post_fetch {"<M>"}
 
 sub SubElem {
     my $self = shift;
-    my $eng = $self->getEngine;
+    my $eng = $self->_root_;
     my @res =();
     for (1..2) {
       push @res, $eng->_createObj("el".$_, "TElem");
@@ -86,20 +86,20 @@ sub SubElem {
 
 sub GetElement {
     my $self = shift;
-    my $eng = $self->getEngine;
+    my $eng = $self->_root_;
     $eng->_createObj("el", "TElemO");
 }
 
 sub ModalAnswer {
     my $self = shift;
-    my $r    = $self->getEngine->response();
+    my $r    = $self->_root_->response();
     $r->set_html("Test")->set_modal;
     $r;
 }
 
 sub GetArrayRef {
     my $self = shift;
-    my $eng = $self->getEngine;
+    my $eng = $self->_root_;
     [ $eng->_createObj("el1", "TElemO"),
     $eng->_createObj("el2", "TElemO"),
     ]
