@@ -40,8 +40,8 @@ sub Init {
     my $coo = $cv->get_cookie->{ $id };
     unless ($coo) {
         $coo = md5_hex(time ^ $$, rand(999)) ;
-        U_id $self ( $coo );
     }
+     U_id $self ( $coo );
     $self->Cookie_name()->{value} = $coo;
     $self->Cookie_name()->{expires} = time()+ 60*60*24*30*3; # 3 month
     $cv->set_header('Set-Cookie', $self->Cookie_name());
