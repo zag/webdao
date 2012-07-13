@@ -1,6 +1,6 @@
 Revision history for Perl extension WebDAO.
 
-2.07 
+2.07 13 Jul 2012
   * fix sessions cookie init
   * fix path_info_elments
 
