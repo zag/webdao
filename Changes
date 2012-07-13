@@ -2,6 +2,7 @@ Revision history for Perl extension WebDAO.
 
 2.07 
   * fix sessions cookie init
+  * fix path_info_elments
 
 2.06 18 Jun 2012
   * add param wdEnginePar (wd_shell.pl)

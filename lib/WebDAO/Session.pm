@@ -71,8 +71,7 @@ sub Init {
     );
 
     Params $self ( $self->_get_params() );
-    $self->Cgi_env->{path_info_elments} =
-      [ grep { defined $_ } split( /\//, $self->Cgi_env->{path_info} ) ];
+    $self->Cgi_env->{path_info_elments} = $self->call_path($self->Cgi_env->{path_info});
     #set default header
     $cv->set_header("Content-Type" => 'text/html; charset=utf-8');
 }
