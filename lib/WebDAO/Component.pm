@@ -11,12 +11,15 @@ WebDAO::Component - Component class
 
 WebDAO::Component - Component class
 
+=head1 METHODS
+
 =cut
 
 use WebDAO::Base;
 use base qw(WebDAO::Element);
 use strict 'vars';
 use Data::Dumper;
+
 
 sub url_method {
     my $self   = shift;
@@ -44,9 +47,29 @@ sub url_method {
     return $path . $str;
 }
 
+=head2 response
+
+Return response object
+
+    return $self->response->error404('Bad name')
+
+=cut
+
 sub response {
     my $self = shift;
     return $self->_root_->response;
+}
+
+=head2 request
+
+Return request object
+
+    $self->request->param('id')
+
+=cut
+
+sub request {
+    return $_[0]->response->get_request();
 }
 1;
 __DATA__
@@ -61,7 +84,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2009 by Zahatski Aliaksandr
+Copyright 2002-2012 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
