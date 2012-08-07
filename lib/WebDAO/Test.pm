@@ -203,7 +203,7 @@ sub xget {
             $eng->_session->Params( \%args );
         }
     }
-    return $self->resolve_path( $path );
+    return $self->resolve_path( $path, @_ );
 #    return $eng->resolve_path( $eng->_session, $path );
 }
 
@@ -224,7 +224,7 @@ sub resolve_path {
 
     #skip root objects
     my ( undef, @path ) = split( /\//, $path );
-    my ( $src, $res ) = $self->eng->_traverse_( $sess, @path );
+    my ( $src, $res ) = ( shift || $self->eng)->_traverse_( $sess, @path );
     $res;
 }
 
