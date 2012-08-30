@@ -195,14 +195,11 @@ sub xget {
     my $eng = $self->{eng};
 
     #check if exists args
-    if ( $path =~ /\?/ ) {
         my $pars;
         ( $path, $pars ) = split /\?/, $path;
-        if ($pars) {
-            my %args = map { split /\=/, $_ } split /\&/, $pars;
-            $eng->_session->Params( \%args );
-        }
-    }
+        my %args = ();
+        %args = map { split /\=/, $_ } split /\&/, $pars if $pars;
+        $eng->_session->Params( \%args );
     return $self->resolve_path( $path, @_ );
 #    return $eng->resolve_path( $eng->_session, $path );
 }
