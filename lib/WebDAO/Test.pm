@@ -294,6 +294,7 @@ sub write   {
     }
 sub close   { }
 sub headers { return $_[0]->{headers} }
+sub output { ${ $_[0]->{out} } }
 
 1;
 
