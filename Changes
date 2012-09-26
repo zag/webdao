@@ -1,5 +1,7 @@
 Revision history for Perl extension WebDAO.
 
+2.12 26 Sep 2012
+  * clean deprecated code
 2.11 26 Sep 2012
   * move request, response and url_method to Element.pm (WebDAO::Component - deprecated)
   * add root element for xget (Test.pm)
