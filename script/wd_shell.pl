@@ -31,10 +31,10 @@ use Getopt::Long;
 use Pod::Usage;
 use WebDAO::Util;
 
-my ( $help, $man, $sess_id );
-my %opt = ( help => \$help, man => \$man, sid => \$sess_id );   #meta=>\$meta,);
+my ( $help, $man, $sess_id, $dump_headers );
+my %opt = ( help => \$help, man => \$man, sid => \$sess_id, d=>\$dump_headers);
 my @urls = ();
-GetOptions( \%opt, 'help|?', 'man', 'f=s', 'wdEngine|M=s', 'wdEnginePar=s',
+GetOptions( \%opt, 'help|?', 'man', 'd', 'f=s', 'wdEngine|M=s', 'wdEnginePar=s',
     'sid|s=s', '<>' => sub { push @urls, shift } )
   or pod2usage(2);
 pod2usage(1) if $help;
@@ -64,13 +64,21 @@ my $ini = WebDAO::Util::get_classes( __env => \%ENV, __preload => 1 );
 
 #Make Session object
 my $store_obj = "$ini->{wdStore}"->new( %{ $ini->{wdStorePar} } );
-
 my $cv = WebDAO::CV->new(
     env    => \%ENV,
     writer => sub {
-        new WebDAO::Shell::Writer::
+        my $fd = new WebDAO::Shell::Writer::
           status  => $_[0]->[0],
           headers => $_[0]->[1];
+        my $str;
+        if ( $dump_headers ) {
+           while (my ($h, $v) = splice (@{$_[0]->[1]}, 0, 2 ) )   {
+            $str .= "$h: $v\n"
+           }
+           $str.="\n\n";
+           $fd->write($str)
+        }
+        return $fd;
     }
 );
 
@@ -129,6 +137,7 @@ print "\n";
     -help  - print help message
     -man   - print man page
     -f file    - set root [x]html file 
+    -d     - dump HTTP headers
 
 =head1 OPTIONS
 

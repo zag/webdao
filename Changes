@@ -1,5 +1,7 @@
 Revision history for Perl extension WebDAO.
 
+2.14 03 Oct 2012
+  * add -d opt to wd_shell.pl
 2.12 26 Sep 2012
   * clean deprecated code
 2.11 26 Sep 2012
