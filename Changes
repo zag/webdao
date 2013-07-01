@@ -1,6 +1,7 @@
 Revision history for Perl extension WebDAO.
 
-  * add -c /config.ini alias for -wdEnginePar config=[/config.ini] (wd_shell.pl)
+    * fix defined(@array) is deprecated 
+    * add -c /config.ini alias for -wdEnginePar config=[/config.ini] (wd_shell.pl)
 
 2.14 03 Oct 2012
   * add -d opt to wd_shell.pl
