@@ -6,7 +6,6 @@
 #  DESCRIPTION:  shell script for WebDAO project
 #       AUTHOR:  Aliaksandr P. Zahatski (Mn), <zag@cpan.org>
 #===============================================================================
-#$Id: wd_shell.pl,v 1.2 2006/10/27 08:59:08 zag Exp $
 package WebDAO::Shell::Writer;
 
 sub new {
@@ -34,7 +33,7 @@ use WebDAO::Util;
 my ( $help, $man, $sess_id, $dump_headers );
 my %opt = ( help => \$help, man => \$man, sid => \$sess_id, d=>\$dump_headers);
 my @urls = ();
-GetOptions( \%opt, 'help|?', 'man', 'd', 'f=s', 'wdEngine|M=s', 'wdEnginePar=s',
+GetOptions( \%opt, 'help|?', 'man', 'd', 'f=s', 'wdEngine|M=s', 'wdEnginePar=s', 'c=s',
     'sid|s=s', '<>' => sub { push @urls, shift } )
   or pod2usage(2);
 pod2usage(1) if $help;
@@ -58,6 +57,10 @@ foreach my $sname ('__DIE__') {
 
 $ENV{wdEngine} ||= $opt{wdEngine} || 'WebDAO::Engine';
 $ENV{wdEnginePar} ||= $opt{wdEnginePar};
+#overwrite wdEnginePar with config=...
+if ( $opt{c} ) {
+    $ENV{wdEnginePar}='config='.$opt{c};
+}
 $ENV{wdSession} ||= 'WebDAO::SessionSH';
 $ENV{wdShell} = 1;
 my $ini = WebDAO::Util::get_classes( __env => \%ENV, __preload => 1 );
@@ -139,6 +142,12 @@ print "\n";
     -f file    - set root [x]html file 
     -d     - dump HTTP headers
 
+   examples:
+    
+    wd_shell.pl -wdEngine Test  -wdEnginePar config=../test.ini /some/url/query
+    wd_shell.pl -M Test -c ../test.ini /some/url/query #the same
+
+
 =head1 OPTIONS
 
 =over 8
@@ -171,7 +180,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2000-2012 by Zahatski Aliaksandr
+Copyright 2000-2013 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
