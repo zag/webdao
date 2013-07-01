@@ -189,7 +189,7 @@ sub get_attribute_names {
     my $pkg = shift;
     $pkg = ref($pkg) if ref($pkg);
     my @result = keys %{"${pkg}::_SESS_ATTRIBUTES_"};
-    if ( defined( @{"${pkg}::ISA"} ) ) {
+    if (  @{"${pkg}::ISA"} )  {
         foreach my $base_pkg ( @{"${pkg}::ISA"} ) {
             push( @result, get_attribute_names($base_pkg) );
         }
