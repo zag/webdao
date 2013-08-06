@@ -203,8 +203,9 @@ sub get_body {
     my $body;
     {
        local $/;
-       my $fd = $self->body;
-       $body = <$fd>;
+       if ( my $fd = $self->body ) {
+           $body = <$fd>
+	}
      }
     return $body
 }
