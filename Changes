@@ -1,5 +1,6 @@
 Revision history for Perl extension WebDAO.
 
+    * fix wrn if empty HTTP body
     * fix defined(@array) is deprecated 
     * add -c /config.ini alias for -wdEnginePar config=[/config.ini] (wd_shell.pl)
 
