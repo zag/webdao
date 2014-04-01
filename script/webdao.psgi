@@ -22,6 +22,7 @@ my $handler = sub {
     $env->{wdEnginePar} = $ENV{wdEnginePar} || $env->{HTTP_WDENGINEPAR} ;
     $env->{wdEngine} = $ENV{wdEngine} || $env->{HTTP_WDENGINE} ;
     $env->{wdSession} = $ENV{wdSession} || $env->{HTTP_WDSESSION} || 'WebDAO::Session' ;
+    $env->{wdSessionPar} = $ENV{wdSessionPar};
     my $ini = WebDAO::Util::get_classes(__env => $env, __preload=>1);
     my $store_obj = "$ini->{wdStore}"->new(
             %{ $ini->{wdStorePar} }
