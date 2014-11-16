@@ -1,10 +1,11 @@
 Revision history for Perl extension WebDAO.
 
-    * remove session attributes
-    * fix wdSessionPar under PSGI
-    * fix wrn if empty HTTP body
-    * fix defined(@array) is deprecated 
-    * add -c /config.ini alias for -wdEnginePar config=[/config.ini] (wd_shell.pl)
+2.15 16 Nov 2014
+  * remove session attributes
+  * fix wdSessionPar under PSGI
+  * fix wrn if empty HTTP body
+  * fix defined(@array) is deprecated 
+  * add -c /config.ini alias for -wdEnginePar config=[/config.ini] (wd_shell.pl)
 
 2.14 03 Oct 2012
   * add -d opt to wd_shell.pl
