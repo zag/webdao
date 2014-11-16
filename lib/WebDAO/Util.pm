@@ -4,7 +4,6 @@
 #
 #       AUTHOR:  Aliaksandr P. Zahatski, <zahatski@gmail.com>
 #===============================================================================
-#$Id$
 package WebDAO::Util;
 use strict;
 use warnings;
@@ -83,7 +82,6 @@ sub get_classes {
     my %defaults = (
         wdEngine     => 'WebDAO::Engine',
         wdSession    => 'WebDAO::Session',
-        wdStorePar   => undef,
         wdSessionPar => undef,
         wdEnginePar  => undef,
         @_
@@ -104,10 +102,6 @@ sub get_classes {
     $defaults{wdEnginePar} =
       WebDAO::Util::_parse_str_to_hash( $env->{WD_ENGINE_PAR}
           || $env->{wdEnginePar} )
-      || {};
-    $defaults{wdStorePar} =
-      WebDAO::Util::_parse_str_to_hash( $env->{WD_STORE_PAR}
-          || $env->{wdStorePar} )
       || {};
     $defaults{wdSessionPar} =
       WebDAO::Util::_parse_str_to_hash( $env->{WD_SESSION_PAR}
