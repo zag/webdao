@@ -11,7 +11,6 @@ use warnings;
 use Carp;
 use WebDAO::Engine;
 use WebDAO::Session;
-use WebDAO::Store::Abstract;
 
 =head2  load_module <package>
 
@@ -84,7 +83,6 @@ sub get_classes {
     my %defaults = (
         wdEngine     => 'WebDAO::Engine',
         wdSession    => 'WebDAO::Session',
-        wdStore      => 'WebDAO::Store::Abstract',
         wdStorePar   => undef,
         wdSessionPar => undef,
         wdEnginePar  => undef,
@@ -93,10 +91,6 @@ sub get_classes {
     my $env          = delete $defaults{__env}     || \%ENV;
     my $need_preload = delete $defaults{__preload} || 0;
 
-    $defaults{wdStore} =
-         $env->{WD_STORE}
-      || $env->{wdStore}
-      || $defaults{wdStore};
     $defaults{wdSession} =
          $env->{WD_SESSION}
       || $env->{wdSession}
@@ -121,7 +115,7 @@ sub get_classes {
       || {};
 
     if ($need_preload) {
-        for (qw/wdStore  wdSession  wdEngine /) {
+        for (qw/wdSession  wdEngine /) {
             WebDAO::Util::load_module( $defaults{$_} );
         }
     }

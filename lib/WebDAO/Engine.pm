@@ -24,7 +24,7 @@ sub _sysinit {
     my %hash = @$ref;
 
     # Setup $init_hash;
-    my $my_name = $hash{id} || '';    #shift( @{$ref} );
+    my $my_name = $hash{id} || '';
     unshift(
         @{$ref},
         {
@@ -74,40 +74,6 @@ sub init {
         $self->__add_childs__( 2, @$post );
     }
 
-}
-
-sub __restore_session_attributes {
-    my $self = shift;
-
-    #collect paths as index
-    my %paths;
-    foreach my $object (@_) {
-        my @collection = ( $object, @{ $object->_get_childs_ } );
-        $paths{ $_->__path2me } = $_ for @collection;
-    }
-    my $sess   = $self->_session;
-    my $loaded = $sess->_load_attributes_by_path( keys %paths );
-    while ( my ( $key, $ref ) = each %$loaded ) {
-        next unless exists $paths{$key};
-        $paths{$key}->_set_vars($ref);
-    }
-}
-
-sub __store_session_attributes {
-    my $self = shift;
-
-    #collect paths as index
-    my %paths;
-    foreach my $object (@_) {
-        my @collection = ( $object, @{ $object->_get_childs_ } );
-        foreach (@collection) {
-            my $attrs = $_->_get_vars;
-            next unless $attrs;
-            $paths{ $_->__path2me } = $attrs;
-        }
-    }
-    my $sess = $self->_session;
-    $sess->_store_attributes_by_path( \%paths );
 }
 
 sub response {
@@ -412,7 +378,6 @@ sub register_class {
 
 sub _destroy {
     my $self = shift;
-    $self->__store_session_attributes( @{ $self->_get_childs_ } );
     $self->SUPER::_destroy;
     $self->_session(undef);
     $self->__obj(undef);

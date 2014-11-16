@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 12;
+use Test::More tests => 11;
 
 #use Test::More (no_plan);
 use Data::Dumper;
@@ -21,8 +21,7 @@ BEGIN {
     use_ok('TestWDAO');
 }
 my $ID = "tcontainer";
-ok( ( my $store_ab = new WebDAO::Store::Abstract:: ), "Create store" );
-ok( ( my $session = new WebDAO::SessionSH:: store => $store_ab ),
+ok( ( my $session = new WebDAO::SessionSH::),
     "Create session" );
 $session->U_id($ID);
 

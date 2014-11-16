@@ -4,7 +4,7 @@
 #########################
 
 # change 'tests => 1' to 'tests => last_test_to_print';
-use Test::More tests=>10;
+use Test::More skip_all => "deprecated";;
 use File::Temp qw/tempdir/;
 use Data::Dumper;
 use strict;

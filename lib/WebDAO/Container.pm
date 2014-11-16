@@ -123,7 +123,6 @@ sub __add_childs__ {
     return unless @childs;
     if ( $self->__parent ) {
         $_->_set_parent($self) for @childs;
-        $self->_root_->__restore_session_attributes(@childs);
     }
     push( @{$dst}, @childs );
 }

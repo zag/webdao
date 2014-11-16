@@ -16,52 +16,9 @@ WebDAO::Base - Base class
 use Data::Dumper;
 use Carp;
 @WebDAO::Base::ISA    = qw(Exporter);
-@WebDAO::Base::EXPORT = qw(attributes sess_attributes);
+@WebDAO::Base::EXPORT = qw(attributes);
 
 $DEBUG = 0;    # assign 1 to it to see code generated on the fly
-
-sub mk_sess_attr {
-    my ($pkg) = caller;
-    shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
-#    croak "Error: attributes() invoked multiple times"
-#      if scalar @{"${pkg}::_SESS_ATTRIBUTES_"};
-    my %attrs = @_;
-    %{"${pkg}::_SESS_ATTRIBUTES_"} = %attrs;
-    my $code = "";
-    foreach my $attr (keys %attrs) {
-        # If the accessor is already present, give a warning
-        if ( UNIVERSAL::can( $pkg, "$attr" ) ) {
-            carp "$pkg already has method: $attr";
-            next;
-        }
-        $code .= _define_sess_accessor( $pkg, $attr, $attrs{$attr} );
-    }
-    eval $code;
-    if ($@) {
-        die "ERROR defining and attributes for '$pkg':"
-          . "\n\t$@\n"
-          . "-----------------------------------------------------"
-          . $code;
-    }
-}
-
-
-sub _define_sess_accessor {
-    my ( $pkg, $attr, $default ) = @_;
-
-    # qq makes this block behave like a double-quoted string
-    my $code = qq{
-    package $pkg;
-    sub $attr {                                      # Accessor ...
-      my \$self=shift;
-      my \$ret = \@_ ? \$self->set_attribute("$attr",shift):\$self->get_attribute("$attr");
-      return \${"${pkg}::_SESS_ATTRIBUTES_"}{"$attr"} unless defined \$ret;
-      \$ret
-    }
-  };
-    $code;
-}
-
 sub mk_attr {
     my ($pkg) = caller;
     shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
@@ -105,30 +62,6 @@ sub _define_attr_accessor {
     $code;
 }
 
-sub sess_attributes {
-    my ($pkg) = caller;
-    shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
-    croak "Error: attributes() invoked multiple times"
-      if scalar @{"${pkg}::_SESS_ATTRIBUTES_"};
-    my %attrs = map { $_=>undef} @_;
-    %{"${pkg}::_SESS_ATTRIBUTES_"} = %attrs;
-    my $code = "";
-    foreach my $attr (@_) {
-        # If the accessor is already present, give a warning
-        if ( UNIVERSAL::can( $pkg, "$attr" ) ) {
-            carp "$pkg already has method: $attr";
-            next;
-        }
-        $code .= _define_accessor( $pkg, $attr );
-    }
-    eval $code;
-    if ($@) {
-        die "ERROR defining and attributes for '$pkg':"
-          . "\n\t$@\n"
-          . "-----------------------------------------------------"
-          . $code;
-    }
-}
 
 sub attributes {
     my ($pkg) = caller;
@@ -183,18 +116,6 @@ sub _define_constructor {
     }
   };
     $code;
-}
-
-sub get_attribute_names {
-    my $pkg = shift;
-    $pkg = ref($pkg) if ref($pkg);
-    my @result = keys %{"${pkg}::_SESS_ATTRIBUTES_"};
-    if (  @{"${pkg}::ISA"} )  {
-        foreach my $base_pkg ( @{"${pkg}::ISA"} ) {
-            push( @result, get_attribute_names($base_pkg) );
-        }
-    }
-    @result;
 }
 
 sub set_attribute {
@@ -303,7 +224,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2009 by Zahatski Aliaksandr
+Copyright 2002-2014 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

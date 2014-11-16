@@ -11,8 +11,6 @@ wdIndexFile |" index.html - name of the file to be processed upon request. Possi
 wdEngine |" name of the package core module. This module serves all requests coming to I</>. Default: I<WebDAO::Engine> "| ShowPrice
 wdEnginePar |" initialization parameters when creating the main module. Value a string containing the pairs I<key=value>. Pairs are semicolon separated (I<;>). Default: I<undef> "| config=/home/zag/showprice.ini
 wdSession | Name the package module, which serves a sessional. This module is used to identify a web session. Default: I<WebDAO::Session> | WebDAO::Sessionco
-wdStore |" the name of the module, providing storage of a user session parameters. Defalut: I<WebDAO::Store::Abstract>"| WebDAO::Store::Storable 
-wdStorePar | initialization parameters for session storage module. default: I<undef> | path=/home/zag/tmp
 wdFCGIreq  | number of requests for each  I<FastCGI> process. The parameter is used to work in I<FastCGI> mode. Default: -1 - unlimited | 1000
 wdDebug  |" Debug level. 1 - critical errors, 2 .. n - warns, info.  Default: 0 - off "| 2
 
@@ -158,10 +156,6 @@ At B<VirtualHost> section:
     SetEnv wdEngine WedDAO::Kern
     SetEnv wdIndexFile index.xhtml
     SetEnv wdSession WebDAO::Sessionco
-
-    #for use external storage
-    #SetEnv wdStore WebDAO::Store::MLDBM
-    #SetEnv wdStorePar path=/tmp
 
     RewriteEngine on
     AddDefaultCharset UTF-8

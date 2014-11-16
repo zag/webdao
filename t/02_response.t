@@ -19,7 +19,7 @@ sub headers { return $_[0]->{headers} }
 
 package main;
 
-use Test::More ( tests => 35 );
+use Test::More ( tests => 33 );
 use Data::Dumper;
 use strict;
 
@@ -40,14 +40,12 @@ sub make_cv {
 
 BEGIN {
     use_ok('WebDAO');
-    use_ok('WebDAO::Store::Abstract');
     use_ok('WebDAO::SessionSH');
     use_ok('WebDAO::Response');
     use_ok( 'File::Temp', qw/ tempfile tempdir / );
 }
 my $ID = "tcontainer";
-ok my $store_ab = ( new WebDAO::Store::Abstract:: ), "Create store";
-ok my $session = ( new WebDAO::SessionSH:: store => $store_ab ),
+ok my $session = ( new WebDAO::SessionSH:: ),
   "Create session";
 $session->U_id($ID);
 isa_ok my $response = ( new WebDAO::Response::  cv => &make_cv ),

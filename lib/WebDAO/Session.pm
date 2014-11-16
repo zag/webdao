@@ -14,7 +14,6 @@ Session interface to device(HTTP protocol) specific function
 
 use WebDAO::Base;
 use WebDAO::CV;
-use WebDAO::Store::Abstract;
 use WebDAO::Response;
 use Data::Dumper;
 use base qw( WebDAO::Base );
@@ -26,7 +25,6 @@ __PACKAGE__->mk_attr(
     Cgi_env => undef, 
     U_id=> undef,
     Params => undef,
-    _store_obj =>undef,
     _response_obj=> undef, #deprecated ? 
     _is_absolute_url =>undef #deprecated ?
 );
@@ -57,7 +55,6 @@ sub Init {
         new WebDAO::Response::
         cv => $cv
     );
-    _store_obj $self ( $args{store} || new WebDAO::Store::Abstract:: );
 
     Cgi_env $self (
         {
@@ -130,21 +127,6 @@ sub set_absolute_url {
     my $prev_value = $self->_is_absolute_url;
     $self->_is_absolute_url($value) if defined $value;
     return $prev_value;
-}
-
-sub _load_attributes_by_path {
-    my $self = shift;
-    $self->_store_obj->_load_attributes( $self->get_id(), @_ );
-}
-
-sub _store_attributes_by_path {
-    my $self = shift;
-    $self->_store_obj->_store_attributes( $self->get_id(), @_ );
-}
-
-sub flush_session {
-    my $self = shift;
-    $self->_store_obj->flush( $self->get_id() );
 }
 
 sub get_request {

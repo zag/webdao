@@ -4,7 +4,6 @@
 #
 #       AUTHOR:  Aliaksandr P. Zahatski, <zahatski@gmail.com>
 #===============================================================================
-#$Id$
 
 package main;
 #use Test::More tests => 1;    # last test to print
@@ -53,7 +52,6 @@ is_deeply  $r->[0]->attr, {
 
 
 BEGIN {
-    use_ok('WebDAO::Store::Abstract');
     use_ok('WebDAO::SessionSH');
     use_ok('WebDAO::Engine');
     use_ok('WebDAO::Container');
@@ -61,8 +59,7 @@ BEGIN {
 }
 
 my $ID = "extra";
-ok my $store_ab = ( new WebDAO::Store::Abstract:: ), "Create store";
-ok my $session = ( new WebDAO::SessionSH:: store => $store_ab ),
+ok my $session = ( new WebDAO::SessionSH::),
   "Create session";
 $session->U_id($ID);
 

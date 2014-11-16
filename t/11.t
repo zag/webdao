@@ -5,7 +5,8 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 28;
+#use Test::More tests => 28;
+use Test::More skip_all => "deprecated";;
 
 #use Test::More (no_plan);
 use Data::Dumper;

@@ -35,12 +35,10 @@ use warnings;
 
 use Data::Dumper;
 
-use Test::More tests => 16;
+use Test::More tests => 14;
 
-#use Test::More qw(no_plan);
 
 BEGIN {
-    use_ok('WebDAO::Store::Abstract');
     use_ok('WebDAO::SessionSH');
     use_ok('WebDAO::Engine');
     use_ok('WebDAO::Container');
@@ -48,8 +46,7 @@ BEGIN {
 }
 
 my $ID = "extra";
-ok my $store_ab = ( new WebDAO::Store::Abstract:: ), "Create store";
-ok my $session = ( new WebDAO::SessionSH:: store => $store_ab ),
+ok my $session = ( new WebDAO::SessionSH::),
   "Create session";
 $session->U_id($ID);
 

@@ -78,7 +78,6 @@ sub _sysinit {
 
     #init hash of attribute_names
     my $ref_names_hash = {};
-    map { $ref_names_hash->{$_} = 1 } $self->get_attribute_names();
 
     $self->__attribute_names($ref_names_hash);
 

@@ -1,5 +1,6 @@
 Revision history for Perl extension WebDAO.
 
+    * remove session attributes
     * fix wdSessionPar under PSGI
     * fix wrn if empty HTTP body
     * fix defined(@array) is deprecated 

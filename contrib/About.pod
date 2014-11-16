@@ -19,7 +19,7 @@ B<WebDAO> - object-oriented system  for easy creation of high-performance and sc
 There are many environments in which the web applications work:
 
     ---------------------------------------------
-    |           mod_perl             Apache     |
+    |                                Apache     |
     | FastCGI                       CGI         |
     |           ------------------------        |
     |     nginx |                      |        |
@@ -91,62 +91,5 @@ Equivalent to the following:
     http:://example.com/test/index_x?param=1&param2
     http:://example.com/test/index_x
 
-
-=head3 Built-in support session parameters
-
-	
-In I<WebDAO> built-in support sessional settings. Schematically, it can provide the following diagrams:
-
-
-      +-----------------+      load    +------------------+   Storages:
-      |                 | <----------  |                  | -> MLDBM files
-      | Session object  |     store    | WebDAO::Store::* | -> Storable files 
-      |                 | ---------->  |                  | -> MemCached,MemCacheDB
-      +-----------------+              +------------------+ -> Custom storage ...
-          ^          |
-         /|\         |
-          |          |
-          |         \|/
-          |          V
-      +-----------------+
-      |                 |
-      |  WebDAO::Engine |
-      |                 |
-      +-----------------+
-
-	
-To do this, simply select the source storage in the configuration web server, and specify the attributes in the inherited class.
-
-Example configuration (I<Apache> web server):
-
-    <VirtualHost *>
-        ...
-        #set Storable storage
-        SetEnv wdStore WebDAO::Store::Storable
-        #path for store
-        SetEnv wdStorePar path=/tmp/sessions
-
-        #Track session via cookies
-        SetEnv wdSession WebDAO::Sessionco
-        ...
-    </VirtualHost>
-
-The text of the module also need to create attributes:
-
-    package MySess;
-    use WebDAO::Component;
-    use base 'WebDAO::Component';
-    
-    # define list of session attributes
-     
-    __PACKAGE__->mk_sess_attr( attr1 => undef, _attr2 => undef );
-   
-    sub UseAttr {
-        my $self = shift;
-        # read
-        my $val = $self->attr1;
-        ...
-        $self->attr1('test_value');
-    }
 
 =end pod

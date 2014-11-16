@@ -155,16 +155,15 @@ use Data::Dumper;
 use Test::More;
 use base 'Test';
 
-sub setup : Test(setup=>2) {
+sub setup : Test(setup=>1) {
     my $t = shift;
-    ok( ( my $store_ab = new WebDAO::Store::Abstract:: ), "Create store" );
     my $buffer;
     $t->{OUT} = \$buffer;
     my $cv = new TestCV:: \$buffer;
     #don't print headers
     $cv->{SKIP_HEADERS} =1;
     ok(
-        ( my $session = new WebDAO::SessionSH:: store => $store_ab, cv => $cv ),
+        ( my $session = new WebDAO::SessionSH:: cv => $cv ),
         "Create session"
       );
     $session->U_id("sdsd");
