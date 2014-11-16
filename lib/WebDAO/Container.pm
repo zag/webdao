@@ -32,19 +32,6 @@ sub _sysinit {
     $self->_clear_childs_();
 }
 
-sub _get_vars {
-    my $self = shift;
-    my ( $res, $ref );
-    $res = $self->SUPER::_get_vars;
-    return $res;
-}
-
-sub _set_vars {
-    my ( $self, $ref ) = @_;
-    my $chld_name;
-    $self->SUPER::_set_vars($ref);
-}
-
 =head1 METHODS (chidls)
 
 =head2 _get_childs_()

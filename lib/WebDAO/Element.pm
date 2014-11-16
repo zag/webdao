@@ -88,17 +88,6 @@ sub init {
     #Public Init metod for modules;
 }
 
-sub _get_vars {
-    my $self = shift;
-    my $res;
-    for my $key ( keys %{ $self->__attribute_names } ) {
-        my $val = $self->get_attribute($key);
-        no strict 'vars';
-        $res->{$key} = $val if ( defined($val) );
-        use strict 'vars';
-    }
-    return $res;
-}
 
 =head2 _get_childs_()
 
@@ -222,21 +211,6 @@ sub _destroy {
     my $self = shift;
     $self->__parent(undef);
     $self->__engine(undef);
-}
-
-sub _set_vars {
-    my ( $self, $ref, $names ) = @_;
-    $names = $self->__attribute_names;
-    for my $key ( keys %{$ref} ) {
-        if ( exists( $names->{$key} ) ) {
-            $self ->${key}( $ref->{$key} );
-        }
-        else {
-
-            # Uknown attribute ???
-
-        }
-    }
 }
 
 sub url_method {

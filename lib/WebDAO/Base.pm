@@ -1,5 +1,4 @@
 package WebDAO::Base;
-#$Id$
 
 =head1 NAME
 
@@ -16,9 +15,10 @@ WebDAO::Base - Base class
 use Data::Dumper;
 use Carp;
 @WebDAO::Base::ISA    = qw(Exporter);
-@WebDAO::Base::EXPORT = qw(attributes);
+@WebDAO::Base::EXPORT = qw(mk_attr);
 
 $DEBUG = 0;    # assign 1 to it to see code generated on the fly
+
 sub mk_attr {
     my ($pkg) = caller;
     shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
@@ -62,45 +62,6 @@ sub _define_attr_accessor {
     $code;
 }
 
-
-sub attributes {
-    my ($pkg) = caller;
-    shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
-    my $code = "";
-    foreach my $attr (@_) {
-        print STDERR "  defining method $attr\n" if $DEBUG;
-
-        # If the accessor is already present, give a warning
-        if ( UNIVERSAL::can( $pkg, "$attr" ) ) {
-            carp "$pkg already has rtl method: $attr";
-            next;
-        }
-        $code .= _define_accessor( $pkg, $attr );
-    }
-    eval $code;
-    if ($@) {
-        die "ERROR defining  rtl_attributes for '$pkg':"
-          . "\n\t$@\n"
-          . "-----------------------------------------------------"
-          . $code;
-    }
-
-}
-
-sub _define_accessor {
-    my ( $pkg, $attr ) = @_;
-
-    # qq makes this block behave like a double-quoted string
-    my $code = qq{
-    package $pkg;
-    sub $attr {                                      # Accessor ...
-      my \$self=shift;
-      \@_ ? \$self->set_attribute("$attr",shift):\$self->get_attribute("$attr");
-    }
-  };
-    $code;
-}
-
 sub _define_constructor {
     my $pkg  = shift;
     my $code = qq {
@@ -116,46 +77,6 @@ sub _define_constructor {
     }
   };
     $code;
-}
-
-sub set_attribute {
-    my ( $obj, $attr_name, $attr_value ) = @_;
-    $obj->{"Var"}->{$attr_name} = $attr_value;
-}
-
-#
-sub get_attribute {
-    my ( $self, $attr_name ) = @_;
-    return $self->{"Var"}->{$attr_name};
-}
-
-# $obj->set_attributes (name => 'John', age => 23);
-# Or, $obj->set_attributes (['name', 'age'], ['John', 23]);
-sub set_attributes {
-    my $obj = shift;
-    my $attr_name;
-    if ( ref( $_[0] ) ) {
-        my ( $attr_name_list, $attr_value_list ) = @_;
-        my $i = 0;
-        foreach $attr_name (@$attr_name_list) {
-            $obj->$attr_name( $attr_value_list->[ $i++ ] );
-        }
-    }
-    else {
-        my ( $attr_name, $attr_value );
-        while (@_) {
-            $attr_name  = shift;
-            $attr_value = shift;
-            $obj->$attr_name($attr_value);
-        }
-    }
-}
-
-# @attrs = $obj->get_attributes (qw(name age));
-sub get_attributes {
-    my $obj = shift;
-    my (@retval);
-    map { $obj->$_() } @_;
 }
 
 sub new {

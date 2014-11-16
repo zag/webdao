@@ -15,11 +15,13 @@ WebDAO::Lib::RawHTML - Component for raw html
 
 use WebDAO::Base;
 use base qw(WebDAO::Component);
-attributes (_raw_html);
+__PACKAGE__->mk_attr(_raw_html=>undef);
+
 sub init {
     my ($self,$ref_raw_html)=@_;
    _raw_html $self $ref_raw_html;
 }
+
 sub fetch {
   my $self=shift;
   return ${$self->_raw_html};
@@ -38,7 +40,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2009 by Zahatski Aliaksandr
+Copyright 2002-2014 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
