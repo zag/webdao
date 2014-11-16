@@ -89,13 +89,13 @@ $r->content_length(2345);
 $r->set_cookie(  name => 'test', value => 1  );
 $r->set_cookie(  name => 'test1', value => 2, expires => 1327501188  );
 $r->print_header();
-is_deeply $r->_cv_obj->{fd}->headers,
-  [
+is_deeply {@{ $r->_cv_obj->{fd}->headers}} ,
+  {
     'Content-Length' => 2345,
     'Content-Type'   => 'text/html; charset=utf-8',
     'Set-Cookie'     => 'test=1; path=/',
     'Set-Cookie'     => 'test1=2; path=/ ;expires=Wed, 25-Jan-2012 14:19:48 GMT'
-  ],
+  },
   'Set Cookies';
 
 my $cv2 = $fcgi;
