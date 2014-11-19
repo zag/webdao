@@ -24,15 +24,11 @@ my $handler = sub {
     $env->{wdSession} = $ENV{wdSession} || $env->{HTTP_WDSESSION} || 'WebDAO::Session' ;
     $env->{wdSessionPar} = $ENV{wdSessionPar};
     my $ini = WebDAO::Util::get_classes(__env => $env, __preload=>1);
-    my $store_obj = "$ini->{wdStore}"->new(
-            %{ $ini->{wdStorePar} }
-    );
 
     my $cv = WebDAO::CV->new(env=>$env, writer=>$coderef);
 
     my $sess = "$ini->{wdSession}"->new(
         %{ $ini->{wdSessionPar} },
-        store => $store_obj,
         cv    => $cv,
     );
 

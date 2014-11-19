@@ -22,23 +22,27 @@ use warnings;
 use Carp;
 use WebDAO;
 use WebDAO::SessionSH;
-use WebDAO::Store::Abstract;
 use WebDAO::CV;
 use Data::Dumper;
 use WebDAO::Lex;
 use Getopt::Long;
 use Pod::Usage;
 use WebDAO::Util;
+use MIME::Base64;
 
 my ( $help, $man, $sess_id, $dump_headers );
-my %opt = ( help => \$help, man => \$man, sid => \$sess_id, d=>\$dump_headers);
+my %opt = ( help => \$help, man => \$man, sid => \$sess_id, d=>\$dump_headers );
 my @urls = ();
-GetOptions( \%opt, 'help|?', 'man', 'd', 'f=s', 'wdEngine|M=s', 'wdEnginePar=s', 'c=s',
+GetOptions( \%opt, 'help|?', 'man', 'd', 'f=s', 'wdEngine|M=s', 'wdEnginePar=s', 'c=s', 'u=s',
     'sid|s=s', '<>' => sub { push @urls, shift } )
   or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
 
+if ($opt{u}) {
+      $ENV{"HTTP_AUTHORIZATION"} =
+      " " . encode_base64($opt{u});
+}
 my $evl_file = shift @urls;
 pod2usage( -exitstatus => 2, -message => 'No path give or non exists ' )
   unless $evl_file;
@@ -66,7 +70,6 @@ $ENV{wdShell} = 1;
 my $ini = WebDAO::Util::get_classes( __env => \%ENV, __preload => 1 );
 
 #Make Session object
-my $store_obj = "$ini->{wdStore}"->new( %{ $ini->{wdStorePar} } );
 my $cv = WebDAO::CV->new(
     env    => \%ENV,
     writer => sub {
@@ -87,7 +90,6 @@ my $cv = WebDAO::CV->new(
 
 my $sess = "$ini->{wdSession}"->new(
     %{ $ini->{wdSessionPar} },
-    store => $store_obj,
     cv    => $cv,
 );
 
@@ -141,6 +143,7 @@ print "\n";
     -man   - print man page
     -f file    - set root [x]html file 
     -d     - dump HTTP headers
+    -u login:password    - set HTTP_AUTHORIZATION variable
 
    examples:
     

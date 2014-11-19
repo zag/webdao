@@ -11,7 +11,8 @@ Module::Build->new
 	      'FCGI'=>0.67,
 	      'Test::Class'=>0,
 	      'URI'=>1.36,
-              'HTTP::Body'=>1.11
+              'HTTP::Body'=>1.11,
+              'MIME::Base64' =>0
 	       },
   script_files=>[qw!
     script/wd_fcgi.fpl

@@ -152,7 +152,6 @@ sub ExecEngine {
     $eng_ref->execute($self, $path);
     $eng_ref->__send_event__("_sess_ended");
     $eng_ref->_destroy;
-    $self->flush_session();
 }
 
 sub destroy {
