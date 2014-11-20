@@ -1,6 +1,7 @@
 Revision history for Perl extension WebDAO.
 
-  * add -u set auth headers for wd_shell.pl
+2.16 20 Nov 2014
+  * add -u opt (set auth headers) for wd_shell.pl
 
 2.15 16 Nov 2014
   * remove session attributes
