@@ -2,7 +2,8 @@ use Module::Build;
 Module::Build->new
     ( module_name => 'WebDAO',
     license => 'perl',
-   prereq => {
+    configure_requires => 'Module::Build=>0.38',
+    prereq => {
 	      'XML::Flow'=>'0.86',
 	      'DateTime'=> 0.37,
 	      'DateTime::Format::HTTP'=>0.37,
