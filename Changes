@@ -1,5 +1,8 @@
 Revision history for Perl extension WebDAO.
 
+2.17 03 Dec 2014
+  * fix deps
+
 2.16 20 Nov 2014
   * add -u opt (set auth headers) for wd_shell.pl
 
