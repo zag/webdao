@@ -10,7 +10,7 @@ use WebDAO::Container;
 use WebDAO::Engine;
 our @ISA = qw(WebDAO::Element Exporter);
 
-our $VERSION = '2.18';
+our $VERSION = '2.19';
 @WebDAO::EXPORT = qw( mk_route mk_attr);
 
 =head2 mk_route ( 'route1'=> 'Class::Name', 'route2'=> sub { return new My::Class() })

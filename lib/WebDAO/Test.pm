@@ -25,6 +25,8 @@ Class for tests
 
 =cut
 
+our $VERSION = '0.01';
+
 require Exporter;
 @WebDAO::Test::ISA = qw(Exporter );
 
