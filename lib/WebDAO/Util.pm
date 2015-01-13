@@ -10,6 +10,7 @@ use warnings;
 use Carp;
 use WebDAO::Engine;
 use WebDAO::Session;
+our $VERSION = '0.01';
 
 =head2  load_module <package>
 

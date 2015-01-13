@@ -13,6 +13,7 @@ WebDAO::Lib::MethodByPath - Component for method tag
 
 =cut
 
+our $VERSION = '0.01';
 use WebDAO;
 use base qw(WebDAO);
 __PACKAGE__->mk_attr( _path=>undef, _args=>undef);

@@ -19,6 +19,8 @@ WebDAO::Lex - Lexer class
 
 =cut
 
+our $VERSION = '0.01';
+
 use strict;
 use warnings;
 use WebDAO::Base;

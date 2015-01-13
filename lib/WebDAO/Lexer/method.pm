@@ -11,6 +11,8 @@ WebDAO::Lexer::method - Process method tag
 
 =cut
 
+our $VERSION = '0.01';
+
 use base 'WebDAO::Lexer::base';
 use strict;
 sub value {

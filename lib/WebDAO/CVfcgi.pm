@@ -1,4 +1,6 @@
 package WebDAO::Fcgi::Writer;
+our $VERSION = '0.01';
+
 use strict;
 use warnings;
 sub new {
@@ -12,6 +14,7 @@ sub headers { return $_[0]->{headers} }
 1;
 
 package WebDAO::CVfcgi;
+our $VERSION = '0.01';
 
 =head1 NAME
 
@@ -56,6 +59,7 @@ sub print {
 }
 1;
 package WebDAO::CVfcgiold;
+our $VERSION = '0.01';
 use base qw/WebDAO::CVfcgi/;
 sub print {
     my $self = shift;

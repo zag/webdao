@@ -1,4 +1,5 @@
 package WebDAO::Lexer::text;
+our $VERSION = '0.01';
 use base 'WebDAO::Lexer::base';
 use strict;
 =head1 NAME

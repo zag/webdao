@@ -1,4 +1,5 @@
 package WebDAO::Base;
+our $VERSION = '0.01';
 
 =head1 NAME
 
@@ -16,7 +17,6 @@ use Data::Dumper;
 use Carp;
 @WebDAO::Base::ISA    = qw(Exporter);
 @WebDAO::Base::EXPORT = qw(mk_attr mk_route);
-
 $DEBUG = 0;    # assign 1 to it to see code generated on the fly
 
 =head2 mk_attr ( _attr1=>'default value', __attr2=>undef, __attr2=>1)

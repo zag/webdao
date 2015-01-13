@@ -6,6 +6,7 @@
 #===============================================================================
 #$Id$
 package WebDAO::CV;
+our $VERSION = '0.01';
 use URI;
 use Data::Dumper;
 use strict;

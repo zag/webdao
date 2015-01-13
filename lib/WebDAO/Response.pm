@@ -1,7 +1,5 @@
 package WebDAO::Response;
 
-#$Id: CVapache2.pm 423 2009-02-01 09:31:44Z zag $
-
 =head1 NAME
 
 WebDAO::Response - Response class
@@ -16,6 +14,7 @@ Class for make HTTP response
 
 =cut
 
+our $VERSION = '0.01';
 use Data::Dumper;
 use WebDAO::Base;
 use IO::File;

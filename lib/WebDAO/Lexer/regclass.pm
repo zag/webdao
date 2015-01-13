@@ -10,6 +10,8 @@ WebDAO::Lexer::regclass - Process regclass tag
 WebDAO::Lexer::regclass - Process regclass tag
 
 =cut
+
+our $VERSION = '0.01';
 use strict;
 use warnings;
 use base 'WebDAO::Lexer::base';

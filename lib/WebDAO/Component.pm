@@ -13,6 +13,7 @@ WebDAO::Component - Component class (deprecated, use WebDAO)
 =head1 METHODS
 
 =cut
+our $VERSION = '0.01';
 
 use WebDAO::Base;
 use base qw(WebDAO::Element);

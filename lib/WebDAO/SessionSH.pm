@@ -1,5 +1,4 @@
 package WebDAO::SessionSH;
-#$Id$
 
 =head1 NAME
 
@@ -11,6 +10,7 @@ WebDAO::SessionSH - Session class used from shell
 
 =cut
 
+our $VERSION = '0.01';
 use strict;
 use warnings;
 use WebDAO;
@@ -47,7 +47,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2014 by Zahatski Aliaksandr
+Copyright 2002-2015 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

@@ -4,8 +4,9 @@
 #
 #       AUTHOR:  Aliaksandr P. Zahatski, <zahatski@gmail.com>
 #===============================================================================
-#$Id$
 package WebDAO::Modal;
+our $VERSION = '0.01';
+
 1;
 
 

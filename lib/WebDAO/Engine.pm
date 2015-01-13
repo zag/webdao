@@ -10,6 +10,8 @@ WebDAO::Engine - Class for root object of application model
 
 =cut
 
+our $VERSION = '0.01';
+
 use Data::Dumper;
 use WebDAO::Container;
 use WebDAO::Lib::MethodByPath;

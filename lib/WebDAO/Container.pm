@@ -14,6 +14,8 @@ WebDAO::Container - Group of objects
 
 =cut
 
+our $VERSION = '0.01';
+
 use WebDAO::Element;
 use Data::Dumper;
 use base qw(WebDAO::Element);

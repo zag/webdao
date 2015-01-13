@@ -283,6 +283,7 @@ sub make_cv {
 }
 
 package Test::Writer;
+our $VERSION = '0.01';
 use warnings;
 use strict;
 sub new {
@@ -302,6 +303,7 @@ package TestCV;
 use strict;
 use warnings;
 use WebDAO::CV;
+our $VERSION = '0.01';
 use base 'WebDAO::CV';
 
 sub new {

@@ -11,6 +11,8 @@ WebDAO::Lexer::object - Process object tag
 WebDAO::Lexer::object - Process object tag
 
 =cut
+
+our $VERSION = '0.01';
 use base 'WebDAO::Lexer::base';
 use strict;
 use warnings;

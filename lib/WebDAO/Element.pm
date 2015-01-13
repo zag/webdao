@@ -1,5 +1,4 @@
 package WebDAO::Element;
-#$Id$
 
 =head1 NAME
 
@@ -12,6 +11,8 @@ WebDAO::Element - Base class for simple object
 WebDAO::Element - Base class for simple object
 
 =cut
+
+our $VERSION = '0.01';
 
 use Data::Dumper;
 use WebDAO::Base;
