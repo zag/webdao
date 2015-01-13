@@ -20,20 +20,22 @@ sub String {
 sub fetch {
     return "FF";
 }
+
 sub Echo {
     my $self = shift;
-    my %args= @_;
-    return $args{text}
+    my %args = @_;
+    return $args{text};
 }
 
-
 1;
+
 package TElemO;
 use strict;
 use warnings;
 use Data::Dumper;
 use WebDAO;
 use base 'WebDAO::Element';
+
 sub fetch {
     return "O";
 }
@@ -72,22 +74,22 @@ sub Method {
 
 sub pre_fetch { "<M>" }
 
-sub post_fetch {"<M>"}
+sub post_fetch { "<M>" }
 
 sub SubElem {
     my $self = shift;
-    my $eng = $self->_root_;
-    my @res =();
-    for (1..2) {
-      push @res, $eng->_createObj("el".$_, "TElem");
+    my $eng  = $self->_root_;
+    my @res  = ();
+    for ( 1 .. 2 ) {
+        push @res, $eng->_create_( "el" . $_, "TElem" );
     }
-    \@res
+    \@res;
 }
 
 sub GetElement {
     my $self = shift;
-    my $eng = $self->_root_;
-    $eng->_createObj("el", "TElemO");
+    my $eng  = $self->_root_;
+    $eng->_create_( "el", "TElemO" );
 }
 
 sub ModalAnswer {
@@ -99,10 +101,8 @@ sub ModalAnswer {
 
 sub GetArrayRef {
     my $self = shift;
-    my $eng = $self->_root_;
-    [ $eng->_createObj("el1", "TElemO"),
-    $eng->_createObj("el2", "TElemO"),
-    ]
+    my $eng  = $self->_root_;
+    [ $eng->_create_( "el1", "TElemO" ), $eng->_create_( "el2", "TElemO" ), ];
 }
 1;
 
@@ -145,7 +145,21 @@ use warnings;
 use Test::More;
 use Data::Dumper;
 use WebDAO;
-use base ( 'WebDAO::Engine', 'TComp' );
+use base ('WebDAO::Engine');
+mk_route( route => "TRoute" );
+1;
+
+package TR1;
+use strict;
+use warnings;
+sub Test { return "OK" }
+1;
+
+package TRoute;
+use strict;
+use warnings;
+use WebDAO;
+mk_route( tr1 => "TR1" );
 1;
 
 package T::Engine;
@@ -160,33 +174,29 @@ sub setup : Test(setup=>1) {
     my $buffer;
     $t->{OUT} = \$buffer;
     my $cv = new TestCV:: \$buffer;
+
     #don't print headers
-    $cv->{SKIP_HEADERS} =1;
-    ok(
-        ( my $session = new WebDAO::SessionSH:: cv => $cv ),
-        "Create session"
-      );
+    $cv->{SKIP_HEADERS} = 1;
+    ok( ( my $session = new WebDAO::SessionSH:: cv => $cv ), "Create session" );
     $session->U_id("sdsd");
     my $eng = new TEng:: session => $session;
     $t->{tlib} = new WebDAO::Test eng => $eng;
 }
 
-
 sub t01 : Test(1) {
     use_ok 'WebDAO::Engine';
 }
 
-
 sub t01_test_resolve : Test(8) {
-    my $t   = shift;
-    my $eng = $t->{tlib}->eng;
+    my $t    = shift;
+    my $eng  = $t->{tlib}->eng;
     my $tlib = $t->{tlib};
-    ok my $obj = $eng->_createObj( 'comp', 'TComp' ), 'make TestComp';
+    ok my $obj = $eng->_create_( 'comp', 'TComp' ), 'make TestComp';
     $eng->_add_childs_($obj);
 
     isa_ok $tlib->resolve_path("/"),     "TEng",  "/";
     isa_ok $tlib->resolve_path("/comp"), "TComp", "/comp";
-    ok my $obj1 = $eng->_createObj( 'extra', 'TExtra' ), 'make TestComp extra';
+    ok my $obj1 = $eng->_create_( 'extra', 'TExtra' ), 'make TestComp extra';
     $eng->_add_childs_($obj1);
     ok !$tlib->resolve_path("/extra/2010/12/1233"),
       "/extra/2010/12/1233 - not exists";
@@ -205,12 +215,12 @@ sub t02_output : Test(7) {
     my $t    = shift;
     my $eng  = $t->{tlib}->eng;
     my $sess = $eng->_session;
-    ok my $obj = $eng->_createObj( 'extra', 'TExtra' ), 'make TestComp';
+    ok my $obj = $eng->_create_( 'extra', 'TExtra' ), 'make TestComp';
     $eng->_add_childs_($obj);
-    ok my $obj1 = $eng->_createObj( 'extra2', 'TExtra' ), 'make TestComp';
+    ok my $obj1 = $eng->_create_( 'extra2', 'TExtra' ), 'make TestComp';
     $eng->_add_childs_($obj1);
-    $obj1->_add_childs_( $eng->_createObj( 'elem',  'TElem' ) );
-    $obj1->_add_childs_( $eng->_createObj( 'Melem', 'TElemModal' ) );
+    $obj1->_add_childs_( $eng->_create_( 'elem',  'TElem' ) );
+    $obj1->_add_childs_( $eng->_create_( 'Melem', 'TElemModal' ) );
 
     #    diag Dumper $t->{tlib}->tree;
     my $out = $t->{OUT};
@@ -235,15 +245,15 @@ sub t02_output : Test(7) {
 }
 
 sub t03_modal_comp : Test(10) {
-    my $t   = shift;
-    my $eng = $t->{tlib}->eng;
+    my $t    = shift;
+    my $eng  = $t->{tlib}->eng;
     my $tlib = $t->{tlib};
-    ok my $obj = $eng->_createObj( 'elem', 'TElem' ), 'make TestComp';
+    ok my $obj = $eng->_create_( 'elem', 'TElem' ), 'make TestComp';
     $eng->_add_childs_($obj);
 
-    ok my $obj1 = $eng->_createObj( 'Mcomp', 'TCompModal' ), 'make TestComp';
+    ok my $obj1 = $eng->_create_( 'Mcomp', 'TCompModal' ), 'make TestComp';
     $eng->_add_childs_($obj1);
-    $obj1->_add_childs_( $eng->_createObj( 'elem', 'TElem' ) );
+    $obj1->_add_childs_( $eng->_create_( 'elem', 'TElem' ) );
 
     # $VAR1 = {
     #           ':TEng' => [
@@ -259,7 +269,7 @@ sub t03_modal_comp : Test(10) {
     #                        }
     #                      ]
     #         };
-    
+
     my $out  = $t->{OUT};
     my $sess = $eng->_session;
     $eng->execute2( $sess, "/Mcomp/" );
@@ -280,27 +290,43 @@ sub t03_modal_comp : Test(10) {
 
     $$out = '';
     $eng->execute2( $sess, "/Mcomp/SubElem" );
-#        diag Dumper $t->{tlib}->tree;
+
+    #        diag Dumper $t->{tlib}->tree;
     is $$out, '<M>FFFF<M>',
       "/Mcomp/SubElem - modal container method ( return array of elems)";
     $$out = '';
     $eng->execute2( $sess, "/Mcomp/GetElement" );
-    
+
     is $$out, '<M>O<M>',
-      "/Mcomp/getElement - modal container method ( retutn WebDAO::Element - ignored)";
+"/Mcomp/getElement - modal container method ( retutn WebDAO::Element - ignored)";
 
     $$out = '';
     $eng->execute2( $sess, "/Mcomp/GetArrayRef" );
-    is $$out, '<M>OO<M>', "/Mcomp/GetArrayRef - Method return array of elements";
+    is $$out, '<M>OO<M>',
+      "/Mcomp/GetArrayRef - Method return array of elements";
 
-    isa_ok $tlib->resolve_path("/Mcomp/GetArrayRef"),'WebDAO::Container',
+    isa_ok $tlib->resolve_path("/Mcomp/GetArrayRef"), 'WebDAO::Container',
       "Check container when method return Array ref";
 }
 
-sub  t04_buld_scene :Test {
-    my $t =shift;
-    ok my $eng2 = new WebDAO::Engine:: session=> $t->{tlib}->get_session, ;
-#    diag $eng2;
+sub t04_buld_scene : Test {
+    my $t = shift;
+    ok my $eng2 = new WebDAO::Engine:: session => $t->{tlib}->get_session,;
+
+    #    diag $eng2;
 }
 
+no strict 'refs';
+*{"WebDAO::Container::__any_path2"} = sub {
+
+};
+use strict 'refs';
+
+sub t05_test_resolve : Test(1) {
+    my $t    = shift;
+    my $eng  = $t->{tlib}->eng;
+    my $tlib = $t->{tlib};
+    is $tlib->resolve_path("/route/tr1/Test"), 'OK',
+      "Check mk_route";
+}
 1;

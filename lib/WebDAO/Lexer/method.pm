@@ -18,7 +18,7 @@ sub value {
     my $eng = shift || return undef;
     my $attr= $self->attr;
     my $object =
-      $eng->_createObj( "none", "_method_call", $attr->{path} );
+      $eng->_create_( "none", "_method_call", $attr->{path} );
     return $object;
 }
 1;

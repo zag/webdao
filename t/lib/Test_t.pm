@@ -2,8 +2,8 @@ package Test_t;
 use strict;
 use warnings;
 use Data::Dumper;
-use WebDAO::Component;
-use base 'WebDAO::Component';
+use WebDAO;
+use base 'WebDAO';
 
 sub ___my_name {
     return "aaraer/aaa"

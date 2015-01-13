@@ -13,16 +13,16 @@ WebDAO::SessionSH - Session class used from shell
 
 use strict;
 use warnings;
-use WebDAO::Base;
+use WebDAO;
 use WebDAO::Session;
 use Data::Dumper;
 use base qw( WebDAO::Session );
 
 #Need to be forever called from over classes;
-sub Init {
+sub _init {
     my $self = shift;
     my %args = @_;
-    $self->SUPER::Init(@_);
+    $self->SUPER::_init(@_);
     delete $args{cv};
     $self->U_id( rand(100) );
     #setup default method 

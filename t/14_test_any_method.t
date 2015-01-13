@@ -9,7 +9,7 @@ package TestElement;
 use warnings;
 use strict;
 use WebDAO;
-use base 'WebDAO::Component';
+use base 'WebDAO';
 
 sub Exist {
     my $self = shift;
@@ -50,7 +50,7 @@ sub t02_make_test_component : Test(no_plan) {
     my $t    = shift;
     my $eng  = $t->{tlib}->eng;
     my $tlib = $t->{tlib};
-    ok my $obj = $eng->_createObj( 't', 'TestElement' ), 'make TestElement';
+    ok my $obj = $eng->_create_( 't', 'TestElement' ), 'make TestElement';
     $eng->_add_childs_($obj);
     is_deeply { ':WebDAO::Engine' => [ { 't:TestElement' => [] } ] },
       $t->{tlib}->tree($eng), 'add test element';
@@ -65,7 +65,7 @@ sub t03_make_test_component : Test(no_plan) {
     my $t    = shift;
     my $eng  = $t->{tlib}->eng;
     my $tlib = $t->{tlib};
-    ok my $obj = $eng->_createObj( 't2', 'TestElement_any' ),
+    ok my $obj = $eng->_create_( 't2', 'TestElement_any' ),
       'make TestElement_any';
     $eng->_add_childs_($obj);
     is_deeply { ':WebDAO::Engine' => [ { 't2:TestElement_any' => [] } ] },

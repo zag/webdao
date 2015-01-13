@@ -236,6 +236,15 @@ sub process_includes {
     return $str;
 }
 
+sub new {
+    my $class = shift;
+    my $self  = {};
+    my $stat;
+    bless( $self, $class );
+    $self->_init(@_);
+    return $self;
+}
+
 sub _init {
     my $self      = shift;
     my $file_path = shift;

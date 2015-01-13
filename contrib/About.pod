@@ -58,7 +58,7 @@ Create a file C<MyTest.pm> with the following content:
 
     package MyTest;
     use WebDAO;
-    use base 'WebDAO::Component';
+    use base 'WebDAO';
     
     sub fetch {
         "Hello Web X.0!";

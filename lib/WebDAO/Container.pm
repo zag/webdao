@@ -162,10 +162,28 @@ sub _set_parent {
 }
 
 sub __any_path {
-    my $self = shift;
-    my $sess = shift;
-    my ( $method ) = @_;
+    my $self     = shift;
+    my $sess     = shift;
+    my ($method) = @_;
     my ( $res, $path ) = $self->SUPER::__any_path( $sess, @_ );
+
+    #process routes
+    unless ( defined($res) ) {
+        no strict 'refs';
+        my $pkg    = ref($self);
+        my %routes = %{"${pkg}::_WEBDAO_ROUTE_"};
+        if ( exists $routes{$method} and my $class = $routes{$method} ) {
+            unless ( UNIVERSAL::isa( $class, 'WebDAO::Container' ) ) {
+                my $isa = \@{"${class}::ISA"};
+                push @$isa, 'WebDAO::Container';
+            }
+            my $obj = $self->_root_->_create_( $method, $class );
+            $self->_add_childs_($obj);
+            $path = \@_;
+            $res  = $self;
+        }
+        use strict 'refs';
+    }
     return undef unless defined($res);
     if ( ref($res) eq 'ARRAY' ) {
 
@@ -182,18 +200,20 @@ sub __any_path {
 sub _traverse_ {
     my $self = shift;
     my $sess = shift;
+
     #if empty path return $self
     unless ( scalar(@_) ) { return ( $self, $self ) }
 
     my ( $next_name, @path ) = @_;
-    
+
     #$src - object wich handle answer, $res - answer
-    my ($src, $res ) = ($self, undef);
+    my ( $src, $res ) = ( $self, undef );
+
     #check if exist object with some name
     if ( my $obj = $self->_get_obj_by_name($next_name) ) {
 
         #if last in path return him
-        ($src, $res ) =  $obj->_traverse_( $sess, @path );
+        ( $src, $res ) = $obj->_traverse_( $sess, @path );
 
     }
     else {    #try get other ways
@@ -222,17 +242,17 @@ sub _traverse_ {
             }
         }
         if (@rest_path) {
-            ($src, $res ) =  $self->_traverse_( $sess, @rest_path );
+            ( $src, $res ) = $self->_traverse_( $sess, @rest_path );
         }
     }
     #
-    if ($src == $res && ! UNIVERSAL::isa( $src, 'WebDAO::Modal' ) ) {
-        #force set root object for Modal
-        $src = $res = $self if UNIVERSAL::isa( $self, 'WebDAO::Modal' )
-    }
-    return ( $src, $res )
-}
+    if ( $src == $res && !UNIVERSAL::isa( $src, 'WebDAO::Modal' ) ) {
 
+        #force set root object for Modal
+        $src = $res = $self if UNIVERSAL::isa( $self, 'WebDAO::Modal' );
+    }
+    return ( $src, $res );
+}
 
 sub _get_obj_by_name {
     my $self = shift;

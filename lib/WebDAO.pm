@@ -6,15 +6,24 @@ use strict;
 use warnings;
 use WebDAO::Base;
 use WebDAO::Element;
-use WebDAO::Component;
 use WebDAO::Container;
 use WebDAO::Engine;
-use WebDAO::Session;
-use WebDAO::Sessionco;
-use WebDAO::Lib::RawHTML;
-our @ISA = qw();
+our @ISA = qw(WebDAO::Element Exporter);
 
-our $VERSION = '2.16';
+our $VERSION = '2.17';
+@WebDAO::EXPORT = qw( mk_route mk_attr);
+
+=head2 mk_route ( 'route1'=> 'Class::Name', 'route2'=> sub { return new My::Class() })
+
+Make route table for object
+
+ use WebDAO;
+ mk_route( 
+    user=>'MyClass::User', 
+    test=>sub { return  MyClass->new( param1=>1 ) }
+   );
+
+=cut
 
 
 
@@ -57,7 +66,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2012 by Zahatski Aliaksandr
+Copyright 2002-2015 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

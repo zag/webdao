@@ -14,7 +14,7 @@ WebDAO::Lib::RawHTML - Component for raw html
 =cut
 
 use WebDAO::Base;
-use base qw(WebDAO::Component);
+use base qw(WebDAO);
 __PACKAGE__->mk_attr(_raw_html=>undef);
 
 sub init {

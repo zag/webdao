@@ -9,8 +9,8 @@ use base 'WebDAO::Container';
 package TestTraverse;
 use strict;
 use warnings;
-use WebDAO::Component;
-use base 'WebDAO::Component';
+use WebDAO;
+use base 'WebDAO';
 
 sub Test {
     my $self = shift;
@@ -64,9 +64,9 @@ $eng->register_class(
 
 #test traverse
 
-my $main = $eng->_createObj( 'main2', 'testmain' );
+my $main = $eng->_create_( 'main2', 'testmain' );
 $eng->_add_childs_($main);
-isa_ok my $trav_obj = $eng->_createObj( 'traverse', 'traverse' ),
+isa_ok my $trav_obj = $eng->_create_( 'traverse', 'traverse' ),
   'TestTraverse', 'create traverse object';
 $main->_add_childs_($trav_obj);
 $trav_obj->__extra_path( [ 1, 2, 3 ] );
@@ -76,15 +76,15 @@ isa_ok $tlib->resolve_path( $traverse_url ), 'TestTraverse',
 my $traverse_url1 = $trav_obj->url_method();
 isa_ok $tlib->resolve_path(  $traverse_url1 ), 'TestTraverse',
   "resolve_path2 $traverse_url1";
-isa_ok my $t_cont1 = $eng->_createObj( 'test_cont', 'testcont' ),
+isa_ok my $t_cont1 = $eng->_create_( 'test_cont', 'testcont' ),
   'TestContainer', 'test containter';
-isa_ok my $comp = $eng->_createObj( 'el1', 'traverse' ), 'TestTraverse',
+isa_ok my $comp = $eng->_create_( 'el1', 'traverse' ), 'TestTraverse',
   'create elem';
 $t_cont1->_add_childs_($comp);
 $eng->_add_childs_($t_cont1);
 my $t_url = $comp->url_method('Return1');
 is $tlib->resolve_path( $t_url ), 1, "test resolve $t_url";
-isa_ok my $comp1 = $eng->_createObj( 'el_extra', 'traverse' ), 'TestTraverse',
+isa_ok my $comp1 = $eng->_create_( 'el_extra', 'traverse' ), 'TestTraverse',
   'create elem with extra1';
 $comp1->__extra_path( [ 'extra1', 'extra2' ] );
 $t_cont1->_add_childs_($comp1);

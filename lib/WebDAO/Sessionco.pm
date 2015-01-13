@@ -11,21 +11,21 @@ WebDAO::Sessionco - Session with store session id in cookie
 
 =cut
 
-use WebDAO::Base;
+use WebDAO::Session;
 use MIME::Base64;
 use Digest::MD5 qw(md5_hex);
 use base qw( WebDAO::Session );
 use strict 'vars';
-__PACKAGE__->mk_attr ( Cookie_name=>undef, Db_file=>undef );
+mk_attr ( Cookie_name=>undef, Db_file=>undef );
 
-sub Init {
+sub _init {
 
     #Parametrs is realm => [string] - for http auth
     #		id =>[string] - name of cookie
     #		db_file => [string] - path and filename
     #
     my ( $self, %param ) = @_;
-    $self->SUPER::Init(%param);
+    $self->SUPER::_init(%param);
     my $id = $param{id} || "stored";
     Cookie_name $self (
         {

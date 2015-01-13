@@ -73,7 +73,7 @@ F<$filename> - путь и имя  подключаемого файла. Тек
 
     package MyMenu;
     use WebDAO;
-    use base 'WebDAO::Component';
+    use base 'WebDAO';
 
     #default no output
     sub fetch { return }

@@ -13,10 +13,10 @@ WebDAO::Lib::MethodByPath - Component for method tag
 
 =cut
 
-use WebDAO::Base;
-use Data::Dumper;
-use base qw(WebDAO::Component);
+use WebDAO;
+use base qw(WebDAO);
 __PACKAGE__->mk_attr( _path=>undef, _args=>undef);
+
 
 sub init {
     my $self = shift;

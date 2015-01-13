@@ -55,7 +55,7 @@ B<WebDAO>  проектировалась с целью избавить раз�
 
     package MyTest;
     use WebDAO;
-    use base 'WebDAO::Component';
+    use base 'WebDAO';
     
     sub fetch {
         "Hello Web X.0!";

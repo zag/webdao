@@ -52,7 +52,7 @@ sub value {
             return;
         }
         else {
-            my $object = $eng->_createObj( $attr->{id}, $attr->{class}, @args );
+            my $object = $eng->_create_( $attr->{id}, $attr->{class}, @args );
 
             #            _log1 $self
             warn "create_obj fail for class: "

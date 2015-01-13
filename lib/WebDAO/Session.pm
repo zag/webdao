@@ -16,11 +16,10 @@ use WebDAO::Base;
 use WebDAO::CV;
 use WebDAO::Response;
 use Data::Dumper;
-use base qw( WebDAO::Base );
 use Encode qw(encode decode is_utf8);
 use strict;
 
-__PACKAGE__->mk_attr(
+mk_attr(
     Cgi_obj => undef, # request object
     Cgi_env => undef, 
     U_id=> undef,
@@ -29,20 +28,17 @@ __PACKAGE__->mk_attr(
     _is_absolute_url =>undef #deprecated ?
 );
 
-#sub new {
-#    my $class = shift;
-#    bless( ( $#_ == 0 ) ? shift : {@_}, ref($class) || $class );
-#}
-
-sub _init {
-    my $self = shift;
-    $self->Init(@_);
-    return 1;
+sub new {
+    my $class = shift;
+    my $self  = {};
+    my $stat;
+    bless( $self, $class );
+    $self->_init(@_);
+    return $self;
 }
 
-#Need to be forever called from over classes;
-sub Init {
 
+sub _init {
     #Parametrs is realm
     my $self = shift;
     my %args = @_;
@@ -147,10 +143,9 @@ sub print {
 
 sub ExecEngine {
     my ( $self, $eng_ref,$path ) = @_;
-    #deprecated
-    $eng_ref->__register_event__( $self, "_sess_servise", \&sess_servise );
-    $eng_ref->execute($self, $path);
-    $eng_ref->__send_event__("_sess_ended");
+    $eng_ref->_execute($self, $path);
+    $eng_ref->__send_event__("_sess_ended"); # TODO: deprecated : delete this line
+    $eng_ref->_commit();
     $eng_ref->_destroy;
 }
 

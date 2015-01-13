@@ -19,7 +19,6 @@ use base qw/ WebDAO::Base/;
 use strict 'vars';
 
 __PACKAGE__->mk_attr(
-    __attribute_names => undef,
     __my_name => undef,
     __parent => undef,
     __path2me => undef,
@@ -75,12 +74,6 @@ sub _sysinit {
 
     #_my_name - name of this object
     $self->__my_name( $ref_init_hash->{name_obj} );
-
-    #init hash of attribute_names
-    my $ref_names_hash = {};
-
-    $self->__attribute_names($ref_names_hash);
-
 }
 
 sub init {

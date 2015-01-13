@@ -124,7 +124,7 @@ sub t05_wd_in_pre :Test(no_plan) {
     my $t= shift;
     my $lex = new WebDAO::Lex::;
     my $tmpl=<<T1;
-Textext1 <wd><object id="ed" class="WebDAO::Component"/></wd>Testxt1
+Textext1 <wd><object id="ed" class="WebDAO"/></wd>Testxt1
   <!-- <wd:fetch>-->
   <div id="footer">
    <p>Footer of page</p>

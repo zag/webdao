@@ -19,6 +19,14 @@ use Carp;
 use strict;
 __PACKAGE__->mk_attr( _session=>undef, __obj=>undef, __events=>undef);
 
+sub new {
+    my $class = shift;
+    my $self  = {};
+    my $stat;
+    bless( $self, $class );
+    return ( $stat = $self->_init(@_) ) ? $self : $stat;
+}
+
 sub _sysinit {
     my ( $self, $ref ) = @_;
     my %hash = @$ref;
@@ -177,10 +185,11 @@ sub __events__ {
     );
 }
 
-sub execute {
+sub _execute {
     my $self =shift;
     return $self->execute2(@_)
 }
+
 sub execute2 {
     my $self = shift;
     my $sess = shift;
@@ -314,7 +323,7 @@ sub __send_event__ {
     }
 }
 
-=head3 _createObj(<name>,<class or alias>,@parameters)
+=head3 _create_(<name>,<class or alias>,@parameters)
 
 create object by <class or alias>.
 
@@ -329,9 +338,16 @@ sub _create_ {
     };    #! Setup _my_name
     my $obj_ref =
       $pack->isa('WebDAO::Element')
-      ? eval "'$pack'\-\>new(\$ref_init_hash,\@par)"
+      ? eval "'$pack'\-\>new(\@par)"
       : eval "'$pack'\-\>new(\@par)";
-    $self->_log1("Error in eval:  _createObj $@") if $@;
+#      ? eval "'$pack'\-\>new(\$ref_init_hash,\@par)"
+#      : eval "'$pack'\-\>new(\@par)";
+    if ($pack->isa('WebDAO::Element') ) {
+        $obj_ref->{_engine} = $self->_root_ ;
+        $obj_ref->{__my_name} =  $name_obj ;
+        $obj_ref->_init($ref_init_hash,@par) 
+    }
+    $self->_log1("Error in eval:  _create_ $@") if $@;
     return $obj_ref;
 }
 
@@ -376,6 +392,16 @@ sub register_class {
     return;
 }
 
+=head3  _commit
+
+Method witch called after HTTP request
+
+=cut
+
+sub _commit {
+    #nothing by default
+}
+
 sub _destroy {
     my $self = shift;
     $self->SUPER::_destroy;
@@ -396,7 +422,7 @@ Zahatski Aliaksandr, E<lt>zag@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2012 by Zahatski Aliaksandr
+Copyright 2002-2015 by Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
