@@ -12,8 +12,8 @@ Session interface to device(HTTP protocol) specific function
 =cut
 
 
-our $VERSION = '0.01';
-use WebDAO::Base;
+our $VERSION = '0.02';
+use WebDAO;
 use WebDAO::CV;
 use WebDAO::Response;
 use Data::Dumper;

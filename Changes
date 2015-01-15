@@ -1,5 +1,8 @@
 Revision history for Perl extension WebDAO.
 
+2.20 14 Jun 2015
+  * fix deps
+
 2.19 13 Jun 2015
   * fix cpan builds
 

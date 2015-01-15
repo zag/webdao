@@ -11,6 +11,7 @@ WebDAO::Sessionco - Session with store session id in cookie
 =cut
 
 our $VERSION = '0.01';
+use WebDAO;
 use WebDAO::Session;
 use MIME::Base64;
 use Digest::MD5 qw(md5_hex);

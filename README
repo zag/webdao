@@ -1,5 +1,3 @@
-#$Id: README,v 1.2 2006/10/13 12:39:08 zag Exp $
-
 WebDAO 
 ========================
 
@@ -42,7 +40,7 @@ http://webdao.sourceforge.net
 COPYRIGHT AND LICENCE
 
 
-Copyright (C) 2002-2014 Zahatski Aliaksandr
+Copyright (C) 2002-2015 Zahatski Aliaksandr
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
