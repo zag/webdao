@@ -35,7 +35,8 @@ sub mk_attr {
     my %attrs = @_;
     %{"${pkg}::_WEBDAO_ATTRIBUTES_"} = %attrs;
     my $code = "";
-    foreach my $attr (keys %attrs) {
+    foreach my $attr ( keys %attrs ) {
+
         # If the accessor is already present, give a warning
         if ( UNIVERSAL::can( $pkg, "$attr" ) ) {
             carp "$pkg already has method: $attr";
@@ -63,15 +64,28 @@ Make route table for object
    );
 
 =cut
+
 sub mk_route {
     my ($pkg) = caller;
     shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
     my %attrs = @_;
     no strict 'refs';
+    while ( my ( $route, $class  ) = each %attrs ) {
+
+        #check non loaded mods
+        my ( $main, $module ) = $class =~ m/(.*\:\:)?(\S+)$/;
+        $main ||= 'main::';
+        $module .= '::';
+        unless ( exists $$main{$module} ) {
+            eval "use $class";
+            if ($@) {
+                carp "Error make route for for class :$class with $@ ";
+            }
+        }
+    }
     %{"${pkg}::_WEBDAO_ROUTE_"} = %attrs;
     use strict 'refs';
 }
-
 
 sub _define_attr_accessor {
     my ( $pkg, $attr, $default ) = @_;
@@ -94,6 +108,7 @@ sub _define_attr_accessor {
 }
 
 #deprecated
+
 =pod
 sub _define_constructor {
     my $pkg  = shift;
@@ -133,7 +148,7 @@ sub _deprecated {
     my $new_method = shift;
     my ( $old_method, $called_from_str, $called_from_method ) =
       ( ( caller(1) )[3], ( caller(1) )[2], ( caller(2) )[3] );
-      $called_from_method ||= $0;
+    $called_from_method ||= $0;
     $self->_log3(
 "called deprecated method $old_method from $called_from_method at line $called_from_str. Use method $new_method instead."
     );
@@ -153,10 +168,10 @@ sub _log5 { my $self = shift; $self->_log( level => 5, par => \@_ ) }
 sub _log {
     my $self = shift;
     my $dbg_level = $ENV{wdDebug} || $ENV{WD_DEBUG} || 0;
-    return 0 unless $dbg_level ;
+    return 0 unless $dbg_level;
     return $dbg_level unless ( scalar @_ );
     my %args = @_;
-    return $dbg_level if $dbg_level < $args{level}; 
+    return $dbg_level if $dbg_level < $args{level};
     my ( $mod_sub, $str ) = ( caller(2) )[ 3, 2 ];
     ($str) = ( caller(1) )[2];
     print STDERR "$$ [$args{level}] $mod_sub:$str  @{$args{par}} \n";
