@@ -1,5 +1,3 @@
-#$Id$
-
 package WebDAO;
 
 use strict;
@@ -10,8 +8,9 @@ use WebDAO::Container;
 use WebDAO::Engine;
 our @ISA = qw(WebDAO::Element Exporter);
 
-our $VERSION = '2.20';
-@WebDAO::EXPORT = qw( mk_route mk_attr);
+our $VERSION = '2.21';
+@WebDAO::EXPORT = qw( mk_route mk_attr _log1 _log2 _log3
+  _log4 _log5 _log6);
 
 =head2 mk_route ( 'route1'=> 'Class::Name', 'route2'=> sub { return new My::Class() })
 

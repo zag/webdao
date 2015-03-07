@@ -159,7 +159,7 @@ package TRoute;
 use strict;
 use warnings;
 use WebDAO;
-mk_route( tr1 => "TR1" );
+mk_route( tr1 => "TR1", tr2=>'TestLoad' );
 1;
 
 package T::Engine;
@@ -167,6 +167,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use Test::More;
+use WebDAO;
 use base 'Test';
 
 sub setup : Test(setup=>1) {
@@ -327,6 +328,14 @@ sub t05_test_resolve : Test(1) {
     my $eng  = $t->{tlib}->eng;
     my $tlib = $t->{tlib};
     is $tlib->resolve_path("/route/tr1/Test"), 'OK',
+      "Check mk_route";
+}
+
+sub t05_test_resolve_route : Test(1) {
+    my $t    = shift;
+    my $eng  = $t->{tlib}->eng;
+    my $tlib = $t->{tlib};
+    is $tlib->resolve_path("/route/tr2/Pub"), '2',
       "Check mk_route";
 }
 1;

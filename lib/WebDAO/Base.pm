@@ -1,5 +1,5 @@
 package WebDAO::Base;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -16,8 +16,8 @@ WebDAO::Base - Base class
 use Data::Dumper;
 use Carp;
 @WebDAO::Base::ISA    = qw(Exporter);
-@WebDAO::Base::EXPORT = qw(mk_attr mk_route);
-$DEBUG = 0;    # assign 1 to it to see code generated on the fly
+@WebDAO::Base::EXPORT = qw(mk_attr mk_route _log1 _log2 _log3
+  _log4 _log5 _log6);
 
 =head2 mk_attr ( _attr1=>'default value', __attr2=>undef, __attr2=>1)
 
@@ -70,13 +70,14 @@ sub mk_route {
     shift if $_[0] =~ /\:\:/ or $_[0] eq $pkg;
     my %attrs = @_;
     no strict 'refs';
-    while ( my ( $route, $class  ) = each %attrs ) {
+    while ( my ( $route, $class ) = each %attrs ) {
 
         #check non loaded mods
         my ( $main, $module ) = $class =~ m/(.*\:\:)?(\S+)$/;
         $main ||= 'main::';
         $module .= '::';
         unless ( exists $$main{$module} ) {
+            _log6("try autoload class $module");
             eval "use $class";
             if ($@) {
                 carp "Error make route for for class :$class with $@ ";
@@ -107,26 +108,6 @@ sub _define_attr_accessor {
     $code;
 }
 
-#deprecated
-
-=pod
-sub _define_constructor {
-    my $pkg  = shift;
-    my $code = qq {
-    package $pkg;
-    sub new {
-	my \$class =shift;
-	my \$self={};
-	my \$stat;
-	bless (\$self,\$class);
-	return (\$stat=\$self->_init(\@_)) ? \$self: \$stat;
-#	return \$self if (\$self->_init(\@_));
-#	return (\$stat=\$self->Error) ? \$stat : "Error initialize";
-    }
-  };
-    $code;
-}
-=cut
 
 sub new {
     my $class = shift;
@@ -149,24 +130,19 @@ sub _deprecated {
     my ( $old_method, $called_from_str, $called_from_method ) =
       ( ( caller(1) )[3], ( caller(1) )[2], ( caller(2) )[3] );
     $called_from_method ||= $0;
-    $self->_log3(
+    _log3(
 "called deprecated method $old_method from $called_from_method at line $called_from_str. Use method $new_method instead."
     );
 }
 
-sub logmsgs {
-    my $self = shift;
-    $self->_deprecated("_log1,_log2");
-    $self->_log1(@_);
-}
-sub _log1 { my $self = shift; $self->_log( level => 1, par => \@_ ) }
-sub _log2 { my $self = shift; $self->_log( level => 2, par => \@_ ) }
-sub _log3 { my $self = shift; $self->_log( level => 3, par => \@_ ) }
-sub _log4 { my $self = shift; $self->_log( level => 4, par => \@_ ) }
-sub _log5 { my $self = shift; $self->_log( level => 5, par => \@_ ) }
+sub _log1 { shift if ref( $_[0] ); _log( level => 1, par => \@_ ) }
+sub _log2 { shift if ref( $_[0] ); _log( level => 2, par => \@_ ) }
+sub _log3 { shift if ref( $_[0] ); _log( level => 3, par => \@_ ) }
+sub _log4 { shift if ref( $_[0] ); _log( level => 4, par => \@_ ) }
+sub _log5 { shift if ref( $_[0] ); _log( level => 5, par => \@_ ) }
+sub _log6 { shift if ref( $_[0] ); _log( level => 6, par => \@_ ) }
 
 sub _log {
-    my $self = shift;
     my $dbg_level = $ENV{wdDebug} || $ENV{WD_DEBUG} || 0;
     return 0 unless $dbg_level;
     return $dbg_level unless ( scalar @_ );
@@ -177,12 +153,6 @@ sub _log {
     print STDERR "$$ [$args{level}] $mod_sub:$str  @{$args{par}} \n";
 }
 
-#TODO: remove LOG
-sub LOG {
-    my $self = shift;
-    $self->_deprecated("_log1,_log2");
-    return $self->logmsgs(@_);
-}
 1;
 __DATA__
 

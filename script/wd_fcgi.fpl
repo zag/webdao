@@ -58,6 +58,11 @@ my $fcgi_controller = 'WebDAO::CVfcgi';
 if ( $FCGI::VERSION <= 0.68 ) {
     #die "Update FCGI to > 0.68 !";
     $fcgi_controller = 'WebDAO::CVfcgiold'
+} else {
+    # enable UTF-8 output and UTF-8 input 
+    warn "aaaa";
+    binmode STDOUT, ':encoding(UTF-8)';
+    binmode STDIN, ':encoding(UTF-8)'; # HTTP POST only?
 }
 my $proc_manager;
 if ($listen) {
@@ -114,6 +119,7 @@ my $request = FCGI::Request(
   \*STDIN, \*STDOUT, \*STDERR, \%ENV, $sock, 1
   );
 
+
 while ( $count_req != 0 and ($request->Accept() >= 0) ) {
 
     $proc_manager && $proc_manager->pm_pre_dispatch();
@@ -123,7 +129,6 @@ while ( $count_req != 0 and ($request->Accept() >= 0) ) {
     }
 
     my $ini = WebDAO::Util::get_classes(__env => \%ENV, __preload=>1);
-
 
     my $cv = $fcgi_controller->new(env=>\%ENV);
 

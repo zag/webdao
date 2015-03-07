@@ -1,5 +1,10 @@
 Revision history for Perl extension WebDAO.
 
+2.21 07 March 2015
+  * remove deprecated
+  * mk_route now autoload classes
+  * _log* not methods
+
 2.20 14 Jun 2015
   * fix deps
 

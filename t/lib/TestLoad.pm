@@ -10,4 +10,8 @@ use base ( 'WebDAO::Container','WebDAO' );
 sub view {
     return 1
 }
+
+sub Pub {
+    return 2
+}
 1;
