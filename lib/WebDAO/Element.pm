@@ -17,6 +17,7 @@ our $VERSION = '0.01';
 use Data::Dumper;
 use WebDAO::Base;
 use base qw/ WebDAO::Base/;
+use warnings;
 use strict 'vars';
 
 __PACKAGE__->mk_attr(

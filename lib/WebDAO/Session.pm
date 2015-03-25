@@ -16,9 +16,9 @@ our $VERSION = '0.02';
 use WebDAO;
 use WebDAO::CV;
 use WebDAO::Response;
-use Data::Dumper;
 use Encode qw(encode decode is_utf8);
 use strict;
+use warnings;
 
 mk_attr(
     Cgi_obj => undef, # request object

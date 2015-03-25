@@ -17,11 +17,10 @@ WebDAO::Container - Group of objects
 our $VERSION = '0.01';
 
 use WebDAO::Element;
-use Data::Dumper;
 use base qw(WebDAO::Element);
 use strict 'vars';
+use warnings;
 
-#no strict 'refs';
 __PACKAGE__->mk_attr( __post_childs => '', __pre_childs => '', __childs => '' );
 
 sub _sysinit {
@@ -248,7 +247,7 @@ sub _traverse_ {
         }
     }
     #
-    if ( $src == $res && !UNIVERSAL::isa( $src, 'WebDAO::Modal' ) ) {
+    if ( $res && ( $src eq $res )  && !UNIVERSAL::isa( $src, 'WebDAO::Modal' ) ) {
 
         #force set root object for Modal
         $src = $res = $self if UNIVERSAL::isa( $self, 'WebDAO::Modal' );

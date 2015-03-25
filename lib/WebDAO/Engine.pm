@@ -19,6 +19,7 @@ use WebDAO::Lib::RawHTML;
 use base qw(WebDAO::Container);
 use Carp;
 use strict;
+use warnings;
 __PACKAGE__->mk_attr( _session=>undef, __obj=>undef, __events=>undef);
 
 sub new {

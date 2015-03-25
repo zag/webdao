@@ -12,6 +12,8 @@ use Exporter;
 use POSIX qw(:signal_h);
 
 use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS $Q $SIG_CODEREF);
+use warnings;
+
 BEGIN {
   $VERSION = '0.17'; 
   @ISA = qw(Exporter);
@@ -280,7 +282,7 @@ sub managing_init {
   }
 
   # change the name of this process as it appears in ps(1) output.
-  $this->pm_change_process_name("perl-fcgi-pm");
+  $this->pm_change_process_name("webdao-fcgi-pm");
 
   $this->pm_write_pid_file();
 }
@@ -468,7 +470,7 @@ sub handling_init {
   }
 
   # change the name of this process as it appears in ps(1) output.
-  $this->pm_change_process_name("perl-fcgi");
+  $this->pm_change_process_name("webdao-fcgi");
 }
 
 =head2 pm_pre_dispatch

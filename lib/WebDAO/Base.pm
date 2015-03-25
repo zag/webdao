@@ -13,8 +13,9 @@ WebDAO::Base - Base class
 
 =cut
 
-use Data::Dumper;
 use Carp;
+use warnings;
+
 @WebDAO::Base::ISA    = qw(Exporter);
 @WebDAO::Base::EXPORT = qw(mk_attr mk_route _log1 _log2 _log3
   _log4 _log5 _log6);

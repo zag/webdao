@@ -14,8 +14,11 @@ WebDAO::Lib::RawHTML - Component for raw html
 =cut
 
 our $VERSION = '0.01';
+use strict;
+use warnings;
 use WebDAO::Base;
 use base qw(WebDAO);
+
 __PACKAGE__->mk_attr(_raw_html=>undef);
 
 sub init {

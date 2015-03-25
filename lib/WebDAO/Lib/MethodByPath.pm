@@ -1,5 +1,4 @@
 package WebDAO::Lib::MethodByPath;
-#$Id$
 
 =head1 NAME
 
@@ -15,6 +14,8 @@ WebDAO::Lib::MethodByPath - Component for method tag
 
 our $VERSION = '0.01';
 use WebDAO;
+use strict;
+use warnings;
 use base qw(WebDAO);
 __PACKAGE__->mk_attr( _path=>undef, _args=>undef);
 

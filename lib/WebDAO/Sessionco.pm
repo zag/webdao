@@ -17,6 +17,7 @@ use MIME::Base64;
 use Digest::MD5 qw(md5_hex);
 use base qw( WebDAO::Session );
 use strict 'vars';
+use warnings;
 mk_attr ( Cookie_name=>undef, Db_file=>undef );
 
 sub _init {

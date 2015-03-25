@@ -38,6 +38,7 @@ __PACKAGE__->mk_attr(
     );
 
 use strict;
+use warnings;
 
 =head1 METHODS
 

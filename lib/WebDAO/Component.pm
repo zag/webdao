@@ -18,7 +18,7 @@ our $VERSION = '0.01';
 use WebDAO::Base;
 use base qw(WebDAO::Element);
 use strict 'vars';
-use Data::Dumper;
+use warnings;
 
 
 1;

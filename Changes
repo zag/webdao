@@ -1,5 +1,8 @@
 Revision history for Perl extension WebDAO.
 
+2.22 24 March 2015
+  * change process name to webdao-fcgi
+
 2.21 07 March 2015
   * remove deprecated
   * mk_route now autoload classes

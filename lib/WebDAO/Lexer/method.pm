@@ -15,6 +15,7 @@ our $VERSION = '0.01';
 
 use base 'WebDAO::Lexer::base';
 use strict;
+use warnings;
 sub value {
     my $self = shift;
     my $eng = shift || return undef;
