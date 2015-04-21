@@ -1,5 +1,8 @@
 Revision history for Perl extension WebDAO.
 
+2.23 12 Apr 2015
+  * fix warnings
+
 2.22 24 March 2015
   * change process name to webdao-fcgi
 

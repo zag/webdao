@@ -14,7 +14,7 @@ WebDAO::Container - Group of objects
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use WebDAO::Element;
 use base qw(WebDAO::Element);
@@ -247,7 +247,7 @@ sub _traverse_ {
         }
     }
     #
-    if ( $res && ( $src eq $res )  && !UNIVERSAL::isa( $src, 'WebDAO::Modal' ) ) {
+    if ( $res && $src && ( $src eq $res )  && !UNIVERSAL::isa( $src, 'WebDAO::Modal' ) ) {
 
         #force set root object for Modal
         $src = $res = $self if UNIVERSAL::isa( $self, 'WebDAO::Modal' );

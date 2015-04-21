@@ -43,6 +43,7 @@ sub new {
         my $message = $WebDAO::Util::HTTPStatusCode{$code};
         my $header_str= "Status: $code $message\015\012";
         while ( my ($header, $value) = splice( @$headers_ref, 0, 2) ) {
+            $value = '' unless defined $value;
             $header_str .= "$header: $value\015\012"
         }
         $header_str .="\015\012";

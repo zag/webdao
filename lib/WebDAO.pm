@@ -8,7 +8,7 @@ use WebDAO::Container;
 use WebDAO::Engine;
 our @ISA = qw(WebDAO::Element Exporter);
 
-our $VERSION = '2.22';
+our $VERSION = '2.23';
 @WebDAO::EXPORT = qw( mk_route mk_attr _log1 _log2 _log3
   _log4 _log5 _log6);
 
