@@ -14,7 +14,7 @@ sub headers { return $_[0]->{headers} }
 1;
 
 package WebDAO::CVfcgi;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -54,6 +54,7 @@ sub new {
 sub print {
     my $self = shift;
     foreach my $str (@_) {
+        next unless defined $str;
         utf8::encode( $str) if utf8::is_utf8($str);
         print $str;
    }
