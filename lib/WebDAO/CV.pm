@@ -2,11 +2,10 @@
 #
 #  DESCRIPTION:  controller
 #
-#       AUTHOR:  Aliaksandr P. Zahatski, <zahatski@gmail.com>
+#       AUTHOR:  Aliaksandr P. Zahatski, <zag@cpan.org>
 #===============================================================================
-#$Id$
 package WebDAO::CV;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use URI;
 use Data::Dumper;
 use strict;
@@ -63,7 +62,7 @@ sub url {
     return URI->new($full_path)->canonical;
 }
 
-=head2 method
+=head2 method - HTTP method
 
 retrun HTTP method
 
@@ -74,7 +73,7 @@ sub method {
     $self->{env}->{REQUEST_METHOD} || "GET";
 }
 
-=head2
+=head2 accept
 
 return hashref
 
@@ -85,6 +84,7 @@ return hashref
       };
 
 =cut
+
 sub accept {
     my $self = shift;
     my $accept = $self->{env}->{HTTP_ACCEPT} || return {};
@@ -94,7 +94,7 @@ sub accept {
     \%res;
 }
 
-=head2 param 
+=head2 param  - return GET and POST params
 
 return params 
 
@@ -168,14 +168,14 @@ sub _parse_body {
     return $body->param
 }
 
-=head2 body 
+=head2 body - HTTP body file descriptor ( see get-body for get content)
 
 Return HTTP body file descriptor 
 
     my $body;
     {
         local $/;
-        my $fd = $r->get_request->body;
+        my $fd = $request->body;
         $body = <$fd>;
      }
 
@@ -191,11 +191,11 @@ sub body {
     return $http_body->body;
 }
 
-=head2 get-body
+=head2 get-body - HTTP body content
 
 Return HTTP body text
 
-    my $body= $r->get_request->get_body;
+    my $body= $r->get_body;
 
 =cut
 
@@ -209,6 +209,44 @@ sub get_body {
 	}
      }
     return $body
+}
+
+
+=head2 upload - return upload content 
+
+        print Dumper $request->upload;
+
+For command:
+
+ curl -i -X POST -H "Content-Type: multipart/form-data"\
+        -F "data=@UserSettings.txt"\
+        http://example.org/Upload
+
+output:
+
+    {
+      'data' => {
+        'headers' => {
+          'Content-Type' => 'text/plain',
+          'Content-Disposition' => 'form-data; name="data"; filename="UserSettings.txt"'   
+          },
+        'tempname' => '/tmp/txBmaz5Bpf.txt',
+        'size' => 6704,
+        'filename' => 'UserSettings.txt',
+        'name' => 'data'
+      }
+    };
+
+=cut
+
+sub upload {
+    my $self = shift;
+    unless ( exists $self->{'http.body'} ) {
+        $self->_parse_body();
+    }
+
+    my $http_body = $self->{'http.body'} || return {};
+    return $http_body->upload;
 }
 
 =head2 set_header

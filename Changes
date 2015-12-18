@@ -1,5 +1,8 @@
 Revision history for Perl extension WebDAO.
 
+2.25 17 Dec 2015
+  * add upload method to WebDAO::CV
+
 2.24 25 Aug 2015
   * fix warnings
 

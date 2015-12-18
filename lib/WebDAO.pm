@@ -8,22 +8,9 @@ use WebDAO::Container;
 use WebDAO::Engine;
 our @ISA = qw(WebDAO::Element Exporter);
 
-our $VERSION = '2.24';
+our $VERSION = '2.25';
 @WebDAO::EXPORT = qw( mk_route mk_attr _log1 _log2 _log3
   _log4 _log5 _log6);
-
-=head2 mk_route ( 'route1'=> 'Class::Name', 'route2'=> sub { return new My::Class() })
-
-Make route table for object
-
- use WebDAO;
- mk_route( 
-    user=>'MyClass::User', 
-    test=>sub { return  MyClass->new( param1=>1 ) }
-   );
-
-=cut
-
 
 
 1;
@@ -54,6 +41,20 @@ There are many environments in which the web applications work:
     ---------------------------------------------
 
 WebDAO designed to save developers from the details of the application environment, reduce costs with a change of environment, and to simplify debugging and testing applications. An important goal is to simplify and increase the speed of web development.
+
+=head1 METHODS
+
+=head2 mk_route ( 'route1'=> 'Class::Name', 'route2'=> sub { return new My::Class() })
+
+Make route table for object
+
+ use WebDAO;
+ mk_route( 
+    user=>'MyClass::User', 
+    test=>sub { return  MyClass->new( param1=>1 ) }
+   );
+
+=cut
 
 =head1 SEE ALSO
 
