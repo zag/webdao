@@ -32,6 +32,8 @@ equal (=) sign. Sections are declared on their own lines enclosed in
 
   #%INCLUDE file.inc%
 
+=over 4
+
 =item B<?=>  - set value unless it defined before
 
 =item B<+=>  - add value
@@ -39,6 +41,8 @@ equal (=) sign. Sections are declared on their own lines enclosed in
 =item B<=>   - set value to key
 
 =item B<#%INCLUDE file.inc%> - include config ini file
+
+=back
 
 =cut
 
